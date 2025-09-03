@@ -18,9 +18,8 @@
 
 4. **Tailwind CSS 사용**
    - Tailwind 관련 설정(`tailwindcss`, `@tailwindcss/vite`)이 포함되어 있습니다.
-   - CSS 파일에 반드시 Tailwind의 기본 디렉티브(`@tailwind base;`, `@tailwind components;`, `@tailwind utilities;`)를 추가하세요.
    - 공통 색상, 폰트는 index.css에 있습니다. 색상과 폰트는 공통 테마의 변수로 사용해주세요.
-   - 자세한 사용방법은 [블로그-v4.0에 커스텀 스타일링 적용하기](https://alpha.velog.io/@one1_programmer/CSS-Tailwind-CSS-v4.0%EC%97%90-%EC%BB%A4%EC%8A%A4%ED%85%80-%EC%8A%A4%ED%83%80%EC%9D%BC%EB%A7%81-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)를 참고해주세요.
+   - Tailwind 4.0을 사용하고 있습니다. 자세한 사용방법은 공식홈페이지 혹은 [블로그-v4.0에 커스텀 스타일링 적용하기](https://alpha.velog.io/@one1_programmer/CSS-Tailwind-CSS-v4.0%EC%97%90-%EC%BB%A4%EC%8A%A4%ED%85%80-%EC%8A%A4%ED%83%80%EC%9D%BC%EB%A7%81-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)를 참고해주세요.
 
    ```js
    return (
