@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+/* 1) 커스텀 폰트 페이스 선언 */
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 300;
+  font-style: normal;
+  src: url('../assets/fonts/NanumSquareRoundL.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 400;
+  font-style: normal;
+  src: url('../assets/fonts/NanumSquareRoundR.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 700;
+  font-style: normal;
+  src: url('../assets/fonts/NanumSquareRoundB.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 800;
+  font-style: normal;
+  src: url('../assets/fonts/NanumSquareRoundEB.ttf') format('truetype');
+}
+
+/* 2) 기본 스타일 재정의 */
+@layer base {
+  body {
+    /* Font Family */
+    --font-sans: 'NanumSquareRound', system-ui, sans-serif;
+    /* 이곳에 전역 스타일 추가 */
+  }
+}
+
+/* 커스텀 변수 */
+@theme {
+  /* Colors */
+  --color-primary: #12b76a;
+  --color-primary-dark: #006234;
+  --color-primary-light: #f4fffa;
+  --color-primary-hover: #0c8f52;
+
+  --color-secondary: #ff5094;
+  --color-secondary-dark: #a62255;
+  --color-secondary-light: #fffafc;
+  --color-secondary-hover: #d53e78;
+
+  --color-success: #12b76a;
+  --color-error: #f04438;
+  --color-warning: #f79009;
+
+  --color-gray-50: #f6f6f6;
+  --color-gray-100: #ededed;
+  --color-gray-200: #d5d5d5;
+  --color-gray-300: #c0c0c0;
+  --color-gray-400: #afafaf;
+  --color-gray-500: #898989;
+  --color-gray-600: #707070;
+  --color-gray-700: #585858;
+  --color-gray-800: #404040;
+  --color-gray-900: #202020;
+}
