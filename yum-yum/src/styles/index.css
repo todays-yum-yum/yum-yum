@@ -30,13 +30,21 @@
 @layer base {
   body {
     /* Font Family */
-    --font-sans: 'NanumSquareRound', system-ui, sans-serif;
+    font-family: var(--font-sans);
+    color: var(--color-gray-800);
+    background-color: var(--color-gray-100);
     /* 이곳에 전역 스타일 추가 */
+  }
+  button {
+    cursor: pointer;
   }
 }
 
 /* 커스텀 변수 */
 @theme {
+  /* Font token */
+  --font-sans: 'NanumSquareRound', system-ui, sans-serif;
+
   /* Colors */
   --color-primary: #12b76a;
   --color-primary-dark: #006234;
@@ -48,18 +56,56 @@
   --color-secondary-light: #fffafc;
   --color-secondary-hover: #d53e78;
 
+  /* Status */
   --color-success: #12b76a;
   --color-error: #f04438;
   --color-warning: #f79009;
 
+  /* Gray  */
   --color-gray-50: #f6f6f6;
-  --color-gray-100: #ededed;
-  --color-gray-200: #d5d5d5;
-  --color-gray-300: #c0c0c0;
-  --color-gray-400: #afafaf;
-  --color-gray-500: #898989;
-  --color-gray-600: #707070;
-  --color-gray-700: #585858;
-  --color-gray-800: #404040;
-  --color-gray-900: #202020;
+  --color-gray-100: #f2f4f7;
+  --color-gray-200: #eaecf0;
+  --color-gray-300: #d0d5dd;
+  --color-gray-400: #98a2b3;
+  --color-gray-500: #667085;
+  --color-gray-600: #475467;
+  --color-gray-700: #344054;
+  --color-gray-800: #1d2939;
+  --color-gray-900: #101828;
+
+  /* Pink */
+  --color-pink-50: #fff2f2;
+  --color-pink-100: #ffdddc;
+  --color-pink-200: #ffb9bf;
+  --color-pink-300: #ff96a9;
+  --color-pink-400: #ff7ba1;
+  --color-pink-500: #ff5094; /* 탄수화물 메인 색상 */
+  --color-pink-600: #db3a88;
+  --color-pink-700: #b7287c;
+  --color-pink-800: #93196d;
+  --color-pink-900: #7a0f63;
+
+  /* Yellow */
+  --color-yellow-50: #fffcf3;
+  --color-yellow-100: #fffcf0;
+  --color-yellow-200: #fff9dc;
+  --color-yellow-300: #fff6d3;
+  --color-yellow-400: #ffe897;
+  --color-yellow-500: #ffd653; /* 단백질 메인 색상 */
+  --color-yellow-600: #7b621a;
+  --color-yellow-700: #624b14;
+  --color-yellow-800: #4c390e;
+  --color-yellow-900: #412f0b;
+
+  /* Blue */
+  --color-blue-50: #f3f9ff;
+  --color-blue-100: #edf6ff;
+  --color-blue-200: #d3e7fb;
+  --color-blue-300: #c8def9;
+  --color-blue-400: #7faff3;
+  --color-blue-500: #2f73e5; /* 지방 메인 색상 */
+  --color-blue-600: #0e2f6f;
+  --color-blue-700: #0b2258;
+  --color-blue-800: #081744;
+  --color-blue-900: #06123a;
 }
