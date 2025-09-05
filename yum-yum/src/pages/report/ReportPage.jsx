@@ -1,6 +1,7 @@
+
 export default function ReportPage() {
   return (
-    <div>
+    <div className="bg-white">
       <p>ReportPage</p>
     </div>
   );
