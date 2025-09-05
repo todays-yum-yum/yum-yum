@@ -13,10 +13,10 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
   const navigate = useNavigate();
 
   return (
-    <>
+    <div className='absolute bottom-20 right-4 flex flex-col gap-2 items-end '>
       {/* 플로팅 버튼 클릭했을 때 위에 뜨는 메뉴들 */}
       {isOpen && (
-        <div className='fixed bottom-35 right-4 space-y-2 flex flex-col z-50'>
+        <div className='space-y-2 flex flex-col z-50'>
           <RoundButton
             onClick={() => {
               navigate('/water');
@@ -41,7 +41,7 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
       )}
       {/* 플로팅 버튼 */}
       <button
-        className='fixed bottom-20 right-4 p-3 rounded-full bg-primary text-white shadow-lg'
+        className='p-3 w-[48px] rounded-full bg-primary text-white shadow-lg'
         onClick={isClose}
         disabled={disabled}
       >
@@ -53,6 +53,6 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
       </button>
 
       <MenuModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
-    </>
+    </div>
   );
 }
