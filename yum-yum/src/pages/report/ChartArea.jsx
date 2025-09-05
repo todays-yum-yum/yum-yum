@@ -1,10 +1,10 @@
 import React from 'react';
-import RoundButton from './../../components/button/RoundButton';
+import RoundButton from '@/components/button/RoundButton';
 
 const periodPrefixConfig = {
   일간: '오늘의',
   주간: '이번 주 평균',
-  월간: '이번 달',
+  월간: '이번 달 평균',
 };
 
 const unitConfig = {

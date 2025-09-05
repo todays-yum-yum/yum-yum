@@ -5,7 +5,7 @@ export default function DietReportPage() {
   const [activePeriod, setActivePeriod] = useState('일간');
 
   useEffect(() => {
-    console.log(activePeriod);
+    // console.log(activePeriod);
   }, [activePeriod]);
 
   return (
