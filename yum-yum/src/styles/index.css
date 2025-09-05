@@ -40,6 +40,29 @@
   }
 }
 
+/* input 설정 */
+.input-base {
+  @apply w-full h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none placeholder-[var(--color-gray-400)];
+}
+.input-base:focus {
+  @apply border-[var(--color-primary)];
+}
+.input-base:disabled {
+  @apply border-[var(--color-gray-200)] bg-[var(--color-gray-50)] text-[var(--color-gray-400)];
+}
+
+/* Input Error */
+.input-error {
+  @apply border-[var(--color-error)];
+}
+.input-error:focus {
+  @apply border-[var(--color-error)];
+}
+
+.input-with-adornment {
+  @apply pr-13;
+}
+
 /* 커스텀 변수 */
 @theme {
   /* Font token */
