@@ -26,7 +26,7 @@ export default function ReportPage() {
 
   return (
     <div className='bg-white'>
-      <section className='flex flex-row gap-4 py-2.5 justify-center'>
+      <nav className='flex flex-row gap-4 py-2.5 justify-center'>
         {reportTypes.map((type) => (
           <BasicButton
             key={type.name}
@@ -34,7 +34,7 @@ export default function ReportPage() {
             variant={activeTab === type.name ? 'filled' : 'line'}
           >{type.name}</BasicButton>
         ))}
-      </section>
+      </nav>
       <main>
         {CurrentComponent && <CurrentComponent />}
       </main>
