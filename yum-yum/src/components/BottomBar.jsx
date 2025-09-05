@@ -7,6 +7,7 @@ import ReportIcon from '@/assets/icons/bottombar/report.svg?react';
 import ReportActiveIcon from '@/assets/icons/bottombar/report_active.svg?react';
 import MypageIcon from '@/assets/icons/bottombar/my.svg?react';
 import MypageActiveIcon from '@/assets/icons/bottombar/my_active.svg?react';
+import FloatButton from './button/FloatButton';
 
 const navItem = [
   {
@@ -35,7 +36,10 @@ const navItem = [
 export default function BottomBar() {
   const location = useLocation();
   const [activeNav, setActiveNav] = useState('home');
+  const [floatOpen, setFloatOpen] = useState(false);
   const BottomHiddenPage = ['/meal', '/water'];
+  // 플로팅 버튼을 보여줄 페이지들
+  const showFloatButton = ['/', '/home'].includes(location.pathname);
   const isBottomHiddenPage = BottomHiddenPage.some((page) => location.pathname.startsWith(page)); // 바텀바 없는 페이지
 
   // url 동기화
@@ -46,9 +50,12 @@ export default function BottomBar() {
   }, [location.pathname]);
 
   return (
-    <>
+    <div className='sticky bottom-0 z-30'>
+      {showFloatButton && (
+        <FloatButton onClick={null} isOpen={floatOpen} isClose={() => setFloatOpen(!floatOpen)} />
+      )}
       {!isBottomHiddenPage && (
-        <nav className='sticky bottom-0 z-30 flex justify-around w-full max-w-[500px] px-5 bg-white border border-gray-100 shadow-2xl'>
+        <nav className='flex justify-around w-full max-w-[500px] px-5 bg-white border border-gray-100 shadow-2xl'>
           <ul className='flex items-center justify-center w-full'>
             {navItem.map((item) => {
               const isActiveNav = activeNav === item.id;
@@ -74,6 +81,6 @@ export default function BottomBar() {
           </ul>
         </nav>
       )}
-    </>
+    </div>
   );
 }
