@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 // 아이콘
 import HomeIcon from '@/assets/icons/bottombar/home.svg?react';
 import HomeActiveIcon from '@/assets/icons/bottombar/home_active.svg?react';
@@ -34,32 +33,47 @@ const navItem = [
 ];
 
 export default function BottomBar() {
+  const location = useLocation();
   const [activeNav, setActiveNav] = useState('home');
+  const BottomHiddenPage = ['/meal', '/water'];
+  const isBottomHiddenPage = BottomHiddenPage.some((page) => location.pathname.startsWith(page)); // 바텀바 없는 페이지
+
+  // url 동기화
+  useEffect(() => {
+    const urlMatch = navItem.find((nav) => nav.to === location.pathname);
+
+    if (urlMatch) return setActiveNav(urlMatch.id);
+  }, [location.pathname]);
+
   return (
-    <nav className='fixed z-30 left-1/2 bottom-0 -translate-x-1/2 flex justify-around w-full max-w-[500px] px-5 bg-white border border-gray-100 shadow-2xl'>
-      <ul className='flex items-center justify-center w-full'>
-        {navItem.map((item) => {
-          const isActiveNav = activeNav === item.id;
-          const navColor = isActiveNav ? 'text-primary' : 'text-gray-400';
-          const CurrentIcon = isActiveNav ? item.iconActive : item.icon;
+    <>
+      {!isBottomHiddenPage && (
+        <nav className='sticky bottom-0 z-30 flex justify-around w-full max-w-[500px] px-5 bg-white border border-gray-100 shadow-2xl'>
+          <ul className='flex items-center justify-center w-full'>
+            {navItem.map((item) => {
+              const isActiveNav = activeNav === item.id;
+              const navColor = isActiveNav ? 'text-primary' : 'text-gray-400';
+              const CurrentIcon = isActiveNav ? item.iconActive : item.icon;
 
-          return (
-            <li key={item.id} className='w-full py-2'>
-              <Link
-                to={item.to}
-                onClick={() => setActiveNav(item.id)}
-                className='flex flex-col items-center gap-1'
-              >
-                <div className='flex items-center justify-center'>
-                  <CurrentIcon />
-                </div>
+              return (
+                <li key={item.id} className='w-full py-2'>
+                  <Link
+                    to={item.to}
+                    onClick={() => setActiveNav(item.id)}
+                    className='flex flex-col items-center gap-1'
+                  >
+                    <div className='flex items-center justify-center'>
+                      <CurrentIcon />
+                    </div>
 
-                <p className={`text-xs font-bold ${navColor}`}>{item.label}</p>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+                    <p className={`text-xs font-bold ${navColor}`}>{item.label}</p>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      )}
+    </>
   );
 }

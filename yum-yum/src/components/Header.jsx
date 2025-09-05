@@ -17,7 +17,7 @@ export default function Header() {
   return (
     <>
       {!isHeaderHiddenPage && (
-        <div className='flex items-center h-[60px] px-5'>
+        <div className='sticky top-0 z-30 flex items-center h-[60px] px-5 border-b border-gray-200 bg-white'>
           {!isBackHiddenPage && (
             <button onClick={handleBack} className='flex items-center justify-center'>
               <PrevIcon className='h-[60px] mr-4' />
