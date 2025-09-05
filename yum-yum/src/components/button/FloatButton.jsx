@@ -1,13 +1,16 @@
 // 플로팅 버튼 컴포넌트
-import React from 'react';
+import React, { useState } from 'react';
 import IconPlus from '@/assets/icons/icon-plus-line.svg?react';
 import IconClose from '@/assets/icons/icon-close.svg?react';
 import IconDrop from '@/assets/icons/icon-drop.svg?react';
 import IconMeal from '@/assets/icons/icon-restaurant.svg?react';
+import MenuModal from '@/components/modal/MenuModal';
 import { useNavigate } from 'react-router-dom';
 
 export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+
   return (
     <>
       {/* 플로팅 버튼 클릭했을 때 위에 뜨는 메뉴들 */}
@@ -23,7 +26,9 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
             <span className='pl-2'>물 추가하기</span>
           </button>
           <button
-            onClick={() => {}}
+            onClick={() => {
+              setModalOpen(true);
+            }}
             className='p-2 px-4 rounded bg-gray-800 rounded-full text-white shadow-lg flex justify-center items-center space-x-2'
           >
             <IconMeal className='w-6 h-6' />
@@ -43,6 +48,8 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
           <IconPlus width='24' height='24' fill='#ffffff' />
         )}
       </button>
+
+      <MenuModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );
 }

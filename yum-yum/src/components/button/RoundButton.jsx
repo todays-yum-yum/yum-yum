@@ -5,7 +5,6 @@ export default function RoundButton({
   size = 'md', // sm, md, lg, xl, full
   color = 'primary', // primary, secondary, gray
   variant = 'filled', // filled, line
-  svg = null,
   disabled = false,
   onClick,
   children,
