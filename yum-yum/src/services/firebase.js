@@ -1,11 +1,12 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 import {
   initializeAuth,
   browserSessionPersistence,
   indexedDBLocalPersistence,
   browserLocalPersistence,
-} from "firebase/auth";
+} from 'firebase/auth';
+import { getGenerativeModel, GoogleAIBackend } from 'firebase/ai';
 
 // firebase 설정
 const firebaseConfig = {
@@ -29,3 +30,8 @@ export const auth = initializeAuth(app, {
     browserLocalPersistence, // 브라우저가 종료되어도 유지, 호환성
   ],
 });
+
+// Gemini Developer API 백엔드 서비스
+const ai = getAI(app, { backend: new GoogleAIBackend() });
+// Gemini 모델 호출
+export const model = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
