@@ -33,7 +33,7 @@ export default function CalorieChart({ currentCalories = 1800, totalCalories = 1
       <div className='relative w-80 h-80'>
         {' '}
         {/* 크기 증가 */}
-        <PieChart width={320} height={320}>
+        <PieChart width={320} height={280}>
           {' '}
           {/* PieChart 크기도 증가 */}
           <Pie

@@ -34,15 +34,13 @@ const MealCard = ({
           <div className='flex justify-between items-start mb-3'>
             <div className='flex-1'>
               <div className='flex items-center gap-2 mb-2'>
-                <h3 className='text-slate-800 text-xl sm:text-2xl font-extrabold'>
-                  {section.title}
-                </h3>
+                <h3 className='text-gray-800 text-xl font-extrabold'>{section.title}</h3>
                 {section.data.calories > 0 && (
                   <div className='flex items-baseline gap-2'>
-                    <span className='text-slate-800 text-2xl sm:text-3xl font-extrabold'>
+                    <span className='text-gray-800 text-2xl font-extrabold'>
                       {section.data.calories}
                     </span>
-                    <span className='text-pink-500 text-base sm:text-lg font-bold'>kcal</span>
+                    <span className='text-pink-500 text-base font-bold'>kcal</span>
                   </div>
                 )}
               </div>
@@ -73,10 +71,12 @@ const MealCard = ({
       <div className='border-b border-gray-300 my-4'></div>
 
       <div className='flex justify-between items-center'>
-        <div className='flex items-baseline gap-2'>
-          <h3 className='text-slate-800 text-xl sm:text-2xl font-extrabold'>물</h3>
-          <span className='text-pink-500 text-2xl sm:text-3xl font-extrabold'>{water.current}</span>
-          <span className='text-slate-800 text-base sm:text-lg font-bold'>/{water.goal}L</span>
+        <div className='flex items-center gap-2'>
+          <h3 className='text-gray-800 text-xl font-extrabold'>물</h3>
+          <div className='flex items-baseline gap-2'>
+            <span className='text-pink-500 text-2xl font-extrabold'>{water.current}</span>
+            <span className='text-gray-800 text-base font-bold'>/{water.goal}L</span>
+          </div>
         </div>
 
         <CheckButton hasData={false} onClick={() => onAddWater?.()} />
