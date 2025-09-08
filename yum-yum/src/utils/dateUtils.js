@@ -113,7 +113,7 @@ export function getNextMonth(date) {
 
 // ---
 
-// 년 월 일 추출
+// 년 월 일 추출 - 정규식 이용
 export const parseDateString = (dateString) => {
   const regex = /(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/;
   const match = dateString.match(regex);
@@ -122,8 +122,23 @@ export const parseDateString = (dateString) => {
 
   return {
     year,
-    month: month.padStart(2, '0'), 
+    month: month.padStart(2, '0'),
     date: date.padStart(2, '0'),
     fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
   };
+};
+
+// 오늘보다 미래로 갈수 없게, 이동 여부 가능 체크
+export const canMoveDate = (date, days) => {
+  const curDate = parseDate(date);
+  const newDate = addDays(curDate, days)
+
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+  newDate.setHours(0, 0, 0, 0);
+
+  console.log(today, newDate);
+
+  return newDate <= today;
 };
