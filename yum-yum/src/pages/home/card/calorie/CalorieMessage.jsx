@@ -23,7 +23,7 @@ export default function CalorieMessage({ currentCalories = 1060, totalCalories =
   const message = getCalorieMessage(currentCalories, remainingCalories);
 
   return (
-    <div className='text-center mb-4 sm:mb-6'>
+    <div className='text-center mb-4 '>
       <span
         className={clsx(
           { 'text-gray-800 text-2xl font-extrabold': currentCalories !== totalCalories },
@@ -47,7 +47,7 @@ export default function CalorieMessage({ currentCalories = 1060, totalCalories =
             {' '}
             {Math.abs(remainingCalories)}{' '}
           </span>
-          <span className='text-gray-800 text-lg sm:text-2xl font-extrabold'>kcal</span>
+          <span className='text-gray-800 text-2xl font-extrabold'>kcal</span>
         </>
       )}
     </div>

@@ -2,8 +2,8 @@ import React from 'react';
 import BasicButton from '@/components/button/BasicButton';
 
 export default function WeightCard({ currentWeight = 68, targetWeight = 62, onWeightInput }) {
-  const remainingWegiht = currentWeight - targetWeight;
-  const isGoalReached = remainingWegiht <= 0;
+  const remainingWegiht = targetWeight - currentWeight;
+  const isGoalReached = remainingWegiht == 0;
 
   return (
     <div className='p-6 sm:p-8'>
@@ -27,11 +27,11 @@ export default function WeightCard({ currentWeight = 68, targetWeight = 62, onWe
 
         {/* 목표까지 남은 무게 박스 */}
         <div
-          className={`rounded-[20px] p-7  text-center flex-shrink-0 ${
+          className={`rounded-[20px] p-6  text-center flex-shrink-0 ${
             isGoalReached ? 'bg-blue-100' : 'bg-pink-100'
           }`}
         >
-          <div className='text-gray-800 text-mb  font-bold leading-tight'>
+          <div className='text-gray-800 text-mb  font-bold leading-tight mb-3'>
             {isGoalReached ? '목표 달성!' : '목표 무게까지'}
           </div>
           <div
@@ -39,7 +39,7 @@ export default function WeightCard({ currentWeight = 68, targetWeight = 62, onWe
               isGoalReached ? 'text-primary' : 'text-secondary'
             }`}
           >
-            {isGoalReached ? '완료!' : `-${remainingWegiht}kg!`}
+            {isGoalReached ? '완료!' : `${remainingWegiht}kg!`}
           </div>
         </div>
       </div>
