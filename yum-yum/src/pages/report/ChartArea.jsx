@@ -29,8 +29,17 @@ const unitConfig = {
 // 단위기간 버튼용
 const periods = ['일간', '주간', '월간'];
 
-export default function ChartArea({ date, unit, value, children, activePeriod, onPeriodChange,
-  prevDate, nextDate  }) {
+export default function ChartArea({
+  date,
+  unit,
+  value,
+  children,
+  activePeriod,
+  onPeriodChange,
+  prevDate,
+  nextDate,
+  canMove,
+}) {
   // 활성화된 단위기간과 리포트 타입에 맞는 접두어 및 접미어 설정
   const periodPrefix = periodPrefixConfig[activePeriod];
   const unitInfo = unitConfig[unit];
@@ -45,9 +54,11 @@ export default function ChartArea({ date, unit, value, children, activePeriod, o
           </button>
 
           <article className='text-2xl font-bold'>{date}</article>
-          <button onClick={nextDate}>
-            <NextDateIcon />
-          </button>
+          {canMove && (
+            <button onClick={nextDate} disabled={!canMove}>
+              <NextDateIcon />
+            </button>
+          )}
         </div>
       )}
       {/* 리포트 타입에 따른 값과 단위 출력 + 접두어 */}

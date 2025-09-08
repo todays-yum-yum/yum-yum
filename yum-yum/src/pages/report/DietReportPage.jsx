@@ -14,6 +14,7 @@ import {
   getTomorrow,
   parseDateString
 } from '@/utils/dateUtils';
+import { canMoveDate } from '../../utils/dateUtils';
 
 export default function DietReportPage() {
   // 단위 기간 저장
@@ -46,6 +47,9 @@ export default function DietReportPage() {
 
   // 표기 날짜
   const fullDate = getDisplayDate(activePeriod, date, day);
+
+  // 다음 단위 기간으로 갈 수 있는지(오늘보다 미래로 가는 것을 막기)
+  const canMove = canMoveDate(date, activePeriod === '일간' ? 1 : activePeriod === '주간' ? 7 : 30);
 
   // 이전 단위 기간으로
   const handlePrevDate = () => {
@@ -97,6 +101,7 @@ export default function DietReportPage() {
       activePeriod={activePeriod}
       prevDate={handlePrevDate}
       nextDate={handleNextDate}
+      canMove={canMove}
       onPeriodChange={setActivePeriod}
     >
       <PieCharts data={data} />
