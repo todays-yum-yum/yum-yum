@@ -32,7 +32,7 @@ export default function ChartArea({ date, unit, value, children, activePeriod, o
     <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>
       {date && <article className='text-2xl font-bold'>{date}</article>}
       {value && (
-        <article className='flex items-center gap-2'>
+        <article className='flex items-end gap-2'>
           <span className='text-2xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}
           </span>
