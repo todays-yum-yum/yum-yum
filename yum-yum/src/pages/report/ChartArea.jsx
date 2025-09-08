@@ -1,5 +1,7 @@
 import React from 'react';
 import RoundButton from '@/components/button/RoundButton';
+import PrevDateIcon from '@/assets/icons/icon-left.svg?react';
+import NextDateIcon from '@/assets/icons/icon-right.svg?react';
 
 const periodPrefixConfig = {
   일간: '오늘의',
@@ -24,13 +26,25 @@ const unitConfig = {
 
 const periods = ['일간', '주간', '월간'];
 
-export default function ChartArea({ date, unit, value, children, activePeriod, onPeriodChange }) {
+export default function ChartArea({ date, unit, value, children, activePeriod, onPeriodChange,
+  prevDate, nextDate  }) {
   const periodPrefix = periodPrefixConfig[activePeriod];
   const unitInfo = unitConfig[unit];
 
   return (
     <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>
-      {date && <article className='text-2xl font-bold'>{date}</article>}
+      {date && (
+        <div className='flex flex-row gap-5 items-center'>
+          <button onClick={prevDate}>
+            <PrevDateIcon />
+          </button>
+
+          <article className='text-2xl font-bold'>{date}</article>
+          <button onClick={nextDate}>
+            <NextDateIcon />
+          </button>
+        </div>
+      )}
       {value && (
         <article className='flex items-end gap-2'>
           <span className='text-2xl font-bold'>

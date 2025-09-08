@@ -45,7 +45,7 @@ export default function PieCharts({ data = [] }) {
   };
 
   return (
-    <PieChart width={400} height={320}>
+    <PieChart width={400} height={330}>
       <Pie
         data={pieData}
         cx='50%'

@@ -1,27 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import ChartArea from './ChartArea';
 import PieCharts from './charts/PieCharts';
-import { getDayOfWeekShort, todayDate } from '../../utils/dateUtils';
+import {
+  getDayOfWeek,
+  todayDate,
+  getStartDateOfWeek,
+  getEndDateOfWeek,
+  getYesterday,
+  getLastMonth,
+  getLastWeek,
+  getNextMonth,
+  getNextWeek,
+  getTomorrow,
+  parseDateString
+} from '@/utils/dateUtils';
 
 export default function DietReportPage() {
   const [activePeriod, setActivePeriod] = useState('일간');
   const [date, setDate] = useState(todayDate());
-  const day = getDayOfWeekShort(date);
-  const fullDate = date + ' (' + day + ')';
+  const day = getDayOfWeek(date);
 
-  useEffect(() => {
-    if (activePeriod === '일간') {
-      console.log('일간');
-    }
+  const getDisplayDate = (period, date, day) => {
+    const parsedDate = parseDateString(date);
 
-    if (activePeriod === '주간') {
-      console.log('주간');
+    switch (period) {
+      case '일간':
+        return `${parsedDate.month}월 ${parsedDate.date}일 (${day})`;
+      case '주간': {
+        const startDate = parseDateString(getStartDateOfWeek(date));
+        const endDate = parseDateString(getEndDateOfWeek(date));
+        return `${startDate.month}월 ${startDate.date}일 ~ ${endDate.month}월 ${endDate.date}일`;
+      }
+      case '월간':
+        return `${parsedDate.year}년 ${parsedDate.month}월`
+      default:
+        return date;
     }
+  };
 
-    if (activePeriod === '월간') {
-      console.log('월간');
+  const fullDate = getDisplayDate(activePeriod, date, day);
+
+  const handlePrevDate = () => {
+    switch (activePeriod) {
+      case '일간':
+        setDate(getYesterday(date));
+        break;
+      case '주간':
+        setDate(getLastWeek(date));
+        break;
+      case '월간':
+        setDate(getLastMonth(date));
+        break;
+      default:
+        return date;
     }
-  }, [activePeriod]);
+  };
+
+  const handleNextDate = () => {
+    switch (activePeriod) {
+      case '일간':
+        setDate(getTomorrow(date));
+        break;
+      case '주간':
+        setDate(getNextWeek(date));
+        break;
+      case '월간':
+        setDate(getNextMonth(date));
+        break;
+      default:
+        return date;
+    }
+  };
 
   const data = [
     { name: '탄수화물', value: 400 },
@@ -36,6 +85,8 @@ export default function DietReportPage() {
       unit='Kcal'
       value='768'
       activePeriod={activePeriod}
+      prevDate={handlePrevDate}
+      nextDate={handleNextDate}
       onPeriodChange={setActivePeriod}
     >
       <PieCharts data={data} />
