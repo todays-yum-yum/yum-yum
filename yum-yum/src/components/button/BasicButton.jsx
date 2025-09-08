@@ -16,6 +16,7 @@ export default function BasicButton({
       disabled={disabled}
       // h-12 px-5 bg-emerald-500 rounded-lg inline-flex justify-center items-center gap-2 overflow-hidden
       className={clsx('rounded-lg flex justify-center items-center', {
+        'px-2 h-8': size === 'xs',
         'px-2 h-12': size === 'sm',
         'px-5 h-12': size === 'md',
         'px-8 h-12': size === 'lg',
