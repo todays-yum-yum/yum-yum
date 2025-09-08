@@ -67,16 +67,21 @@ export default function PieCharts({ data = [] }) {
         payload={pieData.map((item, index) => ({
           value: item.name,
           type: 'square', // 범례 도형
-          color: PALETTES[index % PALETTES.length],
         }))}
         wrapperStyle={{
           whiteSpace: 'nowrap', // 줄바꿈 방지
           marginTop: 20,
           fontSize: 18,
+          fontWeight: 800,
         }}
         formatter={(value) => {
           const item = chartData.find((d) => d.name === value);
-          return `${value} (${item?.value ?? 0})`;
+          return (
+            <div className='inline-block text-center w-20 align-middle text-black'>
+              <div>{value}</div>
+              <div className='mt-1'>{item?.value ?? 0}g</div>
+            </div>
+          );
         }}
       />
     </PieChart>
