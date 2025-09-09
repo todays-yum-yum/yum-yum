@@ -39,7 +39,7 @@ export default function PieCharts({ data = [] }) {
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
     return (
-      <text x={x} y={y} fill='white' textAnchor='middle' dominantBaseline='central' fontSize={16}>
+      <text x={x} y={y} fill='white' textAnchor='middle' dominantBaseline='central' fontSize={16} fontWeight={400}>
         {total === 0 ? '0%' : `${(percent * 100).toFixed(0)}%`}
       </text>
       // 값이 없을때 0% 표기
@@ -56,6 +56,7 @@ export default function PieCharts({ data = [] }) {
         outerRadius={120}
         dataKey='value'
         label={renderCustomizedLabel} // 커스텀 라벨 적용
+        isAnimationActive={false} // 애니메이션 설정
       >
         {/* 차트 색상은 미리 지정한 색상 */}
         {pieData.map((entry, index) => (
@@ -76,7 +77,7 @@ export default function PieCharts({ data = [] }) {
           whiteSpace: 'nowrap', // 줄바꿈 방지
           marginTop: 20,
           fontSize: 18,
-          fontWeight: 800,
+          fontWeight: 700,
         }}
         formatter={(value) => {
           const item = chartData.find((d) => d.name === value);
