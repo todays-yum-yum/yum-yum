@@ -1,5 +1,5 @@
 // 테스트용 유저데이터
-const mockUser = {
+export const mockUser = {
   _id: '1',
   userId: 'test@gmail.com',
   name: '김철수',
