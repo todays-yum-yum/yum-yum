@@ -27,7 +27,8 @@ export default function CalorieChart({ currentCalories = 1800, totalCalories = 1
     { name: '초과 칼로리', value: currentCalories - totalCalories, fill: '#FF5094' },
   ];
   const chartData = isOverTarget ? overTargetData : calorieRatioData;
-
+  const startAngle = isOverTarget ? -270 : 90;
+  const endAngle = isOverTarget ? 90 : -270;
   return (
     <div className='flex justify-center mb-12'>
       <div className='relative w-80 h-80'>
@@ -44,8 +45,8 @@ export default function CalorieChart({ currentCalories = 1800, totalCalories = 1
             outerRadius={120}
             cx={160}
             cy={150}
-            startAngle={90}
-            endAngle={-270}
+            startAngle={startAngle}
+            endAngle={endAngle}
           />
         </PieChart>
         <div className='absolute inset-0 flex flex-col items-center justify-center'>
