@@ -35,7 +35,7 @@ export default function Modal({
           <h2 className='font-bold text-lg'>{title}</h2>
 
           {showClose && (
-            <button onClick={onCloseModal} className='flex items-center justify-center'>
+            <button onClick={onCloseModal} className='flex items-center justify-center w-6 h-6'>
               <CloseIcon />
             </button>
           )}

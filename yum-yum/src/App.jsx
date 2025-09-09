@@ -14,6 +14,9 @@ import SimpleLayout from '@/components/layout/SimpleLayout';
 import Layout from '@/components/layout/Layout';
 import RequireGuest from '@/routes/RequireGuest';
 import RequireAuth from '@/routes/RequireAuth';
+import CustomEntryForm from './pages/meal/page/CustomEntryForm';
+import TotalMeal from './pages/meal/page/TotalMeal';
+// import SearchList from './pages/meal/page/SearchList';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +32,9 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <HomePage /> },
           { path: 'meal', element: <MealPage /> },
+          { path: 'meal/custom', element: <CustomEntryForm /> },
+          // { path: 'meal/search', element: <SearchList /> },
+          { path: 'meal/total', element: <TotalMeal /> },
           { path: 'report', element: <ReportPage /> },
           { path: 'water', element: <WaterPage /> },
         ],

@@ -15,7 +15,7 @@ export default function Input({
   ...rest
 }) {
   return (
-    <div className='flex flex-col gap-1'>
+    <div className='flex flex-col gap-1 w-full'>
       <div className='relative'>
         <input
           id={id}
@@ -42,7 +42,6 @@ export default function Input({
             {endAdornment}
           </button>
         )}
-
       </div>
 
       {status === 'error' && errorMessage && (
