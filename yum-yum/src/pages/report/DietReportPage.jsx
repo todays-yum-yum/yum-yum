@@ -16,6 +16,7 @@ import {
   canMoveDate,
 } from '@/utils/dateUtils';
 import RoundButton from '@/components/button/RoundButton';
+import NutritionInfo from './NutritionInfo';
 
 export default function DietReportPage() {
   // 단위 기간 저장
@@ -95,8 +96,25 @@ export default function DietReportPage() {
     { name: '지방', value: 300 },
   ];
 
+  const nutrient = {
+    kcal: 250,
+    carbs: 45,
+    sugar: 12,
+    sweetener: 2,
+    fiber: 8,
+    protein: 15,
+    fat: 8,
+    satFat: 3,
+    transFat: 0,
+    unsatFat: 5,
+    cholesterol: 25,
+    sodium: 480,
+    potassium: 320,
+    caffeine: 95,
+  };
+
   return (
-    <main>
+    <main className='flex flex-col gap-7.5'>
       <ChartArea
         date={fullDate}
         period='일간'
@@ -110,8 +128,8 @@ export default function DietReportPage() {
       >
         <PieCharts data={data} />
       </ChartArea>
-      <section className="flex flex-row items-center justify-center">
-        <article className="w-fit flex flex-row items-center justify-center m-2.5 p-2 gap-2.5 rounded-full bg-gray-600">
+      <section className='flex flex-row items-center justify-center'>
+        <article className='w-fit flex flex-row items-center justify-center p-2 gap-2.5 rounded-full bg-gray-600'>
           {DetailTab.map((tab) => (
             <RoundButton
               key={tab.name}
@@ -122,6 +140,9 @@ export default function DietReportPage() {
             </RoundButton>
           ))}
         </article>
+      </section>
+      <section className='flex items-center justify-center'>
+        <NutritionInfo nutritionData={nutrient} />
       </section>
     </main>
   );
