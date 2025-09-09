@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCustomFoodStore } from '../../../stores/useCustomFoodStore';
+import { addCustomFood } from '../../../services/customFoodsApi';
 
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
@@ -7,15 +9,41 @@ import BasicButton from '@/components/button/BasicButton';
 import Input from '@/components/common/Input';
 import NutritionSection from '../component/NutritionSection';
 
+// 임시 유저 (나중에 useAuth로 대체)
+const mockUser = { uid: 'test-user' };
+
 export default function CustomEntryForm() {
   const navigate = useNavigate();
-  const [foodName, setFoodName] = useState('');
-  const [foodSize, setFoodSize] = useState('');
-  const [foodUnit, setFoodUnit] = useState('g');
+  const {
+    foodName,
+    foodSize,
+    foodUnit,
+    nutrient,
+    setField,
+    setNutrient,
+    reset,
+    validate,
+    createCustomFood,
+  } = useCustomFoodStore();
 
   // 등록 완료 버튼
-  const handleSubmitRegister = () => {
-    navigate('/');
+  const handleSubmitRegister = async () => {
+    if (!validate().ok) return;
+
+    const newFoodData = createCustomFood(mockUser.uid);
+
+    try {
+      const newFoodId = await addCustomFood(mockUser.uid, newFoodData);
+
+      reset();
+      navigate('/meal');
+
+      console.log(newFoodId);
+    } catch (error) {
+      alert('등록 실패');
+      console.error(error);
+    }
+    console.log(newFoodData);
   };
   return (
     <div>
@@ -33,7 +61,7 @@ export default function CustomEntryForm() {
               placeholder='음식명 (최대 20자)'
               maxLength={20}
               value={foodName}
-              onChange={(e) => setFoodName(e.target.value)}
+              onChange={(e) => setField('foodName', e.target.value)}
             />
           </div>
 
@@ -46,15 +74,17 @@ export default function CustomEntryForm() {
 
             <div className='flex gap-2'>
               <Input
+                type='number'
+                noSpinner
                 id='foodSize'
                 maxLength={8}
                 value={foodSize}
-                onChange={(e) => setFoodSize(e.target.value)}
+                onChange={(e) => setField('foodSize', e.target.value)}
               />
 
               <select
                 value={foodUnit}
-                onChange={(e) => setFoodUnit(e.target.value)}
+                onChange={(e) => setField('foodUnit', e.target.value)}
                 className='w-full max-w-[226px] h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'
               >
                 <option value='g'>g</option>
@@ -64,11 +94,11 @@ export default function CustomEntryForm() {
           </div>
 
           {/* 영양정보 */}
-          <NutritionSection />
+          <NutritionSection value={nutrient} onChange={(key, v) => setNutrient(key, v)} />
         </div>
 
         <div className='sticky bottom-0 z-30 w-full max-w-[500px] p-[20px] bg-white'>
-          <BasicButton size='full' onClick={handleSubmitRegister}>
+          <BasicButton size='full' onClick={handleSubmitRegister} disabled={!validate().ok}>
             등록 완료
           </BasicButton>
         </div>

@@ -1,45 +1,26 @@
 import React, { useState } from 'react';
-import Input from '../../../components/common/Input';
+import Input from '@/components/common/Input';
+import { useCustomFoodStore } from '../../../stores/useCustomFoodStore';
 
 export default function NutritionSection() {
-  const [values, setValues] = useState({
-    kcal: '',
-    carbs: '',
-    sugar: '',
-    sweetener: '',
-    fiber: '',
-    protein: '',
-    fat: '',
-    satFat: '',
-    transFat: '',
-    unsatFat: '',
-    cholesterol: '',
-    sodium: '',
-    potassium: '',
-    caffeine: '',
-  });
-
-  const set = (id) => (e) => setValues((prev) => ({ ...prev, [id]: e.target.value }));
+  const nutrient = useCustomFoodStore((state) => state.nutrient);
+  const setNutrient = useCustomFoodStore((state) => state.setNutrient);
 
   const nutritionFields = [
-    { type: 'row', label: '칼로리', id: 'kcal', unit: 'kcal', required: true },
-
-    { type: 'row', label: '탄수화물', id: 'carbs', unit: 'g' },
-    { type: 'row', label: '- 당', id: 'sugar', unit: 'g', subtle: true },
-    { type: 'row', label: '- 대체 감미료', id: 'sweetener', unit: 'g', subtle: true },
-    { type: 'row', label: '- 식이섬유', id: 'fiber', unit: 'g', subtle: true },
-
-    { type: 'row', label: '단백질', id: 'protein', unit: 'g' },
-
-    { type: 'row', label: '지방', id: 'fat', unit: 'g' },
-    { type: 'row', label: '- 포화지방', id: 'satFat', unit: 'g', subtle: true },
-    { type: 'row', label: '- 트랜스지방', id: 'transFat', unit: 'g', subtle: true },
-    { type: 'row', label: '- 불포화지방', id: 'unsatFat', unit: 'g', subtle: true },
-
-    { type: 'row', label: '콜레스테롤', id: 'cholesterol', unit: 'mg' },
-    { type: 'row', label: '나트륨', id: 'sodium', unit: 'mg' },
-    { type: 'row', label: '칼륨', id: 'potassium', unit: 'mg' },
-    { type: 'row', label: '카페인', id: 'caffeine', unit: 'mg' },
+    { id: 'kcal', label: '칼로리', unit: 'kcal', required: true },
+    { id: 'carbs', label: '탄수화물', unit: 'g' },
+    { id: 'sugar', label: '- 당', unit: 'g', subtle: true },
+    { id: 'sweetener', label: '- 대체 감미료', unit: 'g', subtle: true },
+    { id: 'fiber', label: '- 식이섬유', unit: 'g', subtle: true },
+    { id: 'protein', label: '단백질', unit: 'g' },
+    { id: 'fat', label: '지방', unit: 'g' },
+    { id: 'satFat', label: '- 포화지방', unit: 'g', subtle: true },
+    { id: 'transFat', label: '- 트랜스지방', unit: 'g', subtle: true },
+    { id: 'unsatFat', label: '- 불포화지방', unit: 'g', subtle: true },
+    { id: 'cholesterol', label: '콜레스테롤', unit: 'mg' },
+    { id: 'sodium', label: '나트륨', unit: 'mg' },
+    { id: 'potassium', label: '칼륨', unit: 'mg' },
+    { id: 'caffeine', label: '카페인', unit: 'mg' },
   ];
 
   return (
@@ -52,7 +33,7 @@ export default function NutritionSection() {
         {nutritionFields.map((f) => (
           <div
             key={f.id}
-            className={`flex gap-2 items-center py-[12px] text-sm first:border-t-0 border-t border-gray-300 ${f.subtle ? 'border-none' : ''}`}
+            className={`flex gap-2 items-center py-[12px] text-sm ${f.subtle ? 'border-none' : 'first:border-t-0 border-t border-gray-300'}`}
           >
             <label
               className={`w-full max-w-[226px] ${f.subtle ? 'pl-[20px] text-gray-500' : ''}`}
@@ -61,12 +42,15 @@ export default function NutritionSection() {
               {f.label} {f.required && <strong className='font-extrabold text-secondary'>*</strong>}
             </label>
             <Input
+              type='number'
+              noSpinner
               id={f.id}
-              value={values[f.id]}
-              onChange={set(f.id)}
+              value={nutrient?.[f.id] ?? ''}
+              onChange={(e) => setNutrient(f.id, e.target.value)}
               endAdornment={f.unit}
               placeholder='0'
-              maxLength={8}
+              min={0}
+              max={20000}
             />
           </div>
         ))}
