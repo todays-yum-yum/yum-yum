@@ -8,10 +8,11 @@ import {
   subDays,
   subWeeks,
   subMonths,
-  endOfMonth,
   addDays,
   addWeeks,
   addMonths,
+  startOfMonth,
+  endOfMonth,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -81,39 +82,39 @@ export function getTomorrow(date) {
 export function getLastWeek(date) {
   const newDate = parseDate(date);
   const lastWeek = subWeeks(newDate, 1);
-  const lastWeekEnd = endOfWeek(lastWeek, { locale: ko });
+  const lastWeekStart = startOfWeek(lastWeek, { locale: ko });
 
-  return dateFormatting(lastWeekEnd);
+  return dateFormatting(lastWeekStart);
 }
 
 // 다음 주
 export function getNextWeek(date) {
   const newDate = parseDate(date);
   const nextWeek = addWeeks(newDate, 1);
-  const NextWeekend = endOfWeek(nextWeek, { locale: ko });
+  const NextWeekStart = startOfWeek(nextWeek, { locale: ko });
 
-  return dateFormatting(NextWeekend);
+  return dateFormatting(NextWeekStart);
 }
 
 // 이전달
 export function getLastMonth(date) {
   const newDate = parseDate(date);
   const lastMonth = subMonths(newDate, 1);
-  const lastMonthEnd = endOfMonth(lastMonth);
-  return dateFormatting(lastMonthEnd);
+  const lastMonthStart = startOfMonth(lastMonth);
+  return dateFormatting(lastMonthStart);
 }
 
 // 다음달
 export function getNextMonth(date) {
   const newDate = parseDate(date);
   const nextMonth = addMonths(newDate, 1);
-  const NextMonthEnd = endOfMonth(nextMonth);
-  return dateFormatting(NextMonthEnd);
+  const NextMonthStart = startOfMonth(nextMonth);
+  return dateFormatting(NextMonthStart);
 }
 
 // ---
 
-// 년 월 일 추출
+// 년 월 일 추출 - 정규식 이용
 export const parseDateString = (dateString) => {
   const regex = /(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/;
   const match = dateString.match(regex);
@@ -122,8 +123,34 @@ export const parseDateString = (dateString) => {
 
   return {
     year,
-    month: month.padStart(2, '0'), 
+    month: month.padStart(2, '0'),
     date: date.padStart(2, '0'),
     fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
   };
+};
+
+// 오늘보다 미래로 갈수 없게, 이동 여부 가능 체크
+export const canMoveDate = (date, days) => {
+  const curDate = parseDate(date);
+
+  let newDate;
+
+  // 비교 대상은 단위 기간의 맨 끝 날짜
+  let compareDate = new Date();
+
+  // 날짜에 따라, 일간/주간/월간 + 1
+  if (days === 1) {
+    newDate = addDays(curDate, 1);
+  } else if (days === 7) {
+    newDate = addWeeks(curDate, 1);
+    compareDate = endOfWeek(compareDate);
+  } else if (days === 30) {
+    newDate = addMonths(curDate, 1);
+    compareDate = endOfMonth(compareDate)
+  }
+
+  today.setHours(0, 0, 0, 0);
+  compareDate.setHours(0, 0, 0, 0);
+
+  return newDate <= compareDate;
 };
