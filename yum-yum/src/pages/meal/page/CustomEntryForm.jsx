@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { useCustomFoodStore } from '../../../stores/useCustomFoodStore';
-import { addCustomFood } from '../../../services/customFoodsApi';
+import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
+import { addCustomFood } from '@/services/customFoodsApi';
 
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
@@ -26,6 +27,11 @@ export default function CustomEntryForm() {
     createCustomFood,
   } = useCustomFoodStore();
 
+  // 페이지 들어올때 리셋
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
   // 등록 완료 버튼
   const handleSubmitRegister = async () => {
     if (!validate().ok) return;
@@ -36,6 +42,7 @@ export default function CustomEntryForm() {
       const newFoodId = await addCustomFood(mockUser.uid, newFoodData);
 
       reset();
+      toast.success('등록 되었습니다!');
       navigate('/meal');
 
       console.log(newFoodId);

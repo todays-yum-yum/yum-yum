@@ -1,23 +1,34 @@
 import React, { useState } from 'react';
+import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 // 컴포넌트
 import FoodItem from './FoodItem';
 import FoodDetailModal from './FoodDetailModal';
 
-export default function FoodList({
-  items = [],
-  variant = 'select',
-  selectedIds = [],
-  onToggleSelect,
-  onDelete,
-}) {
+export default function FoodList({ items = [] }) {
+  const { isFoodSelected, addFood, deleteFood } = useSelectedFoodsStore();
   const [openModal, setOpenModal] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
 
-  const isSelected = (id) => selectedIds.includes(id);
-
-  const open = (food) => {
+  // 모달 열기
+  const handleOpenModal = (food) => {
     setSelectedFood(food);
     setOpenModal(true);
+  };
+
+  // 음식 추가
+  const handleSelectFood = (food) => {
+    addFood(food);
+  };
+
+  // 음식 제거
+  const handleRemoveFood = (id) => {
+    deleteFood(id);
+  };
+
+  // 모달 닫기
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedFood(null);
   };
 
   return (
@@ -26,23 +37,20 @@ export default function FoodList({
         {items.map((food) => (
           <FoodItem
             key={food.id}
-            id={food.id}
-            foodName={food.foodName}
-            makerName={food.makerName}
-            foodWeight={food.foodWeight}
-            foodCal={food.foodCal}
-            onClick={() => open(food)}
-            variant={variant}
-            selected={variant === 'select' ? isSelected(food.id) : false}
-            onToggleSelect={onToggleSelect ? () => onToggleSelect(food.id) : undefined}
-            onDelete={onDelete ? () => onDelete(food.id) : undefined}
+            {...food}
+            selected={isFoodSelected(food.id)}
+            onSelect={() => handleSelectFood(food)}
+            onRemove={() => handleRemoveFood(food.id)}
+            onOpenModal={() => handleOpenModal(food)}
           />
         ))}
       </ul>
+
       <FoodDetailModal
         openModal={openModal}
-        closeModal={() => setOpenModal(false)}
+        closeModal={handleCloseModal}
         foodInfo={selectedFood}
+        onAddFood={handleSelectFood}
       />
     </div>
   );
