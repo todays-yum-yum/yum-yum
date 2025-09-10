@@ -1,41 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { customFoodsList } from '@/services/customFoodsApi';
 // 컴포넌트
 import EmptyState from '@/components/EmptyState';
+import FoodList from '../component/FoodList';
 // 아이콘
 import SearchIcon from '@/assets/icons/icon-search.svg?react';
-import FoodList from '../component/FoodList';
 
-const foodItems = [
-  {
-    id: '1',
-    foodName: '두유',
-    makerName: '',
-    foodWeight: '200',
-    foodCal: '110',
-  },
-  {
-    id: '2',
-    foodName: '약콩두유',
-    makerName: '대학두유',
-    foodWeight: '190',
-    foodCal: '100',
-  },
-  {
-    id: '3',
-    foodName: '약콩두유',
-    makerName: '대학두유',
-    foodWeight: '190',
-    foodCal: '100',
-  },
-];
+const mockUser = { uid: 'test-user' };
 
-export default function CustomEntry() {
-  const [selectedIds, setSelectedIds] = useState([]);
-  const handleToggleSelect = (id) => {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-    console.log(id);
-  };
+export default function CustomEntry({ selectedIds, onToggleSelect }) {
+  const [foodItems, setFoodItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        const data = await customFoodsList(mockUser.uid);
+        setFoodItems(data);
+      } catch (error) {
+        console.error('불러오기 실패:', error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFoods();
+  }, []);
+
   return (
     <div className='flex flex-col h-full'>
       <div className='flex justify-between items-center px-5 py-3 bg-gray-50'>
@@ -61,7 +53,7 @@ export default function CustomEntry() {
             <FoodList
               variant='select'
               selectedIds={selectedIds}
-              onToggleSelect={handleToggleSelect}
+              onToggleSelect={onToggleSelect}
               items={foodItems}
             />
           ) : (
