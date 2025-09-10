@@ -17,6 +17,10 @@ import {
 } from '@/utils/dateUtils';
 import RoundButton from '@/components/button/RoundButton';
 import NutritionInfo from '../components/NutritionInfo';
+import StackedCharts from '../charts/stackedCharts';
+import Carbohydrate from "@/assets/icons/icon-carbohydrate.svg?react"
+import Fat from "@/assets/icons/icon-fat.svg?react"
+import Protein from "@/assets/icons/icon-protein.svg?react"
 
 export default function DietReportPage() {
   // 단위 기간 저장
@@ -90,6 +94,13 @@ export default function DietReportPage() {
     }
   };
 
+  // 영양소별 음식 아이콘
+  const nutritionIcon = {
+    탄수화물: <Carbohydrate />,
+    단백질: <Protein />,
+    지방: <Fat />,
+  };
+
   const data = [
     { name: '탄수화물', value: 400 },
     { name: '단백질', value: 300 },
@@ -113,6 +124,33 @@ export default function DietReportPage() {
     caffeine: 95,
   };
 
+  const topChart = [
+    {
+      name: '탄수화물',
+      goal: 120,
+      top1: 40,
+      top2: 20,
+      top3: 10,
+      etc: 0,
+    },
+    {
+      name: '단백질',
+      goal: 120,
+      top1: 60,
+      top2: 30,
+      top3: 10,
+      etc: 30,
+    },
+    {
+      name: '지방',
+      goal: 50,
+      top1: 20,
+      top2: 20,
+      top3: 10,
+      etc: 0,
+    },
+  ];
+
   return (
     <main className='flex flex-col gap-7.5'>
       <ChartArea
@@ -126,8 +164,11 @@ export default function DietReportPage() {
         canMove={canMove}
         onPeriodChange={setActivePeriod}
       >
+        {/* 탄단지 비율 차트 */}
         <PieCharts data={data} />
       </ChartArea>
+
+      {/* 영양 정보 & 영양소별 음식 토글 버튼*/}
       <section className='flex flex-row items-center justify-center'>
         <article className='w-fit flex flex-row items-center justify-center p-2 gap-2.5 rounded-full bg-gray-600'>
           {DetailTab.map((tab) => (
@@ -141,8 +182,30 @@ export default function DietReportPage() {
           ))}
         </article>
       </section>
-      <section className='flex items-center justify-center'>
-        <NutritionInfo nutritionData={nutrient} />
+
+      {/*  영양 정보 & 영양소별 음식 영역  */}
+      <section className='flex flex-col items-center justify-center'>
+        {/* 영양 정보 */}
+        {activeDetailTab === '영양 정보' && <NutritionInfo nutritionData={nutrient} />}
+        
+        {/* 영양소 별 음식 */}
+        {activeDetailTab === '영양소 별 음식' && (
+          <>
+            {topChart.map((data, index) => (
+              <React.Fragment key={index}>
+                {/* 헤더 영역 */}
+                <div className='w-full m-2 flex flex-row items-center justify-around'>
+                  <span className='w-10 font-bold text-xl text-center'>{nutritionIcon[data.name]}</span>
+                  <span className='w-20 font-bold text-xl text-center'>{data.name}</span>
+                  <span className='w-10 font-bold text-xl text-center'>{458}g</span>
+                </div>
+
+                {/* 스택 차트 */}
+                <StackedCharts data={data} />
+              </React.Fragment>
+            ))}
+          </>
+        )}
       </section>
     </main>
   );
