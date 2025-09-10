@@ -5,7 +5,7 @@ import { Navigate, Outlet, RouterProvider } from 'react-router';
 
 import HomePage from '@/pages/home/HomePage';
 import MealPage from '@/pages/meal/MealPage';
-import ReportPage from '@/pages/report/ReportPage';
+import ReportPage from '@/pages/report/pages/ReportPage';
 import WaterPage from '@/pages/water/WaterPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import SignUpPage from '@/pages/auth/SignUpPage';

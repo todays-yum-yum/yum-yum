@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ChartArea from './ChartArea';
-import PieCharts from './charts/PieCharts';
+import ChartArea from '../components/ChartArea';
+import PieCharts from '../charts/PieCharts';
 import {
   getDayOfWeek,
   todayDate,
@@ -16,7 +16,7 @@ import {
   canMoveDate,
 } from '@/utils/dateUtils';
 import RoundButton from '@/components/button/RoundButton';
-import NutritionInfo from './NutritionInfo';
+import NutritionInfo from '../components/NutritionInfo';
 
 export default function DietReportPage() {
   // 단위 기간 저장
