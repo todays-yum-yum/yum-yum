@@ -14,7 +14,7 @@ function InfoData({ label, percent, value, isSub }) {
 }
 
 function InfoSection({ rowData }) {
-  console.log(rowData);
+  // console.log(rowData);
 
   return (
     <article className='w-full flex flex-col p-2.5 gap-2.5 border-b-1 border-gray-300'>

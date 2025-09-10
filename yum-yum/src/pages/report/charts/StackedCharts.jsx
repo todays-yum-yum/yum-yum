@@ -91,7 +91,7 @@ export default function StackedCharts({ data }) {
         strokeDasharray='4 4' // 점선
         label={{
           position: 'insideBottomRight',
-          value: `목표 ${data.goal}`,
+          value: `목표 ${data.goal}g`,
           fill: 'red',
           fontSize: 12,
         }}

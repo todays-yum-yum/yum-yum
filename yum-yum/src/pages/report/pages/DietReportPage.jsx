@@ -18,9 +18,10 @@ import {
 import RoundButton from '@/components/button/RoundButton';
 import NutritionInfo from '../components/NutritionInfo';
 import StackedCharts from '../charts/stackedCharts';
-import Carbohydrate from "@/assets/icons/icon-carbohydrate.svg?react"
-import Fat from "@/assets/icons/icon-fat.svg?react"
-import Protein from "@/assets/icons/icon-protein.svg?react"
+import Carbohydrate from '@/assets/icons/icon-carbohydrate.svg?react';
+import Fat from '@/assets/icons/icon-fat.svg?react';
+import Protein from '@/assets/icons/icon-protein.svg?react';
+import NutritionFood from '../components/NutritionFood';
 
 export default function DietReportPage() {
   // 단위 기간 저장
@@ -127,6 +128,12 @@ export default function DietReportPage() {
   const topChart = [
     {
       name: '탄수화물',
+      food: [
+        { name: '쌀밥', percent: 56, value: 49.2, count: 1 },
+        { name: '계란', percent: 26, value: 22.8, count: 1 },
+        { name: '빵', percent: 11, value: 10, count: 1 },
+        { name: '과자', percent: 5, value: 5, count: 1 },
+      ],
       goal: 120,
       top1: 40,
       top2: 20,
@@ -135,6 +142,12 @@ export default function DietReportPage() {
     },
     {
       name: '단백질',
+      food: [
+        { name: '쌀밥', percent: 56, value: 49.2, count: 1 },
+        { name: '계란', percent: 26, value: 22.8, count: 1 },
+        { name: '빵', percent: 11, value: 10, count: 1 },
+        { name: '과자', percent: 5, value: 5, count: 1 },
+      ],
       goal: 120,
       top1: 60,
       top2: 30,
@@ -143,6 +156,12 @@ export default function DietReportPage() {
     },
     {
       name: '지방',
+      food: [
+        { name: '쌀밥', percent: 56, value: 49.2, count: 1 },
+        { name: '계란', percent: 26, value: 22.8, count: 1 },
+        { name: '빵', percent: 11, value: 10, count: 1 },
+        { name: '과자', percent: 5, value: 5, count: 1 },
+      ],
       goal: 50,
       top1: 20,
       top2: 20,
@@ -187,7 +206,7 @@ export default function DietReportPage() {
       <section className='flex flex-col items-center justify-center'>
         {/* 영양 정보 */}
         {activeDetailTab === '영양 정보' && <NutritionInfo nutritionData={nutrient} />}
-        
+
         {/* 영양소 별 음식 */}
         {activeDetailTab === '영양소 별 음식' && (
           <>
@@ -195,13 +214,18 @@ export default function DietReportPage() {
               <React.Fragment key={index}>
                 {/* 헤더 영역 */}
                 <div className='w-full m-2 flex flex-row items-center justify-around'>
-                  <span className='w-10 font-bold text-xl text-center'>{nutritionIcon[data.name]}</span>
+                  <span className='w-10 font-bold text-xl text-center'>
+                    {nutritionIcon[data.name]}
+                  </span>
                   <span className='w-20 font-bold text-xl text-center'>{data.name}</span>
                   <span className='w-10 font-bold text-xl text-center'>{458}g</span>
                 </div>
 
                 {/* 스택 차트 */}
                 <StackedCharts data={data} />
+              
+                {/* 음식 목록 */}
+                <NutritionFood foodData={data}/>
               </React.Fragment>
             ))}
           </>
