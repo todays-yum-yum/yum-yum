@@ -30,12 +30,12 @@ export default function Modal({
         className='fixed z-40 left-1/2 bottom-0 -translate-x-1/2 w-full max-w-[500px] h-full bg-black opacity-60'
       ></div>
 
-      <div className='fixed z-50 left-1/2 bottom-0 -translate-x-1/2 flex flex-col gap-[28px] w-full max-w-[500px] bg-white p-[20px] rounded-t-3xl'>
-        <div className='flex items-center justify-between'>
+      <div className='fixed z-50 left-1/2 bottom-0 -translate-x-1/2 flex flex-col w-full max-w-[500px] bg-white px-[20px] pt-[20px] rounded-t-3xl'>
+        <div className='flex items-center justify-between pb-[20px]'>
           <h2 className='font-bold text-lg'>{title}</h2>
 
           {showClose && (
-            <button onClick={onCloseModal} className='flex items-center justify-center w-6 h-6'>
+            <button onClick={onCloseModal} className='flex items-center justify-center'>
               <CloseIcon />
             </button>
           )}
@@ -44,9 +44,11 @@ export default function Modal({
         <div>{children}</div>
 
         {btnLabel && (
-          <BasicButton onClick={onBtnClick} size='full' disabled={btnDisabled}>
-            {btnLabel}
-          </BasicButton>
+          <div className='bg-white py-[20px]'>
+            <BasicButton onClick={onBtnClick} size='full' disabled={btnDisabled}>
+              {btnLabel}
+            </BasicButton>
+          </div>
         )}
       </div>
     </>
