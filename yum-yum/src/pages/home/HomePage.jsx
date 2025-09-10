@@ -1,12 +1,16 @@
 /**
- TODO: 화면 우선 제작
+ * 메인 페이지
  */
 import React, { useEffect, useState } from 'react';
-import DateHeader from '@/components/common/DateHeader';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import { ko } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+
+import DateHeader from '@/components/common/DateHeader';
 import OnBoarding from '@/components/common/OnBoarding';
 import BaseCard from './card/BaseCard';
 import MealCard from './card/nutrition/MealCard';
@@ -16,17 +20,58 @@ import CalorieChart from './card/calorie/CalorieChart';
 import CalorieHeader from './card/calorie/CalorieHeader';
 import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
+import Modal from '@/components/Modal';
+import { useWeight } from '../../hooks/useWeight';
+import WeightInput from './modal/WeightInput';
 
 registerLocale('ko', ko);
+const userId = 'test-user';
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [date, setDate] = useState(new Date());
   const [calendarOepn, setCalendarOpen] = useState(false);
   const [onboardOpen, setOnboardOpen] = useState(false);
+  const [weightModalOpen, setWeightModalOpen] = useState(false);
+
+  const { saveWeightMutation } = useWeight(userId);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+    watch,
+  } = useForm({
+    defaultValues: { weight: '' },
+    mode: 'onSubmit',
+  });
 
   useEffect(() => {
-    //
+    // 불러오기
   }, []);
+
+  // 체중 저장
+  const onSubmit = async (data) => {
+    console.log(data);
+    try {
+      const saveWeight = saveWeightMutation.mutateAsync({ weight: parseFloat(data.weight) });
+
+      await toast.promise(saveWeight, {
+        loading: '저장하는 중...',
+        success: (response) => {
+          setWeightModalOpen(false);
+          reset();
+          return response?.message || '몸무게가 성공적으로 저장되었습니다!';
+        },
+        error: (error) => {
+          return error?.message || '몸무게 저장에 실패했습니다.';
+        },
+      });
+    } catch (errors) {
+      console.error('체중 저장 실패', errors);
+    }
+  };
 
   return (
     <div className='flex flex-col gap-8 justify-start item-center bg-primary-light w-full h-full min-h-screen'>
@@ -85,10 +130,23 @@ export default function HomePage() {
             targetWeight={62}
             onWeightInput={() => {
               // 체중 입력 모달 열기 등의 로직
-              console.log('체중 입력 버튼 클릭');
+              setWeightModalOpen(true);
             }}
           />
         </BaseCard>
+
+        {weightModalOpen && (
+          <Modal
+            isOpenModal={weightModalOpen}
+            onCloseModal={() => setWeightModalOpen(false)}
+            title='체중 입력'
+            showClose={true}
+            btnLabel='확인'
+            onBtnClick={handleSubmit(onSubmit)}
+          >
+            <WeightInput register={register} errors={errors} />
+          </Modal>
+        )}
 
         {/* 실시간 식단 표 */}
         <BaseCard>
@@ -107,12 +165,14 @@ export default function HomePage() {
               water={{ current: 1.2, goal: 2.0 }}
               onAddMeal={(id, mealType) => {
                 console.log(`${id}의 ${mealType} 식사 추가`);
+                navigate(`/meal/${mealType}`);
               }}
               onUpdateMeal={(id, mealType) => {
                 console.log(`${id}의 ${mealType} 식사 편집`);
+                navigate(`/meal/total`);
               }}
               onAddWater={() => {
-                console.log('물 추가');
+                navigate(`/water`);
               }}
             />
           </div>
