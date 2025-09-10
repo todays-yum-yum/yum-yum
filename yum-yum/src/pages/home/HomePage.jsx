@@ -1,7 +1,7 @@
 /**
  * 메인 페이지
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
@@ -103,7 +103,7 @@ export default function HomePage() {
         <DateHeader
           date={selectedDate}
           onCalendarClick={() => {
-            setSelectedDate(!selectedDate);
+            setCalendarOpen(!calendarOpen);
           }}
           onOnBoardClick={() => {
             setOnboardOpen(true);
@@ -185,16 +185,24 @@ export default function HomePage() {
         <BaseCard>
           <div className='p-6 sm:p-8'>
             <MealCard
-              // mealData를 아래의 형태로 파싱해야함
               meals={{
-                _id: 1,
+                _id: mealData?.id ?? 0,
                 breakfast: {
-                  calories: 280,
-                  foods: '쌀밥, 미역국, 김치, 소고기장조림, 쌀밥, 미역국, 김치, 소고기장조림',
+                  calories: mealData?.breakfast.calories ?? 0,
+                  foods: mealData?.breakfast.foods ?? null,
                 },
-                lunch: { calories: 0, foods: null },
-                dinner: { calories: 0, foods: null },
-                snack: { calories: 0, foods: null },
+                lunch: {
+                  calories: mealData?.lunch.calories ?? 0,
+                  foods: mealData?.lunch.foods ?? null,
+                },
+                dinner: {
+                  calories: mealData?.dinner.calories ?? 0,
+                  foods: mealData?.dinner.foods ?? null,
+                },
+                snack: {
+                  calories: mealData?.snack.calories ?? 0,
+                  foods: mealData?.snack.foods ?? null,
+                },
               }}
               water={{ current: waterData?.current ?? 0, goal: waterData?.goal ?? 0 }}
               onAddMeal={(id, mealType) => {

@@ -15,7 +15,7 @@ export const useHomeStore = create((set, get) => ({
   mealData: null, // {id, breackfast, lunch, dinner, snack}
 
   // UI 상태
-  selectedDate: new Date().toISOString().split('T')[0],
+  selectedDate: new Date(),
   calendarOpen: false,
   onboardOpen: false,
   weightModalOpen: false,
@@ -50,7 +50,7 @@ export const useHomeStore = create((set, get) => ({
   // 데이터 정제
   setDailyData: (data, age, gender) => {
     const water = normalizerWater(data.waterData[0], age, gender);
-    const meal = normalizerMeal(data.mealData);
+    const meal = normalizerMeal(data.mealData[0]);
     set({ waterData: water, mealData: meal });
   },
 
