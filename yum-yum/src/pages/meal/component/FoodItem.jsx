@@ -8,26 +8,35 @@ export default function FoodItem({
   id,
   foodName,
   makerName,
-  foodWeight,
-  foodCal,
+  foodSize,
+  foodUnit,
+  kcal,
   variant = 'select' /* select, delete */,
   selected = false,
-  onToggleSelect,
-  onDelete,
-  onClick,
+  onSelect,
+  onRemove,
+  onOpenModal,
 }) {
-  const handleSelected = (e) => {
+  // 체크 해제
+  const handleRemove = (e) => {
     e.stopPropagation();
-    onToggleSelect?.();
+    onRemove?.();
   };
 
+  // 추가 선택
+  const handleSelect = (e) => {
+    e.stopPropagation();
+    onSelect?.();
+  };
+
+  // 삭제
   const handleDelete = (e) => {
     e.stopPropagation();
     onDelete();
   };
   return (
     <li
-      onClick={onClick}
+      onClick={onOpenModal}
       className='flex justify-between items-center py-5 border-b border-gray-200'
     >
       <div className='flex flex-col gap-1'>
@@ -35,23 +44,33 @@ export default function FoodItem({
 
         <div className='flex gap-1 text-sm'>
           {makerName && <p className='text-gray-700'>{makerName}</p>}
-          <p className='text-gray-400'>1잔 ({foodWeight}ml)</p>
+          {/* <p className='text-gray-400'>
+            1잔 ({foodSize}
+            {foodUnit})
+          </p> */}
+          <p className='text-gray-400'>
+            {foodSize}
+            {foodUnit}
+          </p>
         </div>
       </div>
 
       <div className='flex gap-3'>
-        {/* 칼로리 */}
-        <div className='font-bold text-gray-500'>{foodCal}kcal</div>
+        <div className='font-bold text-gray-500'>{kcal}kcal</div>
 
         <div className='flex items-center justify-center'>
           {variant === 'select' && (
-            <button onClick={handleSelected} className='flex items-center justify-center'>
+            <>
               {selected ? (
-                <CheckIcon className='text-primary' />
+                <button onClick={handleRemove}>
+                  <CheckIcon className='text-primary' />
+                </button>
               ) : (
-                <PlusIcon className='text-[#CBE9DB] w-[24px] h-[24px]' />
+                <button onClick={handleSelect}>
+                  <PlusIcon className='text-[#CBE9DB] w-[24px] h-[24px]' />
+                </button>
               )}
-            </button>
+            </>
           )}
 
           {variant === 'delete' && (
