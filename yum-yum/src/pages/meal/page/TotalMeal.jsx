@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import MealHeader from '../component/MealHeader';
 import FoodList from '../component/FoodList';
 import BasicButton from '@/components/button/BasicButton';
+import TotalBarChart from '../component/TotalBarChart';
 
 const foodItems = [
   {
@@ -59,19 +60,21 @@ export default function TotalMeal() {
       <div className='flex flex-col min-h-[calc(100vh-60px)]'>
         <div className='flex-1 px-[20px]'>
           {/* 총 열량 */}
-          <div className='pt-[20px] pb-[36px]'>
-            <div className='flex flex-col gap-[28px] px-[32px] py-[28px] bg-secondary-light rounded-2xl'>
+          <div className='pb-[24px]'>
+            <div className='flex flex-col gap-[20px] px-[32px] py-[28px] bg-secondary-light rounded-2xl'>
               <div className='flex justify-between text-lg font-bold'>
                 <h3>총 열량</h3>
                 <p>210kcal</p>
               </div>
 
-              <div className=''>그래프 영역</div>
+              <div className='w-full h-[80px]'>
+                <TotalBarChart />
+              </div>
             </div>
           </div>
 
           {/* 추가한 음식 */}
-          <div className='pt-[36px] border-t-[12px] border-gray-50 '>
+          <div className='pt-[24px] border-t-[12px] border-gray-50'>
             <h3 className='text-lg font-bold'>
               추가한 음식 <strong className='text-primary font-extrabold'>{foodCount}</strong>
             </h3>
