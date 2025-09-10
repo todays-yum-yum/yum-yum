@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 
 import DateHeader from '@/components/common/DateHeader';
 import OnBoarding from '@/components/common/OnBoarding';
+import Modal from '@/components/Modal';
 import BaseCard from './card/BaseCard';
 import MealCard from './card/nutrition/MealCard';
 import WeightCard from './card/weight/WeightCard';
@@ -20,40 +21,57 @@ import CalorieChart from './card/calorie/CalorieChart';
 import CalorieHeader from './card/calorie/CalorieHeader';
 import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
-import Modal from '@/components/Modal';
-import { useWeight } from '../../hooks/useWeight';
 import WeightInput from './modal/WeightInput';
+import { useWeight } from '../../hooks/useWeight';
+import { usePageData } from '../../hooks/useMainPageData';
+import { useHomeStore } from '../../stores/useHomeStore';
 
 registerLocale('ko', ko);
-const userId = 'test-user';
+const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [date, setDate] = useState(new Date());
-  const [calendarOepn, setCalendarOpen] = useState(false);
-  const [onboardOpen, setOnboardOpen] = useState(false);
-  const [weightModalOpen, setWeightModalOpen] = useState(false);
-
-  const { saveWeightMutation } = useWeight(userId);
+  // zustand에서 UI 상태
+  const {
+    selectedDate,
+    setSelectedDate,
+    calendarOpen,
+    setCalendarOpen,
+    onboardOpen,
+    setOnboardOpen,
+    weightModalOpen,
+    setWeightModalOpen,
+    targetCalories,
+    calcuateCalories,
+    currentWeight,
+    goalWeight,
+  } = useHomeStore();
+  const { saveWeightMutation } = useWeight(userId, selectedDate);
+  const { userData, dailyData, isLoading, isError } = usePageData(userId, selectedDate);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid },
-    watch,
   } = useForm({
     defaultValues: { weight: '' },
     mode: 'onSubmit',
   });
 
+  // userData가 변경되면 다시 계산
   useEffect(() => {
-    // 불러오기
-  }, []);
+    if (userData) {
+      calcuateCalories(userData);
+    }
+  }, [userData, calcuateCalories]);
+
+  useEffect(() => {
+    console.log(dailyData);
+  }, [dailyData]);
 
   // 체중 저장
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       const saveWeight = saveWeightMutation.mutateAsync({ weight: parseFloat(data.weight) });
 
@@ -78,22 +96,22 @@ export default function HomePage() {
       {/* 최상단 날짜 */}
       <div className='w-full h-full'>
         <DateHeader
-          date={date}
+          date={selectedDate}
           onCalendarClick={() => {
-            setCalendarOpen(!calendarOepn);
+            setSelectedDate(!selectedDate);
           }}
           onOnBoardClick={() => {
             setOnboardOpen(true);
           }}
         />
-        {calendarOepn && (
+        {calendarOpen && (
           <div className='absolute z-10 mt-2 left-[120px]'>
             {/* 래퍼 div 추가 */}
             <DatePicker
               dateFormat='yyyy.MM.dd'
-              selected={date}
+              selected={selectedDate}
               onChange={(date) => {
-                setDate(date);
+                setSelectedDate(date);
                 setCalendarOpen(false); // 날짜 선택 후 닫기
               }}
               minDate={new Date('2000-01-01')}
@@ -115,9 +133,9 @@ export default function HomePage() {
             {/* 헤더 */}
             <CalorieHeader />
             {/* 남은 칼로리 */}
-            <CalorieMessage currentCalories={1900} totalCalories={1800} />
+            <CalorieMessage currentCalories={1900} totalCalories={targetCalories} />
             {/* 차트 */}
-            <CalorieChart currentCalories={1900} totalCalories={1800} />
+            <CalorieChart currentCalories={1900} totalCalories={targetCalories} />
             {/* 영양소 정보 */}
             <CalorieNutrition carbs={27.8} protein={5.7} fat={7.2} />
           </CalorieCard>
@@ -126,8 +144,8 @@ export default function HomePage() {
         {/* 체중 정보 카드 */}
         <BaseCard>
           <WeightCard
-            currentWeight={68}
-            targetWeight={62}
+            currentWeight={currentWeight}
+            targetWeight={goalWeight}
             onWeightInput={() => {
               // 체중 입력 모달 열기 등의 로직
               setWeightModalOpen(true);

@@ -22,7 +22,7 @@ function BMICalculate({ weight, height, gender, age }) {
 
 // TDEE 계산 = BMR * 활동지수
 function TDEECalculate({ weight, height, gender, age, excercise = 'none' }) {
-  return BMICalculate({ weight, height, gender, age }) * ACTIVITY.excercise;
+  return BMICalculate({ weight, height, gender, age }) * ACTIVITY[excercise];
 }
 
 // 칼로리 목표 계산
@@ -63,6 +63,7 @@ export function calorieCalculator({ weight, height, gender, age, excercise = 'no
     goalWeight, // 목표 무게
     targetCalories: Math.round(targetCalories), // 목표 칼로리
     weightDifference, // 체중 차이
+    tdee: Math.round(tdee), // tdee
     plan: weightDifference < -0.5 ? '감량' : weightDifference > 0.5 ? '증량' : '유지', // 목표
   };
 }
