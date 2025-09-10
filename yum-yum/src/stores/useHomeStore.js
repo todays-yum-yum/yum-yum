@@ -51,8 +51,6 @@ export const useHomeStore = create((set, get) => ({
   setDailyData: (data, age, gender) => {
     const water = normalizerWater(data.waterData[0], age, gender);
     const meal = normalizerMeal(data.mealData);
-    console.log('AFTER water: ', water);
-    console.log('AFTER meal: ', meal);
     set({ waterData: water, mealData: meal });
   },
 

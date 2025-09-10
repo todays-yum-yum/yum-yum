@@ -4,7 +4,6 @@ import { firestore } from './firebase'; //firestore 초기화
 
 // 몸무게 저장
 export async function saveWeight({ userId, weight }) {
-  console.log('saveWeight 호출 - userId:', userId, 'weight:', weight);
   try {
     if (!userId || typeof userId !== 'string') {
       throw new Error(`userId: ${userId}. 유저아이디는 string 값이어야 합니다.`);

@@ -10,7 +10,6 @@ const waterDailySum = (intakes) => {
   intakes.map((value) => {
     sum += value.amount;
   });
-  console.log(sum);
   return sum;
 };
 
@@ -26,7 +25,6 @@ export function normalizerMeal(meal) {
 // 수분 데이터 파싱 함수
 export function normalizerWater(water, age, gender) {
   if (!water) return null;
-  console.log('파싱하는 부분임: ', water);
   // dailyTotal 계산이 안되어있는 경우?
   const total = water?.dailyTotal || waterDailySum(water.intakes);
 

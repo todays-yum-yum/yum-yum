@@ -13,7 +13,6 @@ export default function WaterPage() {
   const [openModal, setOpenModal] = useState(false);
 
   const handleWaterIntakeModify = () => {
-    console.log('확인 버튼 클릭');
     setOpenModal(false);
   };
 

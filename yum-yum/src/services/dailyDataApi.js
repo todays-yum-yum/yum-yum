@@ -2,7 +2,6 @@ import { collection, doc, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from './firebase';
 
 export async function getDailyData(userId, selectedDate) {
-  console.log('dailyDataApi service: ', userId, selectedDate);
   try {
     // 컬렉션 참조 생성
     const waterRef = collection(firestore, 'users', userId, 'water');
