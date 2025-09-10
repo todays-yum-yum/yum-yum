@@ -1,4 +1,4 @@
-// 칼로리 목표 계산
+// 칼로리 목표 계산, 목표 수분 계산
 
 const ACTIVITY = {
   none: 1.2,
@@ -66,4 +66,20 @@ export function calorieCalculator({ weight, height, gender, age, excercise = 'no
     tdee: Math.round(tdee), // tdee
     plan: weightDifference < -0.5 ? '감량' : weightDifference > 0.5 ? '증량' : '유지', // 목표
   };
+}
+
+// 목표 수분량 : 보건복지부 기준 권장량
+export function calculateWaterIntake(age, gender) {
+  if (age >= 1 && age <= 2) return 1300; // ml
+  if (age >= 3 && age <= 5) return 1400;
+  if (age >= 6 && age <= 8) return 1700;
+  if (age >= 9 && age <= 11) return 2100;
+  if (age >= 12 && age <= 14) {
+    return gender === 'male' ? 2400 : 2000;
+  }
+  if (age >= 15 && age <= 18) {
+    return gender === 'male' ? 2700 : 2000;
+  }
+  // 성인 (19세 이상)
+  return gender === 'male' ? 2600 : 2100;
 }

@@ -1,6 +1,7 @@
 // 메인화면에서 사용되는 데이터
 import { create } from 'zustand';
 import { calorieCalculator } from '../utils/calorieCalculator';
+import { normalizerMeal, normalizerWater } from '../utils/mainDataParser';
 
 export const useHomeStore = create((set, get) => ({
   // 계산된 값들
@@ -10,6 +11,8 @@ export const useHomeStore = create((set, get) => ({
   goalWeight: null, // 목표 무게
 
   // 호출 값들
+  waterData: null, //{current, goal}
+  mealData: null, // {id, breackfast, lunch, dinner, snack}
 
   // UI 상태
   selectedDate: new Date().toISOString().split('T')[0],
@@ -42,6 +45,15 @@ export const useHomeStore = create((set, get) => ({
       currentWeight: currentWeight,
       goalWeight: goalWeight,
     });
+  },
+
+  // 데이터 정제
+  setDailyData: (data, age, gender) => {
+    const water = normalizerWater(data.waterData[0], age, gender);
+    const meal = normalizerMeal(data.mealData);
+    console.log('AFTER water: ', water);
+    console.log('AFTER meal: ', meal);
+    set({ waterData: water, mealData: meal });
   },
 
   // 초기화

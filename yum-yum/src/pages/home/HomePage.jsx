@@ -45,6 +45,9 @@ export default function HomePage() {
     calcuateCalories,
     currentWeight,
     goalWeight,
+    setDailyData,
+    waterData,
+    mealData,
   } = useHomeStore();
   const { saveWeightMutation } = useWeight(userId, selectedDate);
   const { userData, dailyData, isLoading, isError } = usePageData(userId, selectedDate);
@@ -67,7 +70,9 @@ export default function HomePage() {
   }, [userData, calcuateCalories]);
 
   useEffect(() => {
-    console.log(dailyData);
+    if (dailyData) {
+      setDailyData(dailyData, userData.age, userData.gender);
+    }
   }, [dailyData]);
 
   // 체중 저장
@@ -133,11 +138,21 @@ export default function HomePage() {
             {/* 헤더 */}
             <CalorieHeader />
             {/* 남은 칼로리 */}
-            <CalorieMessage currentCalories={1900} totalCalories={targetCalories} />
+            <CalorieMessage
+              currentCalories={mealData?.currentCalories || 0}
+              totalCalories={targetCalories}
+            />
             {/* 차트 */}
-            <CalorieChart currentCalories={1900} totalCalories={targetCalories} />
+            <CalorieChart
+              currentCalories={mealData?.currentCalories || 0}
+              totalCalories={targetCalories}
+            />
             {/* 영양소 정보 */}
-            <CalorieNutrition carbs={27.8} protein={5.7} fat={7.2} />
+            <CalorieNutrition
+              carbs={mealData?.carbs || 0}
+              protein={mealData?.protein || 0}
+              fat={mealData?.fat || 0}
+            />
           </CalorieCard>
         </BaseCard>
 
@@ -170,6 +185,7 @@ export default function HomePage() {
         <BaseCard>
           <div className='p-6 sm:p-8'>
             <MealCard
+              // mealData를 아래의 형태로 파싱해야함
               meals={{
                 _id: 1,
                 breakfast: {
@@ -180,7 +196,7 @@ export default function HomePage() {
                 dinner: { calories: 0, foods: null },
                 snack: { calories: 0, foods: null },
               }}
-              water={{ current: 1.2, goal: 2.0 }}
+              water={{ current: waterData?.current ?? 0, goal: waterData?.goal ?? 0 }}
               onAddMeal={(id, mealType) => {
                 console.log(`${id}의 ${mealType} 식사 추가`);
                 navigate(`/meal/${mealType}`);
