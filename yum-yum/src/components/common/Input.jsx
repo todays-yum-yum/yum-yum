@@ -12,6 +12,7 @@ export default function Input({
   endAdornment = null,
   onAdornmentClick = null,
   errorMessage = '',
+  noSpinner = false,
   ...rest
 }) {
   return (
@@ -29,6 +30,7 @@ export default function Input({
             'input-base',
             endAdornment && 'input-with-adornment',
             status === 'error' && 'input-error',
+            noSpinner && type === 'number' && 'no-spinner',
           )}
         />
 
