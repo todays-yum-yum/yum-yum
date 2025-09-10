@@ -3,10 +3,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const menuItems = [
-  { id: '1', name: '아침' },
-  { id: '2', name: '점심' },
-  { id: '3', name: '저녁' },
-  { id: '4', name: '기타' },
+  { id: '1', name: '아침', key: 'breakfast' },
+  { id: '2', name: '점심', key: 'lunch' },
+  { id: '3', name: '저녁', key: 'dinner' },
+  { id: '4', name: '기타', key: 'snack' },
 ];
 
 export default function MenuModal({ isOpen, onClose }) {
@@ -16,7 +16,7 @@ export default function MenuModal({ isOpen, onClose }) {
   const menuSelected = (item) => {
     // 선택 값 => 식단 입력 이동
     // console.log('item: ', item.name);
-    navigate(`/meal/${item.name}`);
+    navigate(`/meal/${item.key}`);
     // 창 닫기
     onClose;
   };
