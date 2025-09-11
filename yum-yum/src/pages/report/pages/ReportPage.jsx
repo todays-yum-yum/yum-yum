@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BasicButton from '@/components/button/BasicButton';
 import DietReportPage from './DietReportPage';
 import WaterReportPage from './WaterReportPage';
@@ -19,6 +19,7 @@ import {
   parseDateString,
   canMoveDate,
 } from '@/utils/dateUtils';
+
 
 const reportPath = {
   식단: DietReportPage,
@@ -99,6 +100,7 @@ export default function ReportPage() {
         return date;
     }
   };
+
 
   return (
     <div className='bg-white'>
