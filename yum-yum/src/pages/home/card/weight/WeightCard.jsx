@@ -1,7 +1,7 @@
 import React from 'react';
 import BasicButton from '@/components/button/BasicButton';
 
-export default function WeightCard({ currentWeight = 68, targetWeight = 62, onWeightInput }) {
+export default function WeightCard({ currentWeight = 0, targetWeight = 0, onWeightInput }) {
   const remainingWegiht = targetWeight - currentWeight;
   const isGoalReached = remainingWegiht == 0;
 

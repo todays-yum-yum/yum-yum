@@ -2,7 +2,7 @@ import React from 'react';
 import { PieChart, Pie, Legend, Tooltip } from 'recharts';
 import clsx from 'clsx';
 
-export default function CalorieChart({ currentCalories = 1800, totalCalories = 1800 }) {
+export default function CalorieChart({ currentCalories = 0, totalCalories = 0 }) {
   // 목표 달성 여부에 따른 색상 결정
   const isOverTarget = currentCalories > totalCalories;
   const currentColor = isOverTarget ? '#FF5094' : '#12B76A'; // 초과시 빨강, 미달시 초록

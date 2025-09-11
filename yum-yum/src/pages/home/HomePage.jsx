@@ -1,7 +1,7 @@
 /**
  * 메인 페이지
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 
 import DateHeader from '@/components/common/DateHeader';
 import OnBoarding from '@/components/common/OnBoarding';
+import Modal from '@/components/Modal';
 import BaseCard from './card/BaseCard';
 import MealCard from './card/nutrition/MealCard';
 import WeightCard from './card/weight/WeightCard';
@@ -20,40 +21,62 @@ import CalorieChart from './card/calorie/CalorieChart';
 import CalorieHeader from './card/calorie/CalorieHeader';
 import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
-import Modal from '@/components/Modal';
-import { useWeight } from '../../hooks/useWeight';
 import WeightInput from './modal/WeightInput';
+import { useWeight } from '../../hooks/useWeight';
+import { usePageData } from '../../hooks/useMainPageData';
+import { useHomeStore } from '../../stores/useHomeStore';
 
 registerLocale('ko', ko);
-const userId = 'test-user';
+const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [date, setDate] = useState(new Date());
-  const [calendarOepn, setCalendarOpen] = useState(false);
-  const [onboardOpen, setOnboardOpen] = useState(false);
-  const [weightModalOpen, setWeightModalOpen] = useState(false);
-
-  const { saveWeightMutation } = useWeight(userId);
+  // zustand에서 UI 상태
+  const {
+    selectedDate,
+    setSelectedDate,
+    calendarOpen,
+    setCalendarOpen,
+    onboardOpen,
+    setOnboardOpen,
+    weightModalOpen,
+    setWeightModalOpen,
+    targetCalories,
+    calcuateCalories,
+    currentWeight,
+    goalWeight,
+    setDailyData,
+    waterData,
+    mealData,
+  } = useHomeStore();
+  const { saveWeightMutation } = useWeight(userId, selectedDate);
+  const { userData, dailyData, isLoading, isError } = usePageData(userId, selectedDate);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid },
-    watch,
   } = useForm({
     defaultValues: { weight: '' },
     mode: 'onSubmit',
   });
 
+  // userData가 변경되면 다시 계산
   useEffect(() => {
-    // 불러오기
-  }, []);
+    if (userData) {
+      calcuateCalories(userData);
+    }
+  }, [userData, calcuateCalories]);
+
+  useEffect(() => {
+    if (dailyData) {
+      setDailyData(dailyData, userData.age, userData.gender);
+    }
+  }, [dailyData]);
 
   // 체중 저장
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       const saveWeight = saveWeightMutation.mutateAsync({ weight: parseFloat(data.weight) });
 
@@ -78,22 +101,22 @@ export default function HomePage() {
       {/* 최상단 날짜 */}
       <div className='w-full h-full'>
         <DateHeader
-          date={date}
+          date={selectedDate}
           onCalendarClick={() => {
-            setCalendarOpen(!calendarOepn);
+            setCalendarOpen(!calendarOpen);
           }}
           onOnBoardClick={() => {
             setOnboardOpen(true);
           }}
         />
-        {calendarOepn && (
+        {calendarOpen && (
           <div className='absolute z-10 mt-2 left-[120px]'>
             {/* 래퍼 div 추가 */}
             <DatePicker
               dateFormat='yyyy.MM.dd'
-              selected={date}
+              selected={selectedDate}
               onChange={(date) => {
-                setDate(date);
+                setSelectedDate(date);
                 setCalendarOpen(false); // 날짜 선택 후 닫기
               }}
               minDate={new Date('2000-01-01')}
@@ -115,19 +138,29 @@ export default function HomePage() {
             {/* 헤더 */}
             <CalorieHeader />
             {/* 남은 칼로리 */}
-            <CalorieMessage currentCalories={1900} totalCalories={1800} />
+            <CalorieMessage
+              currentCalories={mealData?.currentCalories || 0}
+              totalCalories={targetCalories}
+            />
             {/* 차트 */}
-            <CalorieChart currentCalories={1900} totalCalories={1800} />
+            <CalorieChart
+              currentCalories={mealData?.currentCalories || 0}
+              totalCalories={targetCalories}
+            />
             {/* 영양소 정보 */}
-            <CalorieNutrition carbs={27.8} protein={5.7} fat={7.2} />
+            <CalorieNutrition
+              carbs={mealData?.carbs || 0}
+              protein={mealData?.protein || 0}
+              fat={mealData?.fat || 0}
+            />
           </CalorieCard>
         </BaseCard>
 
         {/* 체중 정보 카드 */}
         <BaseCard>
           <WeightCard
-            currentWeight={68}
-            targetWeight={62}
+            currentWeight={currentWeight}
+            targetWeight={goalWeight}
             onWeightInput={() => {
               // 체중 입력 모달 열기 등의 로직
               setWeightModalOpen(true);
@@ -153,16 +186,25 @@ export default function HomePage() {
           <div className='p-6 sm:p-8'>
             <MealCard
               meals={{
-                _id: 1,
+                _id: mealData?.id ?? 0,
                 breakfast: {
-                  calories: 280,
-                  foods: '쌀밥, 미역국, 김치, 소고기장조림, 쌀밥, 미역국, 김치, 소고기장조림',
+                  calories: mealData?.breakfast.calories ?? 0,
+                  foods: mealData?.breakfast.foods ?? null,
                 },
-                lunch: { calories: 0, foods: null },
-                dinner: { calories: 0, foods: null },
-                snack: { calories: 0, foods: null },
+                lunch: {
+                  calories: mealData?.lunch.calories ?? 0,
+                  foods: mealData?.lunch.foods ?? null,
+                },
+                dinner: {
+                  calories: mealData?.dinner.calories ?? 0,
+                  foods: mealData?.dinner.foods ?? null,
+                },
+                snack: {
+                  calories: mealData?.snack.calories ?? 0,
+                  foods: mealData?.snack.foods ?? null,
+                },
               }}
-              water={{ current: 1.2, goal: 2.0 }}
+              water={{ current: waterData?.current ?? 0, goal: waterData?.goal ?? 0 }}
               onAddMeal={(id, mealType) => {
                 console.log(`${id}의 ${mealType} 식사 추가`);
                 navigate(`/meal/${mealType}`);

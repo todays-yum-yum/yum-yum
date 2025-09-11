@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
+// 컴포넌트
 import Input from '@/components/common/Input';
-import { useCustomFoodStore } from '../../../stores/useCustomFoodStore';
 
 export default function NutritionSection() {
   const nutrient = useCustomFoodStore((state) => state.nutrient);
@@ -33,7 +34,7 @@ export default function NutritionSection() {
         {nutritionFields.map((f) => (
           <div
             key={f.id}
-            className={`flex gap-2 items-center py-[12px] text-sm ${f.subtle ? 'border-none' : 'first:border-t-0 border-t border-gray-300'}`}
+            className={`flex gap-2 items-center py-[12px] text-sm ${f.subtle ? 'border-none' : 'first:border-t-0 border-t border-gray-200'}`}
           >
             <label
               className={`w-full max-w-[226px] ${f.subtle ? 'pl-[20px] text-gray-500' : ''}`}

@@ -1,15 +1,15 @@
 // 몸무게 입력 커스텀 훅
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { saveWeight } from '@/services/weightApi';
-import { getUserData } from '@/services/userApi';
+import { getUserWeightData } from '@/services/userApi';
 
 export const useWeight = (userId) => {
   const queryClient = useQueryClient();
 
-  // 사용자 데이터 불러오기
+  // 사용자 데이터 불러오기(무게데이터만 가져옴)
   const userData = useQuery({
     queryKey: ['user', userId],
-    queryFn: () => getUserData(userId),
+    queryFn: () => getUserWeightData(userId),
     select: (response) => response.data,
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
@@ -51,7 +51,7 @@ export const useWeight = (userId) => {
     isLoading: userData.isLoading,
     isError: userData.isError,
     error: userData.error,
-    userData: userData.data, // 전체 사용자 데이터
+    userWeightData: userData.data, // 사용자 무게 데이터
 
     // 몸무게 저장 관련
     saveWeightMutation,
