@@ -146,7 +146,7 @@ export const canMoveDate = (date, days) => {
     compareDate = endOfWeek(compareDate);
   } else if (days === 30) {
     newDate = addMonths(curDate, 1);
-    compareDate = endOfMonth(compareDate)
+    compareDate = endOfMonth(compareDate);
   }
 
   today.setHours(0, 0, 0, 0);
@@ -154,3 +154,8 @@ export const canMoveDate = (date, days) => {
 
   return newDate <= compareDate;
 };
+
+// 0911추가: 오늘 'yyyy-MM-dd 키
+export function getTodayKey(date) {
+  return format(new Date(date), 'yyyy-MM-dd');
+}
