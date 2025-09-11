@@ -37,30 +37,35 @@ export function todayDate() {
 // 요일
 export function getDayOfWeek(date) {
   const newDate = parseDate(date);
+
   return format(newDate, 'E', { locale: ko });
 }
 
 // 몇번째 주인지
 export function getWeekOfMonth(date) {
   const newDate = parseDate(date);
+
   return getWeekOfMonthFns(newDate);
 }
 
 // 몇 월인지
 export function getMonths(date) {
   const newDate = parseDate(date);
+
   return getMonth(newDate);
 }
 
 // 이번주 시작 날짜
 export function getStartDateOfWeek(date) {
   const newDate = parseDate(date);
+
   return dateFormatting(startOfWeek(newDate));
 }
 
 // 이번주 종료 날짜
 export function getEndDateOfWeek(date) {
   const newDate = parseDate(date);
+
   return dateFormatting(endOfWeek(newDate));
 }
 
@@ -69,12 +74,14 @@ export function getEndDateOfWeek(date) {
 // 전날
 export function getYesterday(date) {
   const newDate = parseDate(date);
+
   return dateFormatting(subDays(newDate, 1));
 }
 
 // 다음날
 export function getTomorrow(date) {
   const newDate = parseDate(date);
+
   return dateFormatting(addDays(newDate, 1));
 }
 
@@ -101,6 +108,7 @@ export function getLastMonth(date) {
   const newDate = parseDate(date);
   const lastMonth = subMonths(newDate, 1);
   const lastMonthStart = startOfMonth(lastMonth);
+
   return dateFormatting(lastMonthStart);
 }
 
@@ -109,6 +117,7 @@ export function getNextMonth(date) {
   const newDate = parseDate(date);
   const nextMonth = addMonths(newDate, 1);
   const NextMonthStart = startOfMonth(nextMonth);
+
   return dateFormatting(NextMonthStart);
 }
 
@@ -135,7 +144,8 @@ export const canMoveDate = (date, days) => {
 
   let newDate;
 
-  // 비교 대상은 단위 기간의 맨 끝 날짜
+  // 비교 대상은 (오늘이 포함된) 단위 기간의 맨 끝 날짜
+  // 그 이전이면, 넘어갈 수 있음에도 넘어가지 못할 수 있음
   let compareDate = new Date();
 
   // 날짜에 따라, 일간/주간/월간 + 1
