@@ -4,7 +4,7 @@ import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 import FoodItem from './FoodItem';
 import FoodDetailModal from './FoodDetailModal';
 
-export default function FoodList({ items = [] }) {
+export default function FoodList({ items = [], variant }) {
   const { isFoodSelected, addFood, deleteFood } = useSelectedFoodsStore();
   const [openModal, setOpenModal] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
@@ -38,6 +38,7 @@ export default function FoodList({ items = [] }) {
           <FoodItem
             key={food.id}
             {...food}
+            variant={variant}
             selected={isFoodSelected(food.id)}
             onSelect={() => handleSelectFood(food)}
             onRemove={() => handleRemoveFood(food.id)}
@@ -46,12 +47,14 @@ export default function FoodList({ items = [] }) {
         ))}
       </ul>
 
-      <FoodDetailModal
-        openModal={openModal}
-        closeModal={handleCloseModal}
-        foodInfo={selectedFood}
-        onAddFood={handleSelectFood}
-      />
+      {openModal && (
+        <FoodDetailModal
+          openModal={openModal}
+          closeModal={handleCloseModal}
+          foodInfo={selectedFood}
+          onAddFood={handleSelectFood}
+        />
+      )}
     </div>
   );
 }

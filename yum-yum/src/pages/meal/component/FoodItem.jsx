@@ -10,7 +10,7 @@ export default function FoodItem({
   makerName,
   foodSize,
   foodUnit,
-  kcal,
+  nutrient,
   variant = 'select' /* select, delete */,
   selected = false,
   onSelect,
@@ -32,7 +32,7 @@ export default function FoodItem({
   // 삭제
   const handleDelete = (e) => {
     e.stopPropagation();
-    onDelete();
+    onRemove();
   };
   return (
     <li
@@ -56,7 +56,7 @@ export default function FoodItem({
       </div>
 
       <div className='flex gap-3'>
-        <div className='font-bold text-gray-500'>{kcal}kcal</div>
+        <div className='font-bold text-gray-500'>{Math.round(Number(nutrient?.kcal))}kcal</div>
 
         <div className='flex items-center justify-center'>
           {variant === 'select' && (
