@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { motiveMessage } from '@/data/motivateMessage';
 
-export default function CalorieMessage({ currentCalories = 1060, totalCalories = 1800 }) {
+export default function CalorieMessage({ currentCalories = 0, totalCalories = 0 }) {
   const remainingCalories = currentCalories - totalCalories;
   const getCalorieMessage = (currentCalories, remainingCalories) => {
     // 아직 섭취한 칼로리가 없는 경우

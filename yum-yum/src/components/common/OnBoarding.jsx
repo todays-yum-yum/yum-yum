@@ -11,7 +11,7 @@ export default function OnBoarding({ isOpen = false, onClose }) {
           {/* 전체화면을 채우는 이미지  */}
           <img src='onboarding.png' alt='온보딩 이미지' className='max-w-full h-auto' />
           {/* 닫기 버튼 */}
-          <div className='absolute top-4 right-4 z-10 bg-white rounded'>
+          <div className='absolute top-4 right-4 z-10 bg-white rounded-lg'>
             <BasicButton size='md' variant='line' onClick={onClose}>
               Skip
             </BasicButton>

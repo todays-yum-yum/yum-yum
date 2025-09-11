@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CalorieNutrition({ carbs = 27.8, protein = 5.7, fat = 7.2 }) {
+export default function CalorieNutrition({ carbs = 0, protein = 0, fat = 0 }) {
   return (
     <div className='flex flex-row gap-8 item-center justify-center mt-[-30px] mb-4'>
       <div className='flex gap-1 item-center justify-center'>

@@ -1,10 +1,9 @@
 // 메인 페이지 - 몸무게 설정 api 서비스
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from './firebase'; //firestore 초기화
 
 // 몸무게 저장
 export async function saveWeight({ userId, weight }) {
-  console.log('saveWeight 호출 - userId:', userId, 'weight:', weight);
   try {
     if (!userId || typeof userId !== 'string') {
       throw new Error(`userId: ${userId}. 유저아이디는 string 값이어야 합니다.`);
@@ -13,7 +12,7 @@ export async function saveWeight({ userId, weight }) {
       throw new Error(`weight: ${weight}. 몸무게 값은 무조건 숫자값이어야 합니다.`);
     }
 
-    await setDoc(doc(firestore, 'users', userId), {
+    await updateDoc(doc(firestore, 'users', userId), {
       weight: weight,
     });
 
