@@ -18,8 +18,8 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
   // 모달 열었을때 수정한 값 유지
   useEffect(() => {
     if (foodInfo) {
-      const stored = selectedFoods[foodInfo.id];
-      setFoodSize(stored ? stored.foodSize : strToNum(foodInfo.foodSize));
+      const storedFood = selectedFoods[foodInfo.id];
+      setFoodSize(storedFood ? storedFood.foodSize : strToNum(foodInfo.foodSize));
     }
   }, [foodInfo, selectedFoods]);
 
