@@ -32,7 +32,6 @@ function createPrompt(meals) {
 
 // AI API 호출 함수
 export async function generateNutritionAnalysis(userId, meals) {
-  console.log('AI 호출 시작', meals);
   if (!meals) {
     // meals에 아무것도 없을 때
     return {
@@ -57,7 +56,6 @@ export async function generateNutritionAnalysis(userId, meals) {
       timePeriod: getCurrentTimePeriod()?.name || 'Unknown',
     };
     // DB 저장
-    console.log('ai service', data);
     saveNutritionAnalysis(userId, data, meals.type);
 
     return data;
@@ -134,8 +132,6 @@ export async function getSelectedData(userId, selectedDate, type) {
 
 // AI 메시지 로그 저장
 export async function saveNutritionAnalysis(userId, analysis, type) {
-  console.log('saveNutritionAnalysis 호출, type=', type, 'analysis=', analysis);
-
   const colRef = collection(firestore, 'users', userId, 'aimessage');
   try {
     const docRef = await addDoc(colRef, {
