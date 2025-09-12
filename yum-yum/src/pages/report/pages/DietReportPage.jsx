@@ -13,7 +13,7 @@ import Fat from '@/assets/icons/icon-fat.svg?react';
 import Protein from '@/assets/icons/icon-protein.svg?react';
 
 
-export default function DietReportPage({fullDate, activePeriod, setActivePeriod, prev, next, canMove}) {
+export default function DietReportPage({originDate, fullDate, activePeriod, setActivePeriod, prev, next, canMove}) {
 
   // 상세 정보 토글버튼
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');

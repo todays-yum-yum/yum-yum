@@ -115,7 +115,7 @@ export default function ReportPage() {
           </BasicButton>
         ))}
       </nav>
-      <main>{CurrentComponent && <CurrentComponent fullDate={fullDate} activePeriod={activePeriod} setActivePeriod={setActivePeriod} 
+      <main>{CurrentComponent && <CurrentComponent originDate={date} fullDate={fullDate} activePeriod={activePeriod} setActivePeriod={setActivePeriod} 
       prev={handlePrevDate} next={handleNextDate} canMove={canMove}/>}</main>
     </div>
   );
