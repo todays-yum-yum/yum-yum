@@ -4,20 +4,20 @@ import { toNum } from '@/utils/NutrientNumber';
 
 const totalDailySummary = (allFoods) => {
   return {
-    totalCalories: allFoods.reduce((sum, f) => sum + toNum(f.kcal), 0), // 칼로리
-    totalCarbs: allFoods.reduce((sum, f) => sum + toNum(f.carbs), 0), // 탄수화물
-    totalProtein: allFoods.reduce((sum, f) => sum + toNum(f.protein), 0), // 단백질
-    totalFat: allFoods.reduce((sum, f) => sum + toNum(f.fat), 0), // 지방
-    totalSugar: allFoods.reduce((sum, f) => sum + toNum(f.sugar), 0), // 당류
-    totalSweetener: allFoods.reduce((sum, f) => sum + toNum(f.sweetener), 0), // 대체 감미료
-    totalFiber: allFoods.reduce((sum, f) => sum + toNum(f.fiber), 0), // 식이섬유
-    totalSaturatedFat: allFoods.reduce((sum, f) => sum + toNum(f.satFat), 0), // 포화지방
-    totalTransFat: allFoods.reduce((sum, f) => sum + toNum(f.transFat), 0), // 트랜스지방
-    totalUnsaturatedFat: allFoods.reduce((sum, f) => sum + toNum(f.unsatFat), 0), // 불포화지방
-    totalCholesterol: allFoods.reduce((sum, f) => sum + toNum(f.cholesterol), 0), // 콜레스테롤
-    totalSodium: allFoods.reduce((sum, f) => sum + toNum(f.sodium), 0), // 나트륨
-    totalPotassium: allFoods.reduce((sum, f) => sum + toNum(f.potassium), 0), // 칼륨
-    totalCaffeine: allFoods.reduce((sum, f) => sum + toNum(f.caffeine), 0), // 카페인
+    totalCalories: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.kcal), 0), // 칼로리
+    totalCarbs: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.carbs), 0), // 탄수화물
+    totalProtein: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.protein), 0), // 단백질
+    totalFat: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.fat), 0), // 지방
+    totalSugar: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.sugar), 0), // 당류
+    totalSweetener: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.sweetener), 0), // 대체 감미료
+    totalFiber: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.fiber), 0), // 식이섬유
+    totalSaturatedFat: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.satFat), 0), // 포화지방
+    totalTransFat: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.transFat), 0), // 트랜스지방
+    totalUnsaturatedFat: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.unsatFat), 0), // 불포화지방
+    totalCholesterol: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.cholesterol), 0), // 콜레스테롤
+    totalSodium: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.sodium), 0), // 나트륨
+    totalPotassium: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.potassium), 0), // 칼륨
+    totalCaffeine: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.caffeine), 0), // 카페인
   };
 };
 
