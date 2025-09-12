@@ -16,6 +16,7 @@ import RequireGuest from '@/routes/RequireGuest';
 import RequireAuth from '@/routes/RequireAuth';
 import CustomEntryForm from './pages/meal/page/CustomEntryForm';
 import TotalMeal from './pages/meal/page/TotalMeal';
+import TestPage from './pages/home/test/TestPage';
 // import SearchList from './pages/meal/page/SearchList';
 
 const router = createBrowserRouter([
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
           { path: 'meal/:type/total', element: <TotalMeal /> },
           { path: 'report', element: <ReportPage /> },
           { path: 'water', element: <WaterPage /> },
+          { path: 'test', element: <TestPage /> }, //AI report 테스트 페이지(지워야함)
         ],
       },
 
