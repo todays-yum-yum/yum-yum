@@ -48,6 +48,41 @@ const parseMealsByType = (meals) => {
   return mealTypes;
 };
 
+// mealType별 데이터 파싱 함수(누적 칼로리, 영양소별 누적값)
+const parseNutritionByType = (meals) => {
+  // 1) 기본 틀
+  const mealTypes = {
+    breakfast: { calories: 0, nutrients: {} },
+    lunch: { calories: 0, nutrients: {} },
+    dinner: { calories: 0, nutrients: {} },
+    snack: { calories: 0, nutrients: {} },
+  };
+
+  if (!meals || meals.length === 0) return mealTypes;
+
+  meals.forEach((meal) => {
+    const bucket = mealTypes[meal.mealType];
+    if (!bucket) return;
+
+    // 2) 칼로리 누적
+    bucket.calories += meal.kcal || 0;
+
+    // 3) 나머지 숫자 필드는 전부 nutrients 에 누적
+    Object.entries(meal).forEach(([key, value]) => {
+      // 제외할 필드 지정
+      if (key === 'mealType' || key === 'kcal' || key === 'foodName') {
+        return;
+      }
+      // 숫자 타입만 누적
+      if (typeof value === 'number' && !isNaN(value)) {
+        bucket.nutrients[key] = (bucket.nutrients[key] || 0) + value;
+      }
+    });
+  });
+
+  return mealTypes;
+};
+
 // 칼로리,탄,단,지 total 값 파싱
 const mealSum = (dailySummary, meals) => {
   if (dailySummary)
@@ -107,4 +142,18 @@ export function normalizerWater(water, age, gender) {
     current: convertMlToL(total),
     goal: convertMlToL(goal),
   };
+}
+
+//--------------------------
+/**
+ * Firebase 에 저장된 로우 데이터를
+ * UI/Api 호출에 적합한 형태로 변환
+ */
+export function parseMeals(rawMeals) {
+  console.log('check: ', rawMeals);
+  return rawMeals.data.map((raw) => ({
+    date: raw.date,
+    totalNutrition: raw.dailySummary,
+    mealBreakdown: parseNutritionByType(raw.meals),
+  }));
 }
