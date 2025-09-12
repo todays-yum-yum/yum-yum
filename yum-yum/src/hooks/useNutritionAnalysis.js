@@ -6,7 +6,7 @@ import { getTodayKey } from '../utils/dateUtils';
 import { hasExecutedInTimePeriod, markExecutedInTimePeriod } from '@/utils/localStorage';
 import { useEffect } from 'react';
 
-export const useNutritionAnalysis = (meals, selectedDate, currentTimePeriod) => {
+export const useNutritionAnalysis = (userId, meals, selectedDate, currentTimePeriod) => {
   const queryClient = useQueryClient();
   const dataHash = generateDataHash(meals);
   const today = getTodayKey(selectedDate);
@@ -18,11 +18,15 @@ export const useNutritionAnalysis = (meals, selectedDate, currentTimePeriod) => 
   // React-Query 로 쿼리 정의 (enabled: false 로 두고, 직접 fetchQuery 로 실행)
   const query = useQuery({
     queryKey: queryKey,
-    queryFn: () => generateNutritionAnalysis(meals[0]),
+    queryFn: () => generateNutritionAnalysis(userId, meals[0]),
     enabled: false,
     staleTime: 1000 * 60 * 60 * 24,
     gcTime: 1000 * 60 * 60 * 24 * 7,
-    retry: 2,
+    retry: (failureCount, error) => {
+      if (failureCount < 3 && error.type === 'RESOURCE_EXHAUSTED') return true;
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });

@@ -150,10 +150,10 @@ export function normalizerWater(water, age, gender) {
  * UI/Api 호출에 적합한 형태로 변환
  */
 export function parseMeals(rawMeals) {
-  console.log('check: ', rawMeals);
   return rawMeals.data.map((raw) => ({
     date: raw.date,
     totalNutrition: raw.dailySummary,
     mealBreakdown: parseNutritionByType(raw.meals),
+    type: rawMeals.type,
   }));
 }

@@ -27,7 +27,7 @@ export default function TestPage() {
     error: aiErrorMsg,
     status,
     isCached,
-  } = useNutritionAnalysis(meals, selectedDate, currentTimePeriod);
+  } = useNutritionAnalysis(userId, meals, selectedDate, currentTimePeriod);
 
   // 로딩/에러 처리
   if (mealsLoading) return <div>식단 불러오는 중…</div>;
