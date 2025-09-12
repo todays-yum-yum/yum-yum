@@ -10,7 +10,6 @@ export function getCurrentTimePeriod(date = null) {
   const hour = date ? new Date(date)?.getHours() : new Date().getHours();
   for (const [key, period] of Object.entries(TIME_PERIODS)) {
     if (hour >= period.start && hour < period.end) {
-      console.log('timeperiod 확인:', period);
       return { key, ...period };
     }
   }
