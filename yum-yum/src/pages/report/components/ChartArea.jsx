@@ -6,8 +6,8 @@ import NextDateIcon from '@/assets/icons/icon-right.svg?react';
 // 단위 기간별 접두어
 const periodPrefixConfig = {
   일간: '오늘의',
-  주간: '이번 주 평균',
-  월간: '이번 달 평균',
+  주간: '이번 주',
+  월간: '이번 달',
 };
 
 // 리포트 타입별 접두어 + 접미어
@@ -23,6 +23,10 @@ const unitConfig = {
   Kg: {
     prefix: '몸무게',
     postfix: 'Kg',
+  },
+  AI: {
+    prefix: '리포트',
+    postfix: '',
   },
 };
 
@@ -41,7 +45,11 @@ export default function ChartArea({
   canMove,
 }) {
   // 활성화된 단위기간과 리포트 타입에 맞는 접두어 및 접미어 설정
-  const periodPrefix = periodPrefixConfig[activePeriod];
+  const periodPrefix =
+    activePeriod === '일간'
+      ? periodPrefixConfig[activePeriod]
+      : periodPrefixConfig[activePeriod] + (unit === 'AI' ? '' : ' 평균');
+
   const unitInfo = unitConfig[unit];
 
   return (
@@ -62,7 +70,16 @@ export default function ChartArea({
         </div>
       )}
       {/* 리포트 타입에 따른 값과 단위 출력 + 접두어 */}
-      {value && (
+
+      {unit === 'AI' && (
+        <article className='flex items-end gap-2'>
+          <span className='text-2xl font-bold'>
+            {periodPrefix} {unitInfo.prefix}
+          </span>
+        </article>
+      )}
+
+      {value && unit !== 'AI' && (
         <article className='flex items-end gap-2'>
           <span className='text-2xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}

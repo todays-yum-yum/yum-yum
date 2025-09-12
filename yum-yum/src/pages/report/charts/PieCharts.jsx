@@ -2,7 +2,7 @@ import React from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 
 export default function PieCharts({ data = [] }) {
-  const PALETTES = ['#FF5094', '#2F73E5', '#FFD653', '#FF8042'];
+  const PALETTES = ['#FF5094', '#2F73E5', '#FFD653'];
 
   // 데이터 가공. 입력된 데이터가 없을 땐 0으로 처리
   const chartData =
@@ -82,7 +82,7 @@ export default function PieCharts({ data = [] }) {
         formatter={(value) => {
           const item = chartData.find((d) => d.name === value);
           return (
-            // 범례 값 출력 2줄로 출력하도록
+            // 범례 값 출력 한 줄로 출력하도록
             <div className='inline-block text-center w-20 align-middle text-black'>
               <div>{value}</div>
               <div className='mt-1'>{item?.value ?? 0}g</div>
