@@ -46,7 +46,7 @@ export const customFoodsList = async () => {
         makerName: data.makerName ?? '',
         foodSize: data.servingSize,
         foodUnit: data.servingUnit,
-        kcal: data.nutrient.kcal,
+        // kcal: data.nutrient.kcal,
 
         nutrient: {
           kcal: data?.nutrient?.kcal ?? undefined,
