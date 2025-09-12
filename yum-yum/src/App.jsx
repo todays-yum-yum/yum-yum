@@ -5,7 +5,7 @@ import { Navigate, Outlet, RouterProvider } from 'react-router';
 
 import HomePage from '@/pages/home/HomePage';
 import MealPage from '@/pages/meal/MealPage';
-import ReportPage from '@/pages/report/ReportPage';
+import ReportPage from '@/pages/report/pages/ReportPage';
 import WaterPage from '@/pages/water/WaterPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import SignUpPage from '@/pages/auth/SignUpPage';
@@ -14,6 +14,10 @@ import SimpleLayout from '@/components/layout/SimpleLayout';
 import Layout from '@/components/layout/Layout';
 import RequireGuest from '@/routes/RequireGuest';
 import RequireAuth from '@/routes/RequireAuth';
+import CustomEntryForm from './pages/meal/page/CustomEntryForm';
+import TotalMeal from './pages/meal/page/TotalMeal';
+import TestPage from './pages/home/test/TestPage';
+// import SearchList from './pages/meal/page/SearchList';
 
 const router = createBrowserRouter([
   {
@@ -28,9 +32,13 @@ const router = createBrowserRouter([
         ),
         children: [
           { index: true, element: <HomePage /> },
-          { path: 'meal', element: <MealPage /> },
+          { path: 'meal/:type', element: <MealPage /> }, // 아침, 점심, 저녁, 기타 타입
+          { path: 'meal/custom', element: <CustomEntryForm /> },
+          // { path: 'meal/search', element: <SearchList /> },
+          { path: 'meal/:type/total', element: <TotalMeal /> },
           { path: 'report', element: <ReportPage /> },
           { path: 'water', element: <WaterPage /> },
+          { path: 'test', element: <TestPage /> }, //AI report 테스트 페이지(지워야함)
         ],
       },
 

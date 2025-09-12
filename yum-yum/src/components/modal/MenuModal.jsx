@@ -1,19 +1,26 @@
 // 식사 type 선택 후, 값 어떻게 넘겨야하는지?
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useHomeStore } from '../../stores/useHomeStore';
 
 const menuItems = [
-  { id: '1', name: '아침' },
-  { id: '2', name: '점심' },
-  { id: '3', name: '저녁' },
-  { id: '4', name: '기타' },
+  { id: '1', name: '아침', key: 'breakfast' },
+  { id: '2', name: '점심', key: 'lunch' },
+  { id: '3', name: '저녁', key: 'dinner' },
+  { id: '4', name: '기타', key: 'snack' },
 ];
 
 export default function MenuModal({ isOpen, onClose }) {
   if (!isOpen) return null;
+  const navigate = useNavigate();
+  const { selectedDate } = useHomeStore();
 
   const menuSelected = (item) => {
     // 선택 값 => 식단 입력 이동
-
+    // console.log('item: ', item.name);
+    navigate(`/meal/${item.key}`, {
+      state: { date: selectedDate, formMain: true },
+    });
     // 창 닫기
     onClose;
   };

@@ -6,7 +6,7 @@ import {
   indexedDBLocalPersistence,
   browserLocalPersistence,
 } from 'firebase/auth';
-import { getGenerativeModel, GoogleAIBackend } from 'firebase/ai';
+import { getAI, getGenerativeModel, GoogleAIBackend } from 'firebase/ai';
 
 // firebase 설정
 const firebaseConfig = {

@@ -40,6 +40,13 @@
   }
 }
 
+/* input number 화살표 제거 */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* input 설정 */
 .input-base {
   @apply w-full h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none placeholder-[var(--color-gray-400)];
