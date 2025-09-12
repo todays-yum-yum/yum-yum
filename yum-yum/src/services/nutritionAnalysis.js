@@ -141,7 +141,6 @@ export async function saveNutritionAnalysis(userId, analysis, type) {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    console.log(docRef);
     return {
       success: true,
       message: '저장 성공',
