@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
 import { addCustomFood } from '@/services/customFoodsApi';
-
+import { useSelectedFoodsStore } from '../../../stores/useSelectedFoodsStore';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
 import BasicButton from '@/components/button/BasicButton';
@@ -14,7 +14,13 @@ import NutritionSection from '../component/NutritionSection';
 const mockUser = { uid: 'test-user' };
 
 export default function CustomEntryForm() {
+  const { setActiveTab } = useSelectedFoodsStore();
+  const location = useLocation();
   const navigate = useNavigate();
+  const { mealType } = useParams();
+
+  const selectedDate = location.state?.date || new Date();
+
   const {
     foodName,
     foodSize,
@@ -36,14 +42,21 @@ export default function CustomEntryForm() {
   const handleSubmitRegister = async () => {
     if (!validate().ok) return;
 
+    // const user = auth.currentUser;
+
     const newFoodData = createCustomFood(mockUser.uid);
+    // const newFoodData = createCustomFood(user.uid);
 
     try {
       const newFoodId = await addCustomFood(mockUser.uid, newFoodData);
+      // const newFoodId = await addCustomFood(user.uid, newFoodData);
 
       reset();
       toast.success('등록 되었습니다!');
-      navigate('/meal');
+      setActiveTab('custom');
+      navigate(`/meal/${mealType}`, {
+        state: { date: selectedDate },
+      });
 
       console.log(newFoodId);
     } catch (error) {

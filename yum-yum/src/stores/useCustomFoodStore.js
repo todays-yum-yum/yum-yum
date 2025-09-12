@@ -51,7 +51,7 @@ export const useCustomFoodStore = create((set, get) => ({
       servingSize: Number(foodSize),
       servingUnit: foodUnit,
       nutrient: {
-        kcal: Math.round(Number(nutrient.kcal)), // 칼로리
+        kcal: Number(nutrient.kcal), // 칼로리
         carbs: toNum(nutrient.carbs), // 탄수화물
         sugar: toNum(nutrient.sugar), // 당
         sweetener: toNum(nutrient.sweetener), // 대체감미료

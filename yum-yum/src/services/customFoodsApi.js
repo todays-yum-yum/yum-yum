@@ -42,14 +42,14 @@ export const customFoodsList = async () => {
       const data = doc.data();
       return {
         id: doc.id,
-        foodName: data.foodName,
-        makerName: data.makerName ?? '',
-        foodSize: data.servingSize,
-        foodUnit: data.servingUnit,
-        kcal: data.nutrient.kcal,
+        foodName: data?.foodName ?? '',
+        makerName: data?.makerName ?? '',
+        foodSize: data?.servingSize ?? '0',
+        foodUnit: data?.servingUnit ?? 'g',
+        // kcal: data.nutrient.kcal,
 
         nutrient: {
-          kcal: data?.nutrient?.kcal ?? undefined,
+          kcal: data?.nutrient?.kcal ?? null,
           carbs: data?.nutrient?.carbs ?? null,
           sugar: data?.nutrient?.sugar ?? null,
           sweetener: data?.nutrient?.sweetener ?? null,

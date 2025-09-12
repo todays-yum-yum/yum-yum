@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 import FrequentlyEatenFood from './page/FrequentlyEatenFood';
 import CustomEntry from './page/CustomEntry';
@@ -14,10 +14,20 @@ const tabItem = [
 ];
 
 export default function MealPage() {
-  const { selectedFoods } = useSelectedFoodsStore();
+  const { activeTab, setActiveTab, selectedFoods, clearFoods } = useSelectedFoodsStore();
+  const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('frequent');
+  const { type } = useParams();
   const [searchInputValue, setSearchInputValue] = useState('');
+  const date = location.state?.date;
+
+  // 페이지 진입 시 선택항목 초기화
+  useEffect(() => {
+    if (location.state?.formMain) {
+      clearFoods();
+      setActiveTab('frequent');
+    }
+  }, [location.state, clearFoods, setActiveTab]);
 
   const onSearchChange = (e) => {
     setSearchInputValue(e.target.value);
@@ -30,8 +40,9 @@ export default function MealPage() {
 
   // 기록하기 버튼
   const handleRecord = () => {
-    console.log(Object.values(selectedFoods));
-    navigate('/meal/total');
+    navigate(`/meal/${type}/total`, {
+      state: { date },
+    });
   };
 
   return (
@@ -47,7 +58,11 @@ export default function MealPage() {
       {activeTab === 'frequent' ? <FrequentlyEatenFood /> : <CustomEntry />}
 
       <div className='sticky bottom-0 z-30 block w-full max-w-[500px] p-[20px] bg-white'>
-        <BasicButton size='full' onClick={handleRecord}>
+        <BasicButton
+          size='full'
+          onClick={handleRecord}
+          disabled={Object.keys(selectedFoods).length === 0}
+        >
           {Object.keys(selectedFoods).length > 0
             ? `${Object.keys(selectedFoods).length}개 기록하기`
             : '기록하기'}

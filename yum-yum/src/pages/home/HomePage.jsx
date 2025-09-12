@@ -206,15 +206,17 @@ export default function HomePage() {
               }}
               water={{ current: waterData?.current ?? 0, goal: waterData?.goal ?? 0 }}
               onAddMeal={(id, mealType) => {
-                console.log(`${id}의 ${mealType} 식사 추가`);
-                navigate(`/meal/${mealType}`);
+                navigate(`/meal/${mealType}`, {
+                  state: { date: selectedDate, formMain: true },
+                });
               }}
               onUpdateMeal={(id, mealType) => {
-                console.log(`${id}의 ${mealType} 식사 편집`);
-                navigate(`/meal/total`);
+                navigate(`/meal/${mealType}/total`, {
+                  state: { date: selectedDate, formMain: true },
+                });
               }}
               onAddWater={() => {
-                navigate(`/water`);
+                navigate(`/water`, { state: { date: selectedDate } });
               }}
             />
           </div>

@@ -2,6 +2,11 @@ import { create } from 'zustand';
 
 export const useSelectedFoodsStore = create((set, get) => ({
   selectedFoods: {},
+
+  activeTab: 'frequent',
+
+  setActiveTab: (tab) => set({ activeTab: tab }),
+
   // 음식 선택 여부
   isFoodSelected: (id) => Boolean(get().selectedFoods[id]),
 

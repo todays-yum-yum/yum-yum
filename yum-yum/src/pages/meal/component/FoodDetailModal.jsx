@@ -1,22 +1,25 @@
 import React, { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { roundTo1, strToNum } from '@/utils/NutrientNumber';
-
+import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 // 컴포넌트
 import Modal from '@/components/Modal';
 
-export default function FoodDetailModal({ openModal, closeModal, foodInfo, onAddFood }) {
-  if (!openModal) return null;
+export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
+  if (!foodInfo) return null;
 
+  const { isFoodSelected, addFood } = useSelectedFoodsStore();
   const baseSize = strToNum(foodInfo.foodSize); // 기준 내용량
-  const n = foodInfo?.nutrient; // 영양소
   const [foodSize, setFoodSize] = useState(baseSize);
-
+  const n = foodInfo?.nutrient; // 영양소
+  const isFoodSelect = isFoodSelected(foodInfo.id); // 선택된 음식
   const foodStep = 10; // 증가, 감소 단위
+
   // + 버튼
   const handleInc = () => {
     setFoodSize((v) => Math.max(v + foodStep, 0));
   };
+
   // - 버튼
   const handleDec = () => {
     setFoodSize((v) => Math.max(v - foodStep, foodStep));
@@ -80,15 +83,15 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo, onAdd
     { id: 'caffeine', label: '카페인', value: currentNutrients.caffeine, unit: 'mg' },
   ];
 
+  // 추가, 수정
   const handleAddFoods = () => {
-    const updatedFood = {
+    addFood({
       ...foodInfo,
       foodSize,
       nutrient: currentNutrients,
-    };
-    if (onAddFood) onAddFood(updatedFood);
+    });
     closeModal();
-    toast.success('추가 되었습니다');
+    toast.success(isFoodSelect ? '수정 되었습니다' : '추가 되었습니다');
   };
 
   return (
@@ -96,7 +99,7 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo, onAdd
       isOpenModal={openModal}
       onCloseModal={closeModal}
       title={foodInfo?.foodName}
-      btnLabel='추가하기'
+      btnLabel={isFoodSelect ? '수정하기' : '추가하기'}
       onBtnClick={handleAddFoods}
       showClose={true}
     >
@@ -107,11 +110,11 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo, onAdd
               -
             </button>
             <input
-              type='text'
+              type='number'
               id='foodSize'
               step={foodStep}
               value={foodSize}
-              onChange={(e) => setFoodSize(e.target.value)}
+              onChange={(e) => setFoodSize(strToNum(e.target.value))}
               onBlur={() => {
                 const newSize = Math.max(strToNum(foodSize), foodStep); // 최소값 제한
                 setFoodSize(roundTo1(newSize));
