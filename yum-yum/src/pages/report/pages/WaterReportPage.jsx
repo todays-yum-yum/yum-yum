@@ -1,6 +1,7 @@
 import React from 'react';
 import LineCharts from '../charts/LineCharts';
 import ChartArea from '../components/ChartArea';
+import WaterWeightInfo from '../components/WaterWeightInfo';
 
 export default function WaterReportPage({
   fullDate,
@@ -33,6 +34,9 @@ export default function WaterReportPage({
       >
         <LineCharts />
       </ChartArea>
+      <section>
+        <WaterWeightInfo period={activePeriod} date={fullDate} unit='L' /> 
+      </section>
     </main>
   );
 }

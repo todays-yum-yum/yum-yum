@@ -1,6 +1,7 @@
 import React from 'react';
 import ChartArea from '../components/ChartArea';
 import LineCharts from '../charts/LineCharts';
+import WaterWeightInfo from '../components/WaterWeightInfo';
 
 export default function WeightReportPage({
   fullDate,
@@ -33,6 +34,9 @@ export default function WeightReportPage({
       >
         <LineCharts />
       </ChartArea>
+      <section>
+        <WaterWeightInfo period={activePeriod} date={fullDate} unit='Kg' />
+      </section>
     </main>
   );
 }
