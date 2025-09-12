@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // 아이콘
 import PrevIcon from '@/assets/icons/icon-left.svg?react';
 import SearchIcon from '@/assets/icons/icon-search.svg?react';
@@ -13,8 +13,14 @@ export default function FoodSearch({
   handleSearchSubmit,
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const handleBack = () => {
-    navigate(-1);
+    // meal/${type} 페이지에서는 뒤로가기 클릭 시 무조건 메인으로
+    if (/^\/meal\/[^/]+$/.test(location.pathname)) {
+      navigate('/', { replace: true });
+    } else {
+      navigate(-1);
+    }
   };
 
   return (

@@ -1,61 +1,106 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+import { toNum } from '@/utils/NutrientNumber';
+import { saveMeal } from '@/services/mealApi';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
 import FoodList from '../component/FoodList';
 import BasicButton from '@/components/button/BasicButton';
 import TotalBarChart from '../component/TotalBarChart';
 
-const foodItems = [
-  {
-    id: '1',
-    foodName: '두유',
-    makerName: '',
-    foodWeight: '200',
-    foodCal: '110',
-  },
-  {
-    id: '2',
-    foodName: '약콩두유',
-    makerName: '대학두유',
-    foodWeight: '190',
-    foodCal: '100',
-  },
-  {
-    id: '3',
-    foodName: '약콩두유',
-    makerName: '대학두유',
-    foodWeight: '190',
-    foodCal: '100',
-  },
-];
-
-export default function TotalMeal() {
+export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM월 dd일' }) {
+  const { selectedFoods, deleteFood, clearFoods } = useSelectedFoodsStore();
   const navigate = useNavigate();
-  const [foods, setFoods] = useState(foodItems);
-  const foodCount = foods.length;
+  const location = useLocation();
+  const { type } = useParams();
+  const [didSubmit, setDidSubmit] = useState(false);
+  const selectedDate = location.state?.date || defaultDate;
+  const formattedDate = format(selectedDate, dateFormat, { locale: ko });
+  const foods = Object.values(selectedFoods); // 선택된 음식
+  const foodCount = foods.length; // 선택된 음식 개수
 
-  const date = new Date();
+  const mealLabel = {
+    breakfast: '아침',
+    lunch: '점심',
+    dinner: '저녁',
+    snack: '기타',
+  }[type];
+
+  // 총 칼로리
+  const totalKcal = foods.reduce((sum, food) => sum + Number(food.nutrient?.kcal), 0);
 
   // - 버튼
-  const handleDelete = (id) => {
-    setFoods((prev) => prev.filter((item) => item.id !== id));
+  const handleRemove = (id) => {
+    deleteFood(id);
+    toast.success('삭제 되었습니다');
   };
 
   // 음식 추가 버튼
   const handleAddFood = () => {
-    navigate('/meal');
+    navigate(`/meal/${type}`, {
+      state: { date: selectedDate },
+      replace: true,
+    });
   };
 
   // 기록 완료 버튼
-  const handleSubmitRecord = () => {
-    navigate('/');
+  const handleSubmitRecord = async () => {
+    try {
+      const meals = foods.map((f) => ({
+        mealType: type ?? 'type',
+        foodName: f.foodName ?? 'foodName',
+        kcal: toNum(f.nutrient?.kcal),
+        carbs: toNum(f.nutrient?.carbs),
+        protein: toNum(f.nutrient?.protein),
+        fat: toNum(f.nutrient?.fat),
+        sugar: toNum(f.nutrient?.sugar),
+        sweetener: toNum(f.nutrient?.sweetener),
+        fiber: toNum(f.nutrient?.fiber),
+        saturatedFat: toNum(f.nutrient?.satFat),
+        transFat: toNum(f.nutrient?.transFat),
+        unsaturatedFat: toNum(f.nutrient?.unsatFat),
+        cholesterol: toNum(f.nutrient?.cholesterol),
+        sodium: toNum(f.nutrient?.sodium),
+        potassium: toNum(f.nutrient?.potassium),
+        caffeine: toNum(f.nutrient?.caffeine),
+      }));
+
+      const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
+
+      // const user = auth.currentUser;
+      await saveMeal('test-user', formattedSaveDate, type, meals);
+      // await saveMeal(user.uid, formattedSaveDate, type, meals);
+
+      toast.success('기록이 완료 되었어요!');
+      setDidSubmit(true);
+      clearFoods();
+      navigate('/', { replace: true });
+    } catch (error) {
+      toast.error('식단 기록 실패!');
+      console.error(error);
+    }
   };
+
+  // 음식 개수 0이면 뒤로가기
+  useEffect(() => {
+    if (!didSubmit && foods.length === 0) {
+      navigate(`/meal/${type}`, {
+        state: { date: selectedDate },
+        replace: true,
+      });
+    }
+  }, [foods, navigate]);
 
   return (
     <div>
       {/* 헤더 */}
-      <MealHeader>{date.toLocaleDateString()} 아침</MealHeader>
+      <MealHeader>
+        {formattedDate} {mealLabel}
+      </MealHeader>
 
       <div className='flex flex-col min-h-[calc(100vh-60px)]'>
         <div className='flex-1 px-[20px]'>
@@ -64,7 +109,7 @@ export default function TotalMeal() {
             <div className='flex flex-col gap-[20px] px-[32px] py-[28px] bg-secondary-light rounded-2xl'>
               <div className='flex justify-between text-lg font-bold'>
                 <h3>총 열량</h3>
-                <p>210kcal</p>
+                <p>{Math.round(Number(totalKcal))}kcal</p>
               </div>
 
               <div className='w-full h-[80px]'>
@@ -78,7 +123,7 @@ export default function TotalMeal() {
             <h3 className='text-lg font-bold'>
               추가한 음식 <strong className='text-primary font-extrabold'>{foodCount}</strong>
             </h3>
-            <FoodList variant='delete' onDelete={handleDelete} items={foods} />
+            <FoodList variant='delete' onRemove={handleRemove} items={foods} />
           </div>
         </div>
 
