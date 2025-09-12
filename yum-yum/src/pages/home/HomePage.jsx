@@ -206,13 +206,13 @@ export default function HomePage() {
               }}
               water={{ current: waterData?.current ?? 0, goal: waterData?.goal ?? 0 }}
               onAddMeal={(id, mealType) => {
-                navigate('/meal', {
-                  state: { type: mealType, date: selectedDate, formMain: true },
+                navigate(`/meal/${mealType}`, {
+                  state: { date: selectedDate, formMain: true },
                 });
               }}
               onUpdateMeal={(id, mealType) => {
-                navigate('/meal/total', {
-                  state: { type: mealType, date: selectedDate, formMain: true },
+                navigate(`/meal/${mealType}/total`, {
+                  state: { date: selectedDate, formMain: true },
                 });
               }}
               onAddWater={() => {

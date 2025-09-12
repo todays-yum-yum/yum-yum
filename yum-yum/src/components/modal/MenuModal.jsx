@@ -18,8 +18,8 @@ export default function MenuModal({ isOpen, onClose }) {
   const menuSelected = (item) => {
     // 선택 값 => 식단 입력 이동
     // console.log('item: ', item.name);
-    navigate('/meal', {
-      state: { type: item.name, date: selectedDate, formMain: true },
+    navigate(`/meal/${item.key}`, {
+      state: { date: selectedDate, formMain: true },
     });
     // 창 닫기
     onClose;
