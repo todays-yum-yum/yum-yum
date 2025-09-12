@@ -31,11 +31,10 @@ const router = createBrowserRouter([
         ),
         children: [
           { index: true, element: <HomePage /> },
-          { path: 'meal', element: <MealPage /> },
           { path: 'meal/:type', element: <MealPage /> }, // 아침, 점심, 저녁, 기타 타입
           { path: 'meal/custom', element: <CustomEntryForm /> },
           // { path: 'meal/search', element: <SearchList /> },
-          { path: 'meal/total', element: <TotalMeal /> },
+          { path: 'meal/:type/total', element: <TotalMeal /> },
           { path: 'report', element: <ReportPage /> },
           { path: 'water', element: <WaterPage /> },
         ],
