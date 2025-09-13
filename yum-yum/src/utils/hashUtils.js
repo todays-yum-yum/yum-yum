@@ -1,6 +1,6 @@
 // 데이터 해시 생성
 export function generateDataHash(meals) {
-  const dataString = JSON.stringify(meals);
+  const dataString = JSON.stringify(meals?.type);
   const encoder = new TextEncoder();
   const data = encoder.encode(dataString);
   let hash = 0;

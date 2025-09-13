@@ -1,5 +1,15 @@
 // AI 호출 API
-import { addDoc, collection, getDocs, query, setDoc, where } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { firestore, model } from './firebase';
 import { endOfMonth, format, formatDate, startOfMonth } from 'date-fns';
 import { getCurrentTimePeriod } from '../data/timePeriods';
@@ -21,13 +31,10 @@ function createPrompt(meals) {
   // 총합 정보만 남기고
   const summary = {
     date: meals.date,
-    cal: meals.totalNutrition.totalCalories,
-    carb: meals.totalNutrition.totalCarbs,
-    prot: meals.totalNutrition.totalProtein,
-    fat: meals.totalNutrition.totalFat,
-    sodium: meals.totalNutrition.totalSodium,
+    nutrition: meals.totalNutrition,
+    mealBreakdown: meals.mealBreakdown,
   };
-  return `오늘 식단 총합: ${JSON.stringify(summary)} 분석해줘.`;
+  return `${meals.type} 식단 총합: ${JSON.stringify(summary)} 분석해줘.`;
 }
 
 // AI API 호출 함수
@@ -91,9 +98,47 @@ export async function generateNutritionAnalysisWithBackoff(meals) {
   }
 }
 
+// 1번 호출한 AI Api는 DB에서 호출
+export async function fetchAIResultWithCache(userId, meals) {
+  try {
+    const aiRef = collection(firestore, 'users', userId, 'aimessage');
+    const aiQuery = query(
+      aiRef,
+      where('date', '==', getTodayKey(meals.date)),
+      where('messageType', '==', meals.type),
+      orderBy('createdAt', 'desc'),
+      limit(1),
+    );
+    const aiSnapShot = await getDocs(aiQuery);
+    const docSnap = aiSnapShot.docs[0];
+    if (!docSnap) {
+      return { success: false, error: 'no-cache' };
+    }
+    const doc = docSnap.data();
+
+    return {
+      success: true,
+      text: doc.message,
+      timestamp: new Date().toISOString(),
+      generatedAt: doc.createdAt,
+      timePeriod: getCurrentTimePeriod()?.name || 'Unknown',
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      text: error.message,
+      timestamp: new Date().toISOString(),
+      generatedAt: new Date().toLocaleTimeString(),
+      timePeriod: getCurrentTimePeriod()?.name || 'Unknown',
+      error: true,
+    };
+  }
+}
+
 // ------------------------------
 // Ai Api 호출을 위한 식단 데이터 조회
 export async function getSelectedData(userId, selectedDate, type) {
+  console.log(selectedDate);
   try {
     // 컬랙션 참조 생성
     const mealRef = collection(firestore, 'users', userId, 'meal');
@@ -111,11 +156,13 @@ export async function getSelectedData(userId, selectedDate, type) {
       const { start, end } = makeMonthRange(selectedDate);
       mealQuery = query(mealRef, where('date', '>=', start), where('date', '<=', end));
     }
+
     const querySnapshot = await getDocs(mealQuery);
     const data = querySnapshot.docs.map((docSnap) => ({
       id: docSnap.id,
       ...docSnap.data(),
     }));
+
     return {
       success: true,
       data,
