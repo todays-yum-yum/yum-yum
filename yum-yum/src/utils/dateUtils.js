@@ -69,6 +69,20 @@ export function getEndDateOfWeek(date) {
   return dateFormatting(endOfWeek(newDate));
 }
 
+// 이번달 시작 날짜
+export function getStartDateOfMonth(date) {
+  const newDate = parseDate(date);
+
+  return dateFormatting(startOfMonth(newDate));
+}
+
+// 이번달 종료 날짜
+export function getEndDateOfMonth(date) {
+  const newDate = parseDate(date);
+
+  return dateFormatting(endOfMonth(newDate));
+}
+
 // ---
 
 // 전날
@@ -126,6 +140,7 @@ export function getNextMonth(date) {
 // 년 월 일 추출 - 정규식 이용
 export const parseDateString = (dateString) => {
   const regex = /(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/;
+  
   const match = dateString.match(regex);
 
   const [full, year, month, date] = match;

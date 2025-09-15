@@ -83,3 +83,15 @@ export function calculateWaterIntake(age, gender) {
   // 성인 (19세 이상)
   return gender === 'male' ? 2600 : 2100;
 }
+
+// 칼로리 대비 각 영양소 비율 계산
+export function calculateNutrientRatio(carbs = 0, proteins = 0, fats = 0) {
+
+  const totalCalories = carbs * 4 + proteins * 4 + fats * 9;
+
+  return {
+    carbsRatio: Math.round((carbs * 4) / totalCalories) * 100,
+    proteinsRatio : Math.round((proteins * 4) / totalCalories) * 100,
+    fatsRatio : Math.round((fats * 9) / totalCalories) * 100,
+  }
+}

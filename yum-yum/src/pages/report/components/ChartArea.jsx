@@ -79,7 +79,7 @@ export default function ChartArea({
         </article>
       )}
 
-      {value && unit !== 'AI' && (
+      {value !== null && value !== undefined && unit !== 'AI' && (
         <article className='flex items-end gap-2'>
           <span className='text-2xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}

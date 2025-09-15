@@ -12,21 +12,34 @@ import Carbohydrate from '@/assets/icons/icon-carbohydrate.svg?react';
 import Fat from '@/assets/icons/icon-fat.svg?react';
 import Protein from '@/assets/icons/icon-protein.svg?react';
 
+import { useMonthlyReportData, useWeeklyReportData } from '../../../hooks/useReportData';
+import { dataSummary, normalizeDataRange } from './../../../utils/reportDataParser';
 
-export default function DietReportPage({originDate, fullDate, activePeriod, setActivePeriod, prev, next, canMove}) {
-
+const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1';
+export default function DietReportPage({
+  originDate,
+  fullDate,
+  activePeriod,
+  setActivePeriod,
+  prev,
+  next,
+  canMove,
+}) {
+const { userData: weeklyUserData, weeklyData, isLoading: weeklyIsLoading, isError: weeklyIsError } = useWeeklyReportData(userId, originDate);
+const { userData: monthlyUserData, monthlyData, isLoading: monthlyIsLoading, isError: monthlyIsError } = useMonthlyReportData(userId, originDate);
   // 상세 정보 토글버튼
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
 
+  const [nutrient, setNutrient] = useState({});
+
   const onPrevPeriod = () => {
     prev();
-  }
+  };
 
-  
   const onNextPeriod = () => {
     next();
-  }
+  };
 
   // 영양소별 음식 아이콘
   const nutritionIcon = {
@@ -35,28 +48,16 @@ export default function DietReportPage({originDate, fullDate, activePeriod, setA
     지방: <Fat />,
   };
 
-  const data = [
-    { name: '탄수화물', value: 400 },
-    { name: '단백질', value: 300 },
-    { name: '지방', value: 300 },
-  ];
+  useEffect(() => {
+    if (activePeriod === '일간') {
+      console.log('일간 데이터 호출');
+    } else if (activePeriod === '주간') {
 
-  const nutrient = {
-    kcal: 250,
-    carbs: 45,
-    sugar: 12,
-    sweetener: 2,
-    fiber: 8,
-    protein: 15,
-    fat: 8,
-    satFat: 3,
-    transFat: 0,
-    unsatFat: 5,
-    cholesterol: 25,
-    sodium: 480,
-    potassium: 320,
-    caffeine: 95,
-  };
+      setNutrient(dataSummary(normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod)));
+    } else if (activePeriod === '월간') {
+      setNutrient(dataSummary(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)));
+    }
+  }, [weeklyData, monthlyData, activePeriod]);
 
   const topChart = [
     {
@@ -109,7 +110,7 @@ export default function DietReportPage({originDate, fullDate, activePeriod, setA
         date={fullDate}
         period='일간'
         unit='Kcal'
-        value='768'
+        value={nutrient.totalCalories}
         activePeriod={activePeriod}
         prevDate={onPrevPeriod}
         nextDate={onNextPeriod}
@@ -117,7 +118,7 @@ export default function DietReportPage({originDate, fullDate, activePeriod, setA
         onPeriodChange={setActivePeriod}
       >
         {/* 탄단지 비율 차트 */}
-        <PieCharts data={data} />
+        <PieCharts data={nutrient} />
       </ChartArea>
 
       {/* 영양 정보 & 영양소별 음식 토글 버튼*/}
@@ -156,9 +157,9 @@ export default function DietReportPage({originDate, fullDate, activePeriod, setA
 
                 {/* 스택 차트 */}
                 <StackedCharts data={data} />
-              
+
                 {/* 음식 목록 */}
-                <NutritionFood foodData={data}/>
+                <NutritionFood foodData={data} />
               </React.Fragment>
             ))}
           </>

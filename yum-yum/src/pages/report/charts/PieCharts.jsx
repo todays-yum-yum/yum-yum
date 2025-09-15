@@ -1,13 +1,26 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 
-export default function PieCharts({ data = [] }) {
+export default function PieCharts({ data }) {
   const PALETTES = ['#FF5094', '#2F73E5', '#FFD653'];
 
   // 데이터 가공. 입력된 데이터가 없을 땐 0으로 처리
   const chartData =
-    data.length > 0
-      ? data
+    data && Object.keys(data).length > 0 
+      ? [
+          {
+            name: '탄수화물',
+            value: data.totalCarbs ?? 0,
+          },
+          {
+            name: '단백질',
+            value: data.totalProtein ?? 0,
+          },
+          {
+            name: '지방',
+            value: data.totalFats ?? 0,
+          },
+        ]
       : [
           { name: '탄수화물', value: 0 },
           { name: '단백질', value: 0 },
@@ -39,7 +52,15 @@ export default function PieCharts({ data = [] }) {
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
     return (
-      <text x={x} y={y} fill='white' textAnchor='middle' dominantBaseline='central' fontSize={16} fontWeight={400}>
+      <text
+        x={x}
+        y={y}
+        fill='white'
+        textAnchor='middle'
+        dominantBaseline='central'
+        fontSize={16}
+        fontWeight={400}
+      >
         {total === 0 ? '0%' : `${(percent * 100).toFixed(0)}%`}
       </text>
       // 값이 없을때 0% 표기
