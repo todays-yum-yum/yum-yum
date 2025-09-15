@@ -26,25 +26,24 @@ const parseMealsByType = (meals) => {
   };
   if (!meals || meals.length === 0) return mealTypes;
 
-  // mealType별로 그룹화
-  meals.forEach((meal) => {
-    const type = meal.mealType;
+  // mealType별로 그룹화 -> Object.entries()로 키-값 쌍을 배열로 변환
+  Object.entries(meals).forEach(([mealType, mealArray]) => {
+    if (mealTypes[mealType] && Array.isArray(mealArray)) {
+      mealArray.forEach((meal) => {
+        // 칼로리 누적
+        mealTypes[mealType].calories += meal.kcal || 0;
 
-    if (mealTypes[type]) {
-      // 칼로리 누적
-      mealTypes[type].calories += meal.kcal || 0;
-
-      // 음식 이름 누적 (쉼표로 구분)
-      if (meal.foodName) {
-        if (mealTypes[type].foods) {
-          mealTypes[type].foods += `, ${meal.foodName}`;
-        } else {
-          mealTypes[type].foods = meal.foodName;
+        // 음식 이름 누적
+        if (meal.foodName) {
+          if (mealTypes[mealType].foods) {
+            mealTypes[mealType].foods += `, ${meal.foodName}`;
+          } else {
+            mealTypes[mealType].foods = meal.foodName;
+          }
         }
-      }
+      });
     }
   });
-
   return mealTypes;
 };
 
@@ -118,7 +117,7 @@ export function normalizerMeal(meal) {
   if (!meal) return null;
   // 칼로리,탄,단,지 통합 구하기
   const { calories, carbs, protein, fat } = mealSum(meal.dailySummary, meal.meals);
-
+  // console.log(meal);
   //mealType별 데이터 파싱
   const mealsByType = parseMealsByType(meal.meals);
 
