@@ -49,8 +49,8 @@ const parseMealsByType = (meals) => {
 };
 
 // mealType별 데이터 파싱 함수(누적 칼로리, 영양소별 누적값)
-const parseNutritionByType = (meals) => {
-  // 1) 기본 틀
+function parseNutritionByType(groupedMeals) {
+  // 1) 결과물 기본 틀
   const mealTypes = {
     breakfast: { calories: 0, nutrients: {} },
     lunch: { calories: 0, nutrients: {} },
@@ -58,30 +58,37 @@ const parseNutritionByType = (meals) => {
     snack: { calories: 0, nutrients: {} },
   };
 
-  if (!meals || meals.length === 0) return mealTypes;
+  // groupedMeals가 없거나 빈 객체면 기본값 리턴
+  if (!groupedMeals || Object.keys(groupedMeals).length === 0) {
+    return mealTypes;
+  }
 
-  meals.forEach((meal) => {
-    const bucket = mealTypes[meal.mealType];
+  // 2) 각 타입별 배열을 순회
+  Object.entries(groupedMeals).forEach(([mealType, mealsArr]) => {
+    // 혹시 mealType 키가 mealTypes에 없으면 skip
+    const bucket = mealTypes[mealType];
     if (!bucket) return;
 
-    // 2) 칼로리 누적
-    bucket.calories += meal.kcal || 0;
+    // 3) 그 타입의 식단 배열을 다시 순회
+    mealsArr.forEach((meal) => {
+      // 3-1) 칼로리 누적
+      bucket.calories += meal.kcal || 0;
 
-    // 3) 나머지 숫자 필드는 전부 nutrients 에 누적
-    Object.entries(meal).forEach(([key, value]) => {
-      // 제외할 필드 지정
-      if (key === 'mealType' || key === 'kcal' || key === 'foodName') {
-        return;
-      }
-      // 숫자 타입만 누적
-      if (typeof value === 'number' && !isNaN(value)) {
-        bucket.nutrients[key] = (bucket.nutrients[key] || 0) + value;
-      }
+      // 3-2) 그 외 숫자 필드를 nutrients에 누적
+      Object.entries(meal).forEach(([key, value]) => {
+        // 건너뛸 필드
+        if (key === 'mealType' || key === 'kcal' || key === 'foodName') {
+          return;
+        }
+        if (typeof value === 'number' && !isNaN(value)) {
+          bucket.nutrients[key] = (bucket.nutrients[key] || 0) + value;
+        }
+      });
     });
   });
 
   return mealTypes;
-};
+}
 
 // 칼로리,탄,단,지 total 값 파싱
 const mealSum = (dailySummary, meals) => {
@@ -149,11 +156,32 @@ export function normalizerWater(water, age, gender) {
  * Firebase 에 저장된 로우 데이터를
  * UI/Api 호출에 적합한 형태로 변환
  */
-export function parseMeals(rawMeals) {
-  console.log('check: ', rawMeals);
-  return rawMeals.data.map((raw) => ({
-    date: raw.date,
-    totalNutrition: raw.dailySummary,
-    mealBreakdown: parseNutritionByType(raw.meals),
-  }));
+export function parseMeals(rawMeals, selectedDate) {
+  const { totalNutrition, mealBreakdown } = multiDataParse(rawMeals.data);
+  return {
+    date: selectedDate,
+    totalNutrition,
+    mealBreakdown,
+    type: rawMeals.type,
+  };
+}
+
+// 파싱 할 때 값이 여러개 일 때(type: weekly, monthly)
+function multiDataParse(data) {
+  const totalNutrition = {};
+  const mealBreakdown = [];
+
+  data.forEach((value) => {
+    // totalNutrition 값 합
+    Object.entries(value.dailySummary).forEach(([key, value]) => {
+      // 숫자 타입만 누적
+      if (typeof value === 'number' && !isNaN(value)) {
+        totalNutrition[key] = (totalNutrition[key] || 0) + value;
+      }
+    });
+    // mealBreakdown 값 합 data.meals
+    mealBreakdown.push({ date: value.date, nutrients: parseNutritionByType(value.meals) });
+  });
+
+  return { totalNutrition, mealBreakdown };
 }

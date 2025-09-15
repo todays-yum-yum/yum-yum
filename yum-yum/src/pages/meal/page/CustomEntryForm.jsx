@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
 import { addCustomFood } from '@/services/customFoodsApi';
 import { useSelectedFoodsStore } from '../../../stores/useSelectedFoodsStore';
@@ -17,8 +17,6 @@ export default function CustomEntryForm() {
   const { setActiveTab } = useSelectedFoodsStore();
   const location = useLocation();
   const navigate = useNavigate();
-  const { mealType } = useParams();
-
   const selectedDate = location.state?.date || new Date();
 
   const {
@@ -48,22 +46,19 @@ export default function CustomEntryForm() {
     // const newFoodData = createCustomFood(user.uid);
 
     try {
-      const newFoodId = await addCustomFood(mockUser.uid, newFoodData);
-      // const newFoodId = await addCustomFood(user.uid, newFoodData);
+      await addCustomFood(mockUser.uid, newFoodData);
+      // await addCustomFood(user.uid, newFoodData);
 
       reset();
       toast.success('등록 되었습니다!');
       setActiveTab('custom');
-      navigate(`/meal/${mealType}`, {
+      navigate(-1, {
         state: { date: selectedDate },
       });
-
-      console.log(newFoodId);
     } catch (error) {
       alert('등록 실패');
       console.error(error);
     }
-    console.log(newFoodData);
   };
   return (
     <div>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { roundTo1, strToNum } from '@/utils/NutrientNumber';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
@@ -8,12 +8,20 @@ import Modal from '@/components/Modal';
 export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
   if (!foodInfo) return null;
 
-  const { isFoodSelected, addFood } = useSelectedFoodsStore();
+  const { selectedFoods, isFoodSelected, addFood } = useSelectedFoodsStore();
   const baseSize = strToNum(foodInfo.foodSize); // 기준 내용량
   const [foodSize, setFoodSize] = useState(baseSize);
   const n = foodInfo?.nutrient; // 영양소
   const isFoodSelect = isFoodSelected(foodInfo.id); // 선택된 음식
   const foodStep = 10; // 증가, 감소 단위
+
+  // 모달 열었을때 수정한 값 유지
+  useEffect(() => {
+    if (foodInfo) {
+      const storedFood = selectedFoods[foodInfo.id];
+      setFoodSize(storedFood ? storedFood.foodSize : strToNum(foodInfo.foodSize));
+    }
+  }, [foodInfo, selectedFoods]);
 
   // + 버튼
   const handleInc = () => {

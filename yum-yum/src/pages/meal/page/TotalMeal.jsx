@@ -51,22 +51,29 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MMì›
   const handleSubmitRecord = async () => {
     try {
       const meals = foods.map((f) => ({
+        id: f.id,
         mealType: type ?? 'type',
         foodName: f.foodName ?? 'foodName',
-        kcal: toNum(f.nutrient?.kcal),
-        carbs: toNum(f.nutrient?.carbs),
-        protein: toNum(f.nutrient?.protein),
-        fat: toNum(f.nutrient?.fat),
-        sugar: toNum(f.nutrient?.sugar),
-        sweetener: toNum(f.nutrient?.sweetener),
-        fiber: toNum(f.nutrient?.fiber),
-        saturatedFat: toNum(f.nutrient?.satFat),
-        transFat: toNum(f.nutrient?.transFat),
-        unsaturatedFat: toNum(f.nutrient?.unsatFat),
-        cholesterol: toNum(f.nutrient?.cholesterol),
-        sodium: toNum(f.nutrient?.sodium),
-        potassium: toNum(f.nutrient?.potassium),
-        caffeine: toNum(f.nutrient?.caffeine),
+        makerName: f.makerName ?? '',
+        foodSize: f.foodSize ?? 0,
+        foodUnit: f.foodUnit ?? 'g',
+
+        nutrient: {
+          kcal: toNum(f.nutrient?.kcal),
+          carbs: toNum(f.nutrient?.carbs),
+          protein: toNum(f.nutrient?.protein),
+          fat: toNum(f.nutrient?.fat),
+          sugar: toNum(f.nutrient?.sugar),
+          sweetener: toNum(f.nutrient?.sweetener),
+          fiber: toNum(f.nutrient?.fiber),
+          satFat: toNum(f.nutrient?.satFat),
+          transFat: toNum(f.nutrient?.transFat),
+          unsatFat: toNum(f.nutrient?.unsatFat),
+          cholesterol: toNum(f.nutrient?.cholesterol),
+          sodium: toNum(f.nutrient?.sodium),
+          potassium: toNum(f.nutrient?.potassium),
+          caffeine: toNum(f.nutrient?.caffeine),
+        },
       }));
 
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
