@@ -56,8 +56,8 @@ export const getWaterSettings = async (userId) => {
     if (!snapShot.exists()) return null;
 
     return {
-      oneTimeIntake: snapShot.data.oneTimeIntake ?? 200,
-      targetIntake: snapShot.data.targetIntake ?? 2000,
+      oneTimeIntake: snapShot.data().oneTimeIntake,
+      targetIntake: snapShot.data().targetIntake,
     };
   } catch (error) {
     console.error('수분 섭취량 설정 불러오는 중 오류 발생:', error);
