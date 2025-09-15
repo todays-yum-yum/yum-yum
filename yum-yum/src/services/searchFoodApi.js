@@ -37,16 +37,35 @@ const parseNutritionData = (jsonData) => {
     return [items]; // 단일 객체인 경우 배열로 변환
   }
   // 필요하면 더 추가
-  return items.map((item) => ({
-    foodCode: item.foodCd, // 음식코드
-    foodName: item.foodNm, // 음식명
-    kcal: parseFloat(item.enerc) || 0, // 칼로리
-    protein: parseFloat(item.prot) || 0, // 단백질
-    fat: parseFloat(item.fatce) || 0, // 지방
-    carbs: parseFloat(item.chocdf) || 0, // 탄수화물
-    sugar: parseFloat(item.sugar) || 0, // 당분
-    sodium: parseFloat(item.nat) || 0, // 나트륨
-    size: item.foodSize || '100g', // 기준량
-    company: item.companyNm || '', // 제조사
-  }));
+  return items.map((item) => {
+    const { amount: size, unit } = parsedFoodSize(item.foodSize);
+    return {
+      foodCode: item.foodCd, // 음식코드
+      foodName: item.foodNm, // 음식명
+      kcal: parseFloat(item.enerc) || 0, // 칼로리
+      protein: parseFloat(item.prot) || 0, // 단백질
+      fat: parseFloat(item.fatce) || 0, // 지방
+      carbs: parseFloat(item.chocdf) || 0, // 탄수화물
+      sugar: parseFloat(item.sugar) || 0, // 당분
+      sodium: parseFloat(item.nat) || 0, // 나트륨
+      foodSize: size, // 기준량
+      foodUnit: unit,
+      company: item.companyNm || '', // 제조사
+    };
+  });
+};
+
+// 숫자, 단위 분리(1000ml => 1000, ml)
+const parsedFoodSize = (foodSize) => {
+  if (!foodSize) return { amount: null, unit: null };
+
+  const match = foodSize.match(/^(\d+(?:\.\d+)?)\s*(.*)$/);
+
+  if (match) {
+    return {
+      amount: parseFloat(match[1]),
+      unit: match[2] || null,
+    };
+  }
+  return { amount: null, unit: foodSize };
 };
