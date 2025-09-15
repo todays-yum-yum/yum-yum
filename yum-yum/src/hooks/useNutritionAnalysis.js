@@ -1,12 +1,12 @@
 // AI Api 캐싱, 상태관리
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { generateNutritionAnalysis } from '../services/nutritionAnalysis';
+import { generateNutritionAnalysis, fetchAIResultWithCache } from '../services/nutritionAnalysis';
 import { generateDataHash } from '../utils/hashUtils';
 import { getTodayKey } from '../utils/dateUtils';
 import { hasExecutedInTimePeriod, markExecutedInTimePeriod } from '@/utils/localStorage';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-export const useNutritionAnalysis = (userId, meals, selectedDate, currentTimePeriod) => {
+export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTimePeriod) => {
   const queryClient = useQueryClient();
   const dataHash = generateDataHash(meals);
   const today = getTodayKey(selectedDate);
@@ -15,49 +15,61 @@ export const useNutritionAnalysis = (userId, meals, selectedDate, currentTimePer
   const queryKey = periodKey
     ? ['nutrition-analysis', today, periodKey, dataHash]
     : ['nutrition-analysis', 'invalid-time'];
-  // React-Query 로 쿼리 정의 (enabled: false 로 두고, 직접 fetchQuery 로 실행)
+
+  // 1) useQuery: enabled: false → 필요할 때만 수동 호출
   const query = useQuery({
-    queryKey: queryKey,
-    queryFn: () => generateNutritionAnalysis(userId, meals[0]),
+    queryKey,
+    queryFn: () => generateNutritionAnalysis(userId, meals),
     enabled: false,
     staleTime: 1000 * 60 * 60 * 24,
     gcTime: 1000 * 60 * 60 * 24 * 7,
-    retry: (failureCount, error) => {
-      if (failureCount < 3 && error.type === 'RESOURCE_EXHAUSTED') return true;
-      return false;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    retry: (count, err) => count < 3 && err.type === 'RESOURCE_EXHAUSTED',
+    retryDelay: (n) => Math.min(1000 * 2 ** n, 30_000),
   });
 
-  // meals가 바뀌거나 currentTimePeriod가 설정되면 이벤트 실행
+  // 2) “한 시간대당 한 번만 AI 생성” useEffect
   useEffect(() => {
-    if (!meals || !periodKey) return; // 준비 안 된 상태는 패스
+    if (!meals.date || !periodKey) return;
 
-    const executed = hasExecutedInTimePeriod(today, periodKey, dataHash);
-    // localStorage를 보고, 아직 호출된 적 없다면 호출
-    if (!executed) {
+    if (!hasExecutedInTimePeriod(today, periodKey, dataHash)) {
       query
         .refetch()
         .then(() => {
-          // 성공 시 localStroage에 추가 혹은 업데이트
           markExecutedInTimePeriod(today, periodKey, dataHash);
         })
-        .catch((err) => {
-          console.error('마킹 에러발생:', err);
-        });
+        .catch(console.error);
     }
-  }, [queryClient, meals, today, periodKey, dataHash, query]);
+    // meals.date, meals.type 만 deps 에 넣어야 객체 참조 변경으로 재실행되는 걸 방지
+  }, [meals.date, meals.type, periodKey, today, dataHash, query]);
 
-  // react-query 캐시에 이미 들어있는지 검사
-  const cachedData = queryClient.getQueryData(queryKey);
-  const isCached = cachedData !== undefined;
+  // 3) “이미 캐시가 있으면 fetchAIResultWithCache” useEffect
+  //    → 한번만 실행할 수 있게 플래그로 또 막아주자
+  const isCached = queryClient.getQueryData(queryKey) !== undefined;
+  const [didFetchCachedResult, setDidFetchCachedResult] = useState(false);
+
+  useEffect(() => {
+    console.log(isCached, didFetchCachedResult);
+    if (!hasExecutedInTimePeriod(today, periodKey, dataHash)) return; // 호출 한 적이 없으면 패스
+    if (didFetchCachedResult) return; // 이미 한 번 불렀으면 패스
+
+    setDidFetchCachedResult(true); // 플래그 세팅
+    fetchAIResultWithCache(userId, { date: selectedDate, type: meals.type })
+      .then((cachedRes) => {
+        // 가져온 AI 메시지도 react-query 캐시에 함께 세팅
+        queryClient.setQueryData(queryKey, cachedRes);
+      })
+      .catch(console.error);
+
+    // meals.date, meals.type
+  }, [isCached, didFetchCachedResult, userId, meals.date, meals.type, queryClient, queryKey]);
+
   return {
     ...query,
     dataHash,
     todayKey: today,
-    periodKey: currentTimePeriod?.key,
+    periodKey,
     isCached,
   };
 };
