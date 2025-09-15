@@ -50,7 +50,7 @@ export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTi
   const [didFetchCachedResult, setDidFetchCachedResult] = useState(false);
 
   useEffect(() => {
-    console.log(isCached, didFetchCachedResult);
+    // console.log(isCached, didFetchCachedResult);
     if (!hasExecutedInTimePeriod(today, periodKey, dataHash)) return; // 호출 한 적이 없으면 패스
     if (didFetchCachedResult) return; // 이미 한 번 불렀으면 패스
 

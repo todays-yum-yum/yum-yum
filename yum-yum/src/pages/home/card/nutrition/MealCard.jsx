@@ -38,7 +38,7 @@ const MealCard = ({
                 {section.data.calories > 0 && (
                   <div className='flex items-baseline gap-2'>
                     <span className='text-gray-800 text-2xl font-extrabold'>
-                      {section.data.calories}
+                      {Math.round(section.data?.calories)}
                     </span>
                     <span className='text-pink-500 text-base font-bold'>kcal</span>
                   </div>
@@ -74,8 +74,10 @@ const MealCard = ({
         <div className='flex items-center gap-2'>
           <h3 className='text-gray-800 text-xl font-extrabold'>물</h3>
           <div className='flex items-baseline gap-2'>
-            <span className='text-pink-500 text-2xl font-extrabold'>{water.current}</span>
-            <span className='text-gray-800 text-base font-bold'>/{water.goal}L</span>
+            <span className='text-pink-500 text-2xl font-extrabold'>
+              {water?.current.toFixed(1)}
+            </span>
+            <span className='text-gray-800 text-base font-bold'>/{water?.goal.toFixed(1)}L</span>
           </div>
         </div>
 

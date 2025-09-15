@@ -19,7 +19,7 @@ export const fetchNutritionData = async (searchKeyword = '') => {
     }
 
     const jsonData = await response.json();
-    console.log('원본 데이터:', jsonData);
+    // console.log('원본 데이터:', jsonData);
 
     // 데이터 구조에 따라 파싱
     return parseNutritionData(jsonData);
