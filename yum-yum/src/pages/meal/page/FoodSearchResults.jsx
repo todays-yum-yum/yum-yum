@@ -24,7 +24,7 @@ export default function FoodSearchResultsPage() {
   useEffect(() => {
     // 검색 로직 추가
     if (searchItem) {
-      console.log('검색 실행:', searchItem);
+      // console.log('검색 실행:', searchItem);
       searchFood(searchItem);
     }
   }, [searchItem]);
@@ -36,7 +36,7 @@ export default function FoodSearchResultsPage() {
 
   // 돋보기 아이콘 클릭, 엔터
   const handleSearchSubmit = () => {
-    console.log(searchInputValue);
+    // console.log(searchInputValue);
     // 같은 페이지로 navigate하되 검색어를 새로 전달
     navigate(`/meal/search`, {
       state: { searchInputValue: searchInputValue },
@@ -54,7 +54,7 @@ export default function FoodSearchResultsPage() {
   // 음식 검색 API 실행 함수
   const searchFood = async (searchItem) => {
     const foods = await fetchNutritionData(searchItem);
-    console.log('파싱된 음식 데이터:', foods);
+    // console.log('파싱된 음식 데이터:', foods);
     setSearchFoodResults(foods);
   };
 

@@ -25,6 +25,7 @@ import WeightInput from './modal/WeightInput';
 import { useWeight } from '../../hooks/useWeight';
 import { usePageData } from '../../hooks/useMainPageData';
 import { useHomeStore } from '../../stores/useHomeStore';
+import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 
 registerLocale('ko', ko);
 const userId = 'test-user'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
@@ -51,6 +52,7 @@ export default function HomePage() {
   } = useHomeStore();
   const { saveWeightMutation } = useWeight(userId, selectedDate);
   const { userData, dailyData, isLoading, isError } = usePageData(userId, selectedDate);
+  const { clearFoods, addFood } = useSelectedFoodsStore();
 
   const {
     register,
@@ -211,13 +213,18 @@ export default function HomePage() {
                 });
               }}
               onUpdateMeal={(id, mealType) => {
+                clearFoods(); // zustand에 이미 저장되어있는 선택값 clear()
+                // selected zustand에 값 추가
+                const copy = dailyData.mealData[id].meals[mealType];
+                copy.map((meal) => addFood(meal));
                 navigate(`/meal/${mealType}/total`, {
-                  state: { date: selectedDate, formMain: true },
+                  state: { date: selectedDate },
                 });
               }}
               onAddWater={() => {
                 navigate(`/water`, { state: { date: selectedDate } });
               }}
+              wholeData={dailyData}
             />
           </div>
         </BaseCard>
