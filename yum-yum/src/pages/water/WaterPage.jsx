@@ -28,6 +28,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
     targetIntake,
     setTargetIntake,
   } = useWaterStore();
+
   const navigate = useNavigate();
   const location = useLocation();
   const [openModal, setOpenModal] = useState(false);
@@ -101,8 +102,12 @@ export default function WaterPage({ defaultDate = new Date() }) {
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
       await addWaterIntake('test-user', formattedSaveDate, waterAmount);
       // await addWaterIntake(user.uid, formattedSaveDate, waterAmount);
+      if (waterAmount >= targetIntake) {
+        toast.success('오늘 목표 달성! 대단해요! 🎉');
+      } else {
+        toast.success('물 한 잔 추가 💧 좋은 습관이에요 👍');
+      }
 
-      toast.success('수분 기록 되었어요!');
       navigate('/');
     } catch (error) {
       toast.error('수분 기록 실패');
@@ -113,13 +118,13 @@ export default function WaterPage({ defaultDate = new Date() }) {
   return (
     <div className='flex flex-col justify-between  min-h-[calc(100vh-60px)] p-[20px]'>
       {/* 타이틀 */}
-      <div className='flex flex-col gap-[4px] pt-[20px] pl-[20px]'>
-        <h4 className='text-2xl'>지금 필요한 건</h4>
+      <div className='flex flex-col gap-[12px] pt-[20px] pl-[20px]'>
+        <h4 className='text-3xl'>지금 필요한 건</h4>
 
         <div className='flex gap-[4px]'>
-          <h3 className='text-3xl font-extrabold'>물 한 잔!</h3>
+          <h3 className='text-4xl font-extrabold'>물 한 잔!</h3>
           <div className='flex items-center justify-center'>
-            <DropIcon />
+            <DropIcon className='w-[40px] h-[40px]' />
           </div>
         </div>
       </div>
