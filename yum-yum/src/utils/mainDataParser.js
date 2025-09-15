@@ -25,12 +25,12 @@ const parseMealsByType = (meals) => {
     snack: { calories: 0, foods: null },
   };
   if (!meals || meals.length === 0) return mealTypes;
-  console.log(meals);
+  // console.log(meals);
   // mealType별로 그룹화 -> Object.entries()로 키-값 쌍을 배열로 변환
   Object.entries(meals).forEach(([mealType, mealArray]) => {
     if (mealTypes[mealType] && Array.isArray(mealArray)) {
       mealArray.forEach((meal) => {
-        console.log(meal);
+        // console.log(meal);
         // 칼로리 누적
         mealTypes[mealType].calories += meal.nutrient?.kcal || 0;
 
@@ -120,7 +120,7 @@ export function normalizerMeal(meal) {
   const { calories, carbs, protein, fat } = mealSum(meal.dailySummary, meal.meals);
   //mealType별 데이터 파싱
   const mealsByType = parseMealsByType(meal.meals);
-  console.log(mealsByType);
+  // console.log(mealsByType);
 
   // return null;
   return {

@@ -138,7 +138,7 @@ export async function fetchAIResultWithCache(userId, meals) {
 // ------------------------------
 // Ai Api 호출을 위한 식단 데이터 조회
 export async function getSelectedData(userId, selectedDate, type) {
-  console.log(selectedDate);
+  // console.log(selectedDate);
   try {
     // 컬랙션 참조 생성
     const mealRef = collection(firestore, 'users', userId, 'meal');
