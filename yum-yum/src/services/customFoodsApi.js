@@ -34,7 +34,12 @@ export const addCustomFood = async (userId, newFoodData) => {
 export const customFoodsList = async () => {
   try {
     // const customFoodsCol = collection(firestore, 'users', userId, 'customFoods');
-    const customFoodsCol = collection(firestore, 'users', 'test-user', 'customFoods');
+    const customFoodsCol = collection(
+      firestore,
+      'users',
+      'yZxviIBudsaf8KYYhCCUWFpy3Ug1',
+      'customFoods',
+    );
     const q = query(customFoodsCol, orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
 

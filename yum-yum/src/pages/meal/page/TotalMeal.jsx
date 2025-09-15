@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 import { toNum } from '@/utils/NutrientNumber';
 import { saveMeal } from '@/services/mealApi';
@@ -79,7 +79,7 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
 
       // const user = auth.currentUser;
-      await saveMeal('test-user', formattedSaveDate, type, meals);
+      await saveMeal('yZxviIBudsaf8KYYhCCUWFpy3Ug1', formattedSaveDate, type, meals);
       // await saveMeal(user.uid, formattedSaveDate, type, meals);
 
       toast.success('기록이 완료 되었어요!');
