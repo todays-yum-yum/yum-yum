@@ -56,7 +56,11 @@ export default function FoodItem({
       </div>
 
       <div className='flex gap-3'>
-        <div className='font-bold text-gray-500'>{Math.round(Number(nutrient?.kcal))}kcal</div>
+        <div className='font-bold text-gray-500'>
+          {typeof nutrient?.kcal === 'number' && !isNaN(nutrient.kcal)
+            ? `${Math.round(nutrient.kcal)}kcal`
+            : '-'}
+        </div>
 
         <div className='flex items-center justify-center'>
           {variant === 'select' && (
