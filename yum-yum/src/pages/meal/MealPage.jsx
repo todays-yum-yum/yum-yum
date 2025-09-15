@@ -7,6 +7,7 @@ import CustomEntry from './page/CustomEntry';
 import MealHeader from './component/MealHeader';
 import MealTabs from './component/MealTabs';
 import BasicButton from '@/components/button/BasicButton';
+import FoodSearchResultsPage from './page/FoodSearchResults';
 
 const tabItem = [
   { id: 'frequent', label: '자주 먹은 음식' },
@@ -36,6 +37,11 @@ export default function MealPage() {
   // 돋보기 아이콘 클릭, 엔터
   const handleSearchSubmit = () => {
     console.log(searchInputValue);
+    // FoodSearchResult.jsx 페이지로 이동
+    navigate(`/meal/search`, {
+      state: { searchInputValue },
+      replace: false, // 히스토리에 추가해서 뒤로가기 가능
+    });
   };
 
   // 기록하기 버튼
