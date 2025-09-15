@@ -32,7 +32,7 @@ const parseMealsByType = (meals) => {
       mealArray.forEach((meal) => {
         console.log(meal);
         // 칼로리 누적
-        mealTypes[mealType].calories += meal.nutrient.kcal || 0;
+        mealTypes[mealType].calories += meal.nutrient?.kcal || 0;
 
         // 음식 이름 누적
         if (meal.foodName) {
