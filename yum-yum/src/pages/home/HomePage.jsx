@@ -27,7 +27,7 @@ import { usePageData } from '../../hooks/useMainPageData';
 import { useHomeStore } from '../../stores/useHomeStore';
 
 registerLocale('ko', ko);
-const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
+const userId = 'test-user'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
 
 export default function HomePage() {
   const navigate = useNavigate();
