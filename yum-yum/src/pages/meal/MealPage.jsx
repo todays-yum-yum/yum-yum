@@ -39,7 +39,7 @@ export default function MealPage() {
     console.log(searchInputValue);
     // FoodSearchResult.jsx 페이지로 이동
     navigate(`/meal/search`, {
-      state: { searchInputValue },
+      state: { searchInputValue, type, date },
       replace: false, // 히스토리에 추가해서 뒤로가기 가능
     });
   };

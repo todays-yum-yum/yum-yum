@@ -40,16 +40,24 @@ const parseNutritionData = (jsonData) => {
   return items.map((item) => {
     const { amount: size, unit } = parsedFoodSize(item.foodSize);
     return {
+      id: item.foodCd,
       foodCode: item.foodCd, // 음식코드
       foodName: item.foodNm, // 음식명
-      kcal: parseFloat(item.enerc) || 0, // 칼로리
-      protein: parseFloat(item.prot) || 0, // 단백질
-      fat: parseFloat(item.fatce) || 0, // 지방
-      carbs: parseFloat(item.chocdf) || 0, // 탄수화물
-      sugar: parseFloat(item.sugar) || 0, // 당분
-      sodium: parseFloat(item.nat) || 0, // 나트륨
+      nutrient: {
+        kcal: parseFloat(item.enerc) || 0, // 칼로리
+        carbs: parseFloat(item.chocdf) || 0, // 탄수화물
+        fat: parseFloat(item.fatce) || 0, // 지방
+        sugar: parseFloat(item.sugar) || 0, // 당분
+        fiber: parseFloat(item.fibtg) || 0, // 식이섬유
+        satFat: parseFloat(item.fasat) || 0, // 포화 지방
+        transFat: parseFloat(item.fatrn) || 0, // 트랜스지방
+        cholesterol: parseFloat(item.chole) || 0, // 콜레스테롤
+        sodium: parseFloat(item.nat) || 0, // 나트륨
+        protein: parseFloat(item.prot) || 0, // 단백질
+      },
       foodSize: size, // 기준량
-      foodUnit: unit,
+      foodUnit: unit, // 식품 양 단위
+      makerName: item.mkrNm || '', // 제조사
       company: item.companyNm || '', // 제조사
     };
   });
