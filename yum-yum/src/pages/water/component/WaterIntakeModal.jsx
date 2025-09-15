@@ -1,19 +1,30 @@
 import React from 'react';
+import { toNum } from '@/utils/WaterNumber';
 // 컴포넌트
 import Modal from '@/components/Modal';
 import Input from '@/components/common/Input';
 // 아이콘
 import LightIcon from '@/assets/icons/icon-light-bulb.svg?react';
 
-export default function WaterIntakeModal({ isOpenModal, onCloseModal, onBtnClick }) {
+export default function WaterIntakeModal({
+  isOpenModal,
+  onCloseModal,
+  onBtnClick,
+  oneTimeIntake,
+  setOneTimeIntake,
+  targetIntake,
+  setTargetIntake,
+}) {
   const intakeSetting = [
     {
       label: '1회 섭취량',
-      value: 500,
+      value: oneTimeIntake,
+      onchange: (e) => setOneTimeIntake(toNum(e.target.value)),
     },
     {
       label: '목표 섭취량',
-      value: 2000,
+      value: targetIntake,
+      onchange: (e) => setTargetIntake(toNum(e.target.value)),
     },
   ];
   return (
@@ -37,7 +48,8 @@ export default function WaterIntakeModal({ isOpenModal, onCloseModal, onBtnClick
                 placeholder='0'
                 min={0}
                 max={20000}
-                // onChange={}
+                noSpinner
+                onChange={item.onchange}
               />
             </div>
           ))}
