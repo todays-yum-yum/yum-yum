@@ -79,7 +79,7 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
 
       // const user = auth.currentUser;
-      await saveMeal('yZxviIBudsaf8KYYhCCUWFpy3Ug1', formattedSaveDate, type, meals);
+      await saveMeal('test-user', formattedSaveDate, type, meals);
       // await saveMeal(user.uid, formattedSaveDate, type, meals);
 
       toast.success('기록이 완료 되었어요!');

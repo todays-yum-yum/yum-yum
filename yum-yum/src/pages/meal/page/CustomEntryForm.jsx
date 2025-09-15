@@ -39,11 +39,11 @@ export default function CustomEntryForm() {
 
     // const user = auth.currentUser;
 
-    const newFoodData = createCustomFood('yZxviIBudsaf8KYYhCCUWFpy3Ug1');
+    const newFoodData = createCustomFood('test-user');
     // const newFoodData = createCustomFood(user.uid);
 
     try {
-      const newFoodId = await addCustomFood('yZxviIBudsaf8KYYhCCUWFpy3Ug1', newFoodData);
+      const newFoodId = await addCustomFood('test-user', newFoodData);
       // const newFoodId = await addCustomFood(user.uid, newFoodData);
 
       reset();

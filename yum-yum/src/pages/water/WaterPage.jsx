@@ -39,7 +39,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
     const fetchData = async () => {
       try {
         const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
-        const data = await getWaterIntake('yZxviIBudsaf8KYYhCCUWFpy3Ug1', formattedSaveDate);
+        const data = await getWaterIntake('test-user', formattedSaveDate);
         if (data) {
           setWaterAmount(data.dailyTotal);
         } else {
@@ -57,7 +57,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const settings = await getWaterSettings('yZxviIBudsaf8KYYhCCUWFpy3Ug1');
+        const settings = await getWaterSettings('test-user');
         setOneTimeIntake(settings.oneTimeIntake);
         setTargetIntake(settings.targetIntake);
       } catch (error) {
@@ -67,7 +67,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
     };
 
     fetchSettings();
-  }, ['yZxviIBudsaf8KYYhCCUWFpy3Ug1', setOneTimeIntake, setTargetIntake]);
+  }, ['test-user', setOneTimeIntake, setTargetIntake]);
 
   // + 버튼
   const handleInc = () => {
@@ -82,7 +82,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
   // 수분 섭취량 설정 버튼
   const handleWaterIntakeModify = async () => {
     try {
-      await saveWaterSettings('yZxviIBudsaf8KYYhCCUWFpy3Ug1', oneTimeIntake, targetIntake);
+      await saveWaterSettings('test-user', oneTimeIntake, targetIntake);
 
       setOneTimeIntake(oneTimeIntake);
       setTargetIntake(targetIntake);
@@ -99,7 +99,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
   const handleRecord = async () => {
     try {
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
-      await addWaterIntake('yZxviIBudsaf8KYYhCCUWFpy3Ug1', formattedSaveDate, waterAmount);
+      await addWaterIntake('test-user', formattedSaveDate, waterAmount);
       // await addWaterIntake(user.uid, formattedSaveDate, waterAmount);
 
       toast.success('수분 기록 되었어요!');

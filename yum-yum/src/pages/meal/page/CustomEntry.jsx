@@ -18,7 +18,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const data = await customFoodsList('yZxviIBudsaf8KYYhCCUWFpy3Ug1');
+        const data = await customFoodsList('test-user');
         setFoodItems(data);
       } catch (error) {
         console.error('불러오기 실패:', error);
