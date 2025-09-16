@@ -2,6 +2,9 @@ import { collection, query, where, orderBy, getDocs, Timestamp } from 'firebase/
 import { firestore } from './../services/firebase';
 
 export const getWeeklyData = async (userId, startDay, endDay) => {
+  const startOfDay = startDay.toISOString().split('T')[0];
+  const endOfDay = endDay.toISOString().split('T')[0];
+
   try {
     // 컬렉션 참조 생성
     const mealRef = collection(firestore, 'users', userId, 'meal');
@@ -9,16 +12,16 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
 
     const mealQuery = query(
       mealRef,
-      where('createdAt', '>=', Timestamp.fromDate(startDay)),
-      where('createdAt', '<', Timestamp.fromDate(endDay)),
-      orderBy('createdAt'),
+      where('date', '>=', startOfDay),
+      where('date', '<', endOfDay),
+      orderBy('date'),
     );
 
     const waterQuery = query(
       waterRef,
-      where('createdAt', '>=', Timestamp.fromDate(startDay)),
-      where('createdAt', '<', Timestamp.fromDate(endDay)),
-      orderBy('createdAt'),
+      where('date', '>=', startOfDay),
+      where('date', '<', endOfDay),
+      orderBy('date'),
     );
 
     const [waterSnap, mealSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery)]);

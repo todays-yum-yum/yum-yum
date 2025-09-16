@@ -12,10 +12,15 @@ import Carbohydrate from '@/assets/icons/icon-carbohydrate.svg?react';
 import Fat from '@/assets/icons/icon-fat.svg?react';
 import Protein from '@/assets/icons/icon-protein.svg?react';
 
-import { useMonthlyReportData, useWeeklyReportData } from '../../../hooks/useReportData';
-import { dataSummary, normalizeDataRange } from './../../../utils/reportDataParser';
+import {
+  useDailyReportData,
+  useMonthlyReportData,
+  useWeeklyReportData,
+} from '@/hooks/useReportData';
+import { dataSummary, normalizeDataRange } from '@/utils/reportDataParser';
+import { getAllMealsSorted } from './../../../utils/reportDataParser';
 
-const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1';
+const userId = 'test-user';
 export default function DietReportPage({
   originDate,
   fullDate,
@@ -25,8 +30,24 @@ export default function DietReportPage({
   next,
   canMove,
 }) {
-const { userData: weeklyUserData, weeklyData, isLoading: weeklyIsLoading, isError: weeklyIsError } = useWeeklyReportData(userId, originDate);
-const { userData: monthlyUserData, monthlyData, isLoading: monthlyIsLoading, isError: monthlyIsError } = useMonthlyReportData(userId, originDate);
+  const {
+    userData: dailyUserData,
+    dailyData,
+    isLoading: daliyIsLoading,
+    isError: daliyIsError,
+  } = useDailyReportData(userId, originDate);
+  const {
+    userData: weeklyUserData,
+    weeklyData,
+    isLoading: weeklyIsLoading,
+    isError: weeklyIsError,
+  } = useWeeklyReportData(userId, originDate);
+  const {
+    userData: monthlyUserData,
+    monthlyData,
+    isLoading: monthlyIsLoading,
+    isError: monthlyIsError,
+  } = useMonthlyReportData(userId, originDate);
   // 상세 정보 토글버튼
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
@@ -50,14 +71,20 @@ const { userData: monthlyUserData, monthlyData, isLoading: monthlyIsLoading, isE
 
   useEffect(() => {
     if (activePeriod === '일간') {
-      console.log('일간 데이터 호출');
+      setNutrient(
+        dataSummary(normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod)),
+      );
     } else if (activePeriod === '주간') {
-
-      setNutrient(dataSummary(normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod)));
+      setNutrient(
+        dataSummary(normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod)),
+      );
     } else if (activePeriod === '월간') {
-      setNutrient(dataSummary(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)));
+      setNutrient(
+        dataSummary(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)),
+      );
+      // console.log(getAllMealsSorted(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)));
     }
-  }, [weeklyData, monthlyData, activePeriod]);
+  }, [dailyData, weeklyData, monthlyData, activePeriod]);
 
   const topChart = [
     {

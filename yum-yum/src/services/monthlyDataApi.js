@@ -1,8 +1,12 @@
 import { collection, query, where, orderBy, getDocs, Timestamp } from 'firebase/firestore';
 import { firestore } from './../services/firebase';
-import { getEndDateOfMonth, parseDateString, getStartDateOfMonth } from '../utils/dateUtils';
 
 export const getMonthlyData = async (userId, startDay, endDay) => {
+  const startOfDay = startDay.toISOString().split('T')[0];
+  const endOfDay = endDay.toISOString().split('T')[0];
+
+  console.log("여기", startOfDay)
+
   try {
     // 컬렉션 참조 생성
     const mealRef = collection(firestore, 'users', userId, 'meal');
@@ -10,18 +14,17 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
 
     const mealQuery = query(
       mealRef,
-      where('createdAt', '>=', Timestamp.fromDate(startDay)),
-      where('createdAt', '<', Timestamp.fromDate(endDay)),
-      orderBy('createdAt'),
+      where('date', '>=', startOfDay),
+      where('date', '<', endOfDay),
+      orderBy('date'),
     );
 
     const waterQuery = query(
       waterRef,
-      where('createdAt', '>=', Timestamp.fromDate(startDay)),
-      where('createdAt', '<', Timestamp.fromDate(endDay)),
-      orderBy('createdAt'),
+      where('date', '>=', startOfDay),
+      where('date', '<', endOfDay),
+      orderBy('date'),
     );
-
     const [waterSnap, mealSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery)]);
 
     const waterData = waterSnap.docs.map((doc) => ({
@@ -34,6 +37,9 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
       ...doc.data(),
     }));
 
+    
+    console.log(mealData)
+    
     return {
       success: true,
       data: {

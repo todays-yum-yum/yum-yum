@@ -15,7 +15,7 @@ const searchConfig = {
   월간: 'monthly',
 };
 
-const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1';
+const userId = 'test-user';
 export default function AiReportPage({
   originDate,
   fullDate,

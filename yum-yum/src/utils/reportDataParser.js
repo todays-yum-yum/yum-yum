@@ -13,7 +13,10 @@ export function normalizeDataRange(rawData, selectedDate, period) {
   let startDay;
   let endDay;
 
-  if (period === '주간') {
+  if (period === '일간') {
+    startDay = parseDateString(selectedDate);
+    endDay = parseDateString(selectedDate);
+  } else if (period === '주간') {
     startDay = parseDateString(getStartDateOfWeek(selectedDate));
     endDay = parseDateString(getEndDateOfWeek(selectedDate));
   } else if (period === '월간') {
@@ -30,7 +33,7 @@ export function normalizeDataRange(rawData, selectedDate, period) {
   // rawData를 Map으로 변환해서 빠른 조회 가능
   const dataMap = new Map(rawData.map((d) => [d.date, d]));
 
-  console.log(dataMap);
+  console.log(start, end, dataMap);
 
   // 모든 날짜를 돌면서 없는 날은 0으로 채움
   return allDays.map((day) => {
@@ -93,4 +96,23 @@ export const dataSummary = (allFoods) => {
       0,
     ), // 카페인
   };
+};
+
+export const getAllMealsSorted = (data, nutrientKey = 'carbs') => {
+  console.log('여기 : ', data);
+
+  return data
+    .reduce((allMeals, dayData) => {
+      if (dayData.value !== 0) {
+        const mealsData = dayData.value.meals.map((meal) => {
+          console.log(meal);
+          return meal;
+        });
+
+        return [...allMeals, ...mealsData];
+      }
+
+      return allMeals;
+    }, [])
+    .sort((a, b) => toNum(b[nutrientKey]) - toNum(a[nutrientKey]));
 };
