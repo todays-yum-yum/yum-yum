@@ -104,12 +104,22 @@ const mealSum = (dailySummary, meals) => {
     totalCarbs = 0,
     totalProtein = 0,
     totalFat = 0;
-  meals.map((meal) => {
-    totalCalories += meal?.calorie ?? 0;
-    totalCarbs += meal?.carbs ?? 0;
-    totalProtein += meal?.protein ?? 0;
-    totalFat += meal?.fat ?? 0;
-  });
+  // console.log(meals);
+  if (!Array.isArray(meals)) {
+    Object.keys(meals)?.map((meal) => {
+      totalCalories += meal?.calorie ?? 0;
+      totalCarbs += meal?.carbs ?? 0;
+      totalProtein += meal?.protein ?? 0;
+      totalFat += meal?.fat ?? 0;
+    });
+  } else {
+    meals.map((meal) => {
+      totalCalories += meal?.calorie ?? 0;
+      totalCarbs += meal?.carbs ?? 0;
+      totalProtein += meal?.protein ?? 0;
+      totalFat += meal?.fat ?? 0;
+    });
+  }
   return { calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat };
 };
 
