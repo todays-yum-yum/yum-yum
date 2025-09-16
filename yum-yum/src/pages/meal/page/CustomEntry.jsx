@@ -7,8 +7,6 @@ import FoodList from '../component/FoodList';
 // 아이콘
 import SearchIcon from '@/assets/icons/icon-search.svg?react';
 
-const mockUser = { uid: 'test-user' };
-
 export default function CustomEntry({ selectedIds, onToggleSelect }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,7 +18,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const data = await customFoodsList(mockUser.uid);
+        const data = await customFoodsList('test-user');
         setFoodItems(data);
       } catch (error) {
         console.error('불러오기 실패:', error);

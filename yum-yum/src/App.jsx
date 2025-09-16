@@ -17,7 +17,7 @@ import RequireAuth from '@/routes/RequireAuth';
 import CustomEntryForm from './pages/meal/page/CustomEntryForm';
 import TotalMeal from './pages/meal/page/TotalMeal';
 import TestPage from './pages/home/test/TestPage';
-// import SearchList from './pages/meal/page/SearchList';
+import FoodSearchResultsPage from './pages/meal/page/FoodSearchResults';
 
 const router = createBrowserRouter([
   {
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage /> },
           { path: 'meal/:type', element: <MealPage /> }, // 아침, 점심, 저녁, 기타 타입
           { path: 'meal/custom', element: <CustomEntryForm /> },
-          // { path: 'meal/search', element: <SearchList /> },
+          { path: 'meal/search', element: <FoodSearchResultsPage /> }, // 음식 검색 시 결과 화면
           { path: 'meal/:type/total', element: <TotalMeal /> },
           { path: 'report', element: <ReportPage /> },
           { path: 'water', element: <WaterPage /> },
