@@ -82,7 +82,7 @@ export default function DietReportPage({
       setNutrient(
         dataSummary(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)),
       );
-      // console.log(getAllMealsSorted(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)));
+      console.log(getAllMealsSorted(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)));
     }
   }, [dailyData, weeklyData, monthlyData, activePeriod]);
 

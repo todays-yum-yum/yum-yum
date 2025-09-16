@@ -98,21 +98,45 @@ export const dataSummary = (allFoods) => {
   };
 };
 
-export const getAllMealsSorted = (data, nutrientKey = 'carbs') => {
+export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
   console.log('여기 : ', data);
 
   return data
     .reduce((allMeals, dayData) => {
       if (dayData.value !== 0) {
-        const mealsData = dayData.value.meals.map((meal) => {
-          console.log(meal);
-          return meal;
-        });
+        const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack']; // 필요한 식사 종류들
+
+        const mealsData = mealTypes.flatMap((mealType) =>
+          (dayData.value.meals[mealType] || []).map((meal) => ({
+            ...meal,
+          })),
+        );
 
         return [...allMeals, ...mealsData];
       }
 
       return allMeals;
     }, [])
-    .sort((a, b) => toNum(b[nutrientKey]) - toNum(a[nutrientKey]));
+    .reduce((grouped, meal) => {
+      const existingMeal = grouped.find((item) => item.foodName === meal.foodName);
+
+      if (existingMeal) {
+
+        existingMeal.count += 1;
+        if (existingMeal.nutrient && meal.nutrient) {
+          Object.keys(meal.nutrient).forEach((key) => {
+            existingMeal.nutrient[key] =
+              toNum(existingMeal.nutrient[key]) + toNum(meal.nutrient[key]);
+          });
+        }
+      } else {
+        grouped.push({
+          ...meal,
+          count: 1, // 횟수 초기값
+        });
+      }
+
+      return grouped;
+    }, [])
+    .sort((a, b) => toNum(b.nutrient?.[nutrientKey]) - toNum(a.nutrient?.[nutrientKey]));
 };
