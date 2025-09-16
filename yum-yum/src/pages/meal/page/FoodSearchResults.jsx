@@ -39,7 +39,7 @@ export default function FoodSearchResultsPage() {
     // console.log(searchInputValue);
     // 같은 페이지로 navigate하되 검색어를 새로 전달
     navigate(`/meal/search`, {
-      state: { searchInputValue: searchInputValue },
+      state: { searchInputValue: searchInputValue, type: type, date: date },
       replace: false,
     });
   };
