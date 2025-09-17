@@ -18,6 +18,7 @@ import CustomEntryForm from './pages/meal/page/CustomEntryForm';
 import TotalMeal from './pages/meal/page/TotalMeal';
 import TestPage from './pages/home/test/TestPage';
 import FoodSearchResultsPage from './pages/meal/page/FoodSearchResults';
+import ScrollToTop from './components/ScrollToTop';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       {
         element: (
           <RequireAuth>
+            <ScrollToTop />
             <Layout />
           </RequireAuth>
         ),
@@ -46,6 +48,7 @@ const router = createBrowserRouter([
       {
         element: (
           <RequireGuest>
+            <ScrollToTop />
             <SimpleLayout />
           </RequireGuest>
         ),
