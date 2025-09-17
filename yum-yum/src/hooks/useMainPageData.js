@@ -18,9 +18,8 @@ export const usePageData = (userId, selectedDate) => {
     queryKey: ['dailyData', userId, selectedDate],
     queryFn: () => getDailyData(userId, selectedDate),
     select: (resp) => resp.data,
-    // staleTime: 1 * 60 * 1000, // 1분
+    staleTime: 1 * 60 * 1000, // 1분
     // staleTime: 30 * 1000, // 30초
-    staleTime: 0, // 실시간(임시)
     enabled: !!userId && !!selectedDate,
   });
 
