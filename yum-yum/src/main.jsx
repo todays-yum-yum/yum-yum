@@ -16,11 +16,11 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <CookiesProvider>
       <QueryClientProvider client={queryClient}>
         <App />
       </QueryClientProvider>
     </CookiesProvider>
-  </StrictMode>,
+  // </StrictMode>,
 );

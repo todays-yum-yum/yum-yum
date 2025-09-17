@@ -45,7 +45,7 @@ export default function PieCharts({ data }) {
   // 파이 차트에 사용할 데이터. 데이터가 없을 때 따로 처리
   const pieData =
     total === 0
-      ? chartData.map((d) => ({ ...d, gram: 1 })) // 0일 땐 균등하게 1씩
+      ? chartData.map((d) => ({ ...d, value: 1 })) // 0일 땐 균등하게 1씩
       : chartData;
 
   const renderCustomizedLabel = ({

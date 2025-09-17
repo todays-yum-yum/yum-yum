@@ -1,14 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import { calculateNutrientRatio } from '../../../utils/calorieCalculator';
-
-
-const safeFormatPercent = (value) => {
-  if (typeof value === 'number' && !Number.isNaN(value)) {
-    return `${value} %`;
-  }
-  return ''; // undefined, NaN, null 등은 빈 문자열
-};
+import { toNum } from '../../../utils/NutrientNumber';
 
 
 function InfoData({ label, percent, value, isSub }) {
@@ -18,7 +11,7 @@ function InfoData({ label, percent, value, isSub }) {
   return (
     <div className='w-full flex flex-row items-center justify-around'>
       <span className={clsx(textStyle, 'w-35')}>{label}</span>
-      <span className={clsx(textStyle, 'text-center', 'w-20')}>{percent ? percent : ''} </span>
+      <span className={clsx(textStyle, 'text-center', 'w-20')}>{percent ? percent + "%" : ''} </span>
       <span className={clsx(textStyle, 'text-right', 'w-35')}>{value}</span>
     </div>
   );
@@ -53,7 +46,7 @@ export default function NutritionInfo({ nutritionData }) {
     },
     {
       label: '탄수화물',
-      percent: safeFormatPercent(carbsRatio),
+      percent: toNum(carbsRatio),
       value: `${nutritionData.totalCarbs?.toFixed(1) ?? 0} g`,
       subs: [
         { label: '당류', value: `${nutritionData.totalSugar?.toFixed(1) ?? 0} g`, isSub: true },
@@ -63,12 +56,12 @@ export default function NutritionInfo({ nutritionData }) {
     },
     {
       label: '단백질',
-      percent: safeFormatPercent(proteinsRatio),
+      percent: toNum(proteinsRatio),
       value: `${nutritionData.totalProtein?.toFixed(1) ?? 0} g`,
     },
     {
       label: '지방',
-      percent:  safeFormatPercent(fatsRatio),
+      percent:  toNum(fatsRatio),
       value: `${nutritionData.totalFat?.toFixed(1) ?? 0} g`,
       subs: [
         { label: '포화지방산', value: `${nutritionData.totalSaturatedFat?.toFixed(1) ?? 0} g`, isSub: true },

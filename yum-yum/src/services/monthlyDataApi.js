@@ -5,7 +5,7 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
   const startOfDay = startDay.toISOString().split('T')[0];
   const endOfDay = endDay.toISOString().split('T')[0];
 
-  console.log("여기", startOfDay)
+  // console.log("여기", startOfDay)
 
   try {
     // 컬렉션 참조 생성

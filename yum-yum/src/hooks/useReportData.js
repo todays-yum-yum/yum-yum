@@ -112,7 +112,7 @@ export const useMonthlyReportData = (userId, selectedDate) => {
     staleTime: 0.5 * 60 * 1000,
     enabled: !!userId && !!selectedDate,
   });
-
+  
   return {
     // 사용자 데이터
     userData: userQuery.data,

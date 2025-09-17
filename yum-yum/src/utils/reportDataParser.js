@@ -33,12 +33,16 @@ export function normalizeDataRange(rawData, selectedDate, period) {
   // rawData를 Map으로 변환해서 빠른 조회 가능
   const dataMap = new Map(rawData.map((d) => [d.date, d]));
 
-  console.log(start, end, dataMap);
+  // console.log(start, end, dataMap);
 
   // 모든 날짜를 돌면서 없는 날은 0으로 채움
   return allDays.map((day) => {
     const key = format(day, 'yyyy-MM-dd');
-    return { date: key, value: dataMap.get(key) ?? 0 };
+    const value = dataMap.get(key);
+    return {
+      date: key,
+      value: value ? structuredClone(value) : 0,
+    };
   });
 }
 
@@ -54,7 +58,7 @@ export const dataSummary = (allFoods) => {
     return result;
   }, 0);
 
-  console.log(allFoods);
+  console.log('allFoods', allFoods);
 
   return {
     totalCalories:
@@ -98,45 +102,48 @@ export const dataSummary = (allFoods) => {
   };
 };
 
+// 식단 데이터 압축 -> 동일한 데이터 합치고 횟수 세기
 export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
   console.log('여기 : ', data);
 
-  return data
-    .reduce((allMeals, dayData) => {
-      if (dayData.value !== 0) {
-        const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack']; // 필요한 식사 종류들
+  return data && data.length > 0
+    ? data
+        .reduce((allMeals, dayData) => { // meal 데이터 합침
+          if (dayData.value !== 0) {
+            const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
 
-        const mealsData = mealTypes.flatMap((mealType) =>
-          (dayData.value.meals[mealType] || []).map((meal) => ({
-            ...meal,
-          })),
-        );
+            const mealsData = mealTypes.flatMap((mealType) =>
+              (dayData.value.meals[mealType] || []).map((meal) => ({
+                ...meal,
+              })),
+            );
 
-        return [...allMeals, ...mealsData];
-      }
+            return [...allMeals, ...mealsData];
+          }
 
-      return allMeals;
-    }, [])
-    .reduce((grouped, meal) => {
-      const existingMeal = grouped.find((item) => item.foodName === meal.foodName);
+          return allMeals;
+        }, [])
+        .reduce((grouped, meal) => { // 중복 제거 및 횟수 세기
+          const existingMeal = grouped.find((item) => item.foodName === meal.foodName);
 
-      if (existingMeal) {
+          if (existingMeal) {
+            existingMeal.count += 1;
+            if (existingMeal.nutrient && meal.nutrient) {
+              Object.keys(meal.nutrient).forEach((key) => {
+                existingMeal.nutrient[key] =
+                  toNum(existingMeal.nutrient[key]) + toNum(meal.nutrient[key]);
+              });
+            }
+          } else {
+            grouped.push({
+              ...meal,
+              count: 1, // 횟수 초기값
+            });
+          }
 
-        existingMeal.count += 1;
-        if (existingMeal.nutrient && meal.nutrient) {
-          Object.keys(meal.nutrient).forEach((key) => {
-            existingMeal.nutrient[key] =
-              toNum(existingMeal.nutrient[key]) + toNum(meal.nutrient[key]);
-          });
-        }
-      } else {
-        grouped.push({
-          ...meal,
-          count: 1, // 횟수 초기값
-        });
-      }
-
-      return grouped;
-    }, [])
-    .sort((a, b) => toNum(b.nutrient?.[nutrientKey]) - toNum(a.nutrient?.[nutrientKey]));
+          return grouped;
+        }, [])
+        .sort((a, b) => toNum(b.nutrient?.[nutrientKey]) - toNum(a.nutrient?.[nutrientKey]))
+        // nutrientKey 기준으로 내림차순 정렬
+    : [];
 };
