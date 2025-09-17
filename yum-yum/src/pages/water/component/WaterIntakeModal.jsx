@@ -1,30 +1,73 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { toNum } from '@/utils/WaterNumber';
 // 컴포넌트
 import Modal from '@/components/Modal';
 import Input from '@/components/common/Input';
 // 아이콘
 import LightIcon from '@/assets/icons/icon-light-bulb.svg?react';
+import toast from 'react-hot-toast';
 
 export default function WaterIntakeModal({
   isOpenModal,
   onCloseModal,
   onBtnClick,
   oneTimeIntake,
-  setOneTimeIntake,
   targetIntake,
-  setTargetIntake,
 }) {
+  const [validOneTime, setValidOneTime] = useState(true);
+  const [validTarget, setValidTarget] = useState(true);
+  const [localOneTime, setLocalOneTime] = useState(oneTimeIntake);
+  const [localTarget, setLocalTarget] = useState(targetIntake);
+
+  // 모달이 열릴 때마다 초기화
+  useEffect(() => {
+    if (isOpenModal) {
+      setLocalOneTime(oneTimeIntake);
+      setLocalTarget(targetIntake);
+    }
+  }, [isOpenModal, oneTimeIntake, targetIntake]);
+
+  // 확인 버튼
+  const handleConfirm = () => {
+    onBtnClick(localOneTime, localTarget);
+  };
+
   const intakeSetting = [
     {
       label: '1회 섭취량',
-      value: oneTimeIntake,
-      onchange: (e) => setOneTimeIntake(toNum(e.target.value)),
+      value: localOneTime,
+      placeholder: '50 ~ 1,000',
+      onChange: (e) => setLocalOneTime(toNum(e.target.value)),
+      onBlur: (e) => {
+        const v = toNum(e.target.value);
+        if (v === '' || v === 0) {
+          toast.error('1회 섭취량을 입력해주세요');
+          setValidOneTime(false);
+        } else if (v < 50 || v > 1000) {
+          toast.error('1회 섭취량은 50 ~ 1000ml 사이여야 해요!');
+          setValidOneTime(false);
+        } else {
+          setValidOneTime(true);
+        }
+      },
     },
     {
       label: '목표 섭취량',
-      value: targetIntake,
-      onchange: (e) => setTargetIntake(toNum(e.target.value)),
+      value: localTarget,
+      placeholder: '500 ~ 10,000',
+      onChange: (e) => setLocalTarget(toNum(e.target.value)),
+      onBlur: (e) => {
+        const v = toNum(e.target.value);
+        if (v === '' || v === 0) {
+          toast.error('목표 섭취량을 입력해주세요');
+          setValidTarget(false);
+        } else if (v < 500 || v > 10000) {
+          toast.error('목표 섭취량은 500 ~ 10000ml 사이여야 해요!');
+          setValidTarget(false);
+        } else {
+          setValidTarget(true);
+        }
+      },
     },
   ];
   return (
@@ -33,8 +76,9 @@ export default function WaterIntakeModal({
       onCloseModal={onCloseModal}
       title='수분 섭취량 설정'
       btnLabel='확인'
-      onBtnClick={onBtnClick}
+      onBtnClick={handleConfirm}
       showClose={true}
+      btnDisabled={!validOneTime || !validTarget || localOneTime === 0 || localTarget === 0}
     >
       <div className='flex flex-col gap-[28px]'>
         <div className='flex flex-col gap-[20px]'>
@@ -45,11 +89,10 @@ export default function WaterIntakeModal({
                 type='number'
                 value={item.value}
                 endAdornment='ml'
-                placeholder='0'
-                min={0}
-                max={20000}
+                placeholder={item.placeholder}
                 noSpinner
-                onChange={item.onchange}
+                onChange={item.onChange}
+                onBlur={item.onBlur}
               />
             </div>
           ))}
