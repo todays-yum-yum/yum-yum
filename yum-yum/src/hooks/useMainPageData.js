@@ -19,9 +19,13 @@ export const usePageData = (userId, selectedDate) => {
     queryFn: () => getDailyData(userId, selectedDate),
     select: (resp) => resp.data,
     // staleTime: 1 * 60 * 1000, // 1분
-    staleTime: 30 * 1000, // 30초
+    // staleTime: 30 * 1000, // 30초
+    staleTime: 0, // 실시간(임시)
     enabled: !!userId && !!selectedDate,
   });
+
+  // 수동 갱신 함수
+  const refetchDaily = () => dailyDataQuery.refetch();
 
   return {
     // 사용자 데이터
@@ -34,5 +38,8 @@ export const usePageData = (userId, selectedDate) => {
 
     // 전체 로딩 상태
     isLoading: userQuery.isLoading || dailyDataQuery.isLoading,
+
+    // 수동 갱신 (일일 데이터)
+    refetchDaily,
   };
 };
