@@ -72,7 +72,12 @@ export default function WaterPage({ defaultDate = new Date() }) {
 
   // + 버튼
   const handleInc = () => {
-    setWaterAmount(Math.min(waterAmount + waterStep, 10000));
+    if (waterAmount + waterStep > 10000) {
+      toast.error('최대 10000ml까지만 기록할 수 있어요!');
+      setWaterAmount(10000);
+    } else {
+      setWaterAmount(waterAmount + waterStep);
+    }
   };
 
   // - 버튼
@@ -85,7 +90,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
 
     // 10000까지 입력 제한
     if (v > 10000) {
-      toast.error('최대 10000ml까지만 입력할 수 있어요!');
+      toast.error('최대 10000ml까지만 기록할 수 있어요!');
       return;
     }
     setWaterAmount(v);
