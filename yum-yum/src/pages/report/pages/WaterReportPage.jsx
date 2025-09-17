@@ -4,6 +4,7 @@ import ChartArea from '../components/ChartArea';
 import WaterWeightInfo from '../components/WaterWeightInfo';
 
 export default function WaterReportPage({
+  originDate,
   fullDate,
   activePeriod,
   setActivePeriod,

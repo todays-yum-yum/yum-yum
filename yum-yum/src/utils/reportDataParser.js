@@ -1,16 +1,142 @@
 // utils/normalizeData.ts
-import { eachDayOfInterval, format } from "date-fns";
+import { eachDayOfInterval, format } from 'date-fns';
+import {
+  getEndDateOfMonth,
+  getEndDateOfWeek,
+  getStartDateOfMonth,
+  getStartDateOfWeek,
+  parseDateString,
+} from './dateUtils';
+import { toNum } from './NutrientNumber';
 
-export function normalizeDataRange(rawData, start, end) {
+export function normalizeDataRange(rawData, selectedDate, period) {
+  let startDay;
+  let endDay;
+
+  if (period === '일간') {
+    startDay = parseDateString(selectedDate);
+    endDay = parseDateString(selectedDate);
+  } else if (period === '주간') {
+    startDay = parseDateString(getStartDateOfWeek(selectedDate));
+    endDay = parseDateString(getEndDateOfWeek(selectedDate));
+  } else if (period === '월간') {
+    startDay = parseDateString(getStartDateOfMonth(selectedDate));
+    endDay = parseDateString(getEndDateOfMonth(selectedDate));
+  }
+
+  const start = new Date(startDay.year, startDay.month - 1, startDay.date);
+  const end = new Date(endDay.year, endDay.month - 1, endDay.date);
+
   // 기준의 모든 날짜만큼 생성
   const allDays = eachDayOfInterval({ start, end });
 
   // rawData를 Map으로 변환해서 빠른 조회 가능
-  const dataMap = new Map(rawData.map((d) => [d.date, d.value]));
+  const dataMap = new Map(rawData.map((d) => [d.date, d]));
+
+  console.log(start, end, dataMap);
 
   // 모든 날짜를 돌면서 없는 날은 0으로 채움
   return allDays.map((day) => {
-    const key = format(day, "yyyy-MM-dd");
+    const key = format(day, 'yyyy-MM-dd');
     return { date: key, value: dataMap.get(key) ?? 0 };
   });
 }
+
+// 특정 기간의 값을 가공
+export const dataSummary = (allFoods) => {
+  // 유효한 값이 있는 경우의 날짜를 체크
+  const length = allFoods.reduce((result, food) => {
+    const value = food.value;
+
+    if (typeof value === 'object' && value !== null) {
+      result++;
+    }
+    return result;
+  }, 0);
+
+  console.log(allFoods);
+
+  return {
+    totalCalories:
+      length > 0
+        ? allFoods.reduce((sum, f) => sum + toNum(f.value?.dailySummary?.totalCalories), 0) / length
+        : 0, // 칼로리
+    totalCarbs: allFoods.reduce((sum, f) => sum + toNum(f.value?.dailySummary?.totalCarbs), 0), // 탄수화물
+    totalProtein: allFoods.reduce((sum, f) => sum + toNum(f.value?.dailySummary?.totalProtein), 0), // 단백질
+    totalFat: allFoods.reduce((sum, f) => sum + toNum(f.value?.dailySummary?.totalFat), 0), // 지방
+    totalSugar: allFoods.reduce((sum, f) => sum + toNum(f.value?.dailySummary?.totalSugar), 0), // 당류
+    totalSweetener: allFoods.reduce(
+      (sum, f) => sum + toNum(f.value?.dailySummary?.totalSweetener),
+      0,
+    ), // 대체 감미료
+    totalFiber: allFoods.reduce((sum, f) => sum + toNum(f.value?.dailySummary?.totalFiber), 0), // 식이섬유
+    totalSaturatedFat: allFoods.reduce(
+      (sum, f) => sum + toNum(f.value?.dailySummary?.totalSaturatedFat),
+      0,
+    ), // 포화지방
+    totalTransFat: allFoods.reduce(
+      (sum, f) => sum + toNum(f.value?.dailySummary?.totalTransFat),
+      0,
+    ), // 트랜스지방
+    totalUnsaturatedFat: allFoods.reduce(
+      (sum, f) => sum + toNum(f.value?.dailySummary?.totalUnsaturatedFat),
+      0,
+    ), // 불포화지방
+    totalCholesterol: allFoods.reduce(
+      (sum, f) => sum + toNum(f.value?.dailySummary?.totalCholesterol),
+      0,
+    ), // 콜레스테롤
+    totalSodium: allFoods.reduce((sum, f) => sum + toNum(f.value?.dailySummary?.totalSodium), 0), // 나트륨
+    totalPotassium: allFoods.reduce(
+      (sum, f) => sum + toNum(f.value?.dailySummary?.totalPotassium),
+      0,
+    ), // 칼륨
+    totalCaffeine: allFoods.reduce(
+      (sum, f) => sum + toNum(f.value?.dailySummary?.totalCaffeine),
+      0,
+    ), // 카페인
+  };
+};
+
+export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
+  console.log('여기 : ', data);
+
+  return data
+    .reduce((allMeals, dayData) => {
+      if (dayData.value !== 0) {
+        const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack']; // 필요한 식사 종류들
+
+        const mealsData = mealTypes.flatMap((mealType) =>
+          (dayData.value.meals[mealType] || []).map((meal) => ({
+            ...meal,
+          })),
+        );
+
+        return [...allMeals, ...mealsData];
+      }
+
+      return allMeals;
+    }, [])
+    .reduce((grouped, meal) => {
+      const existingMeal = grouped.find((item) => item.foodName === meal.foodName);
+
+      if (existingMeal) {
+
+        existingMeal.count += 1;
+        if (existingMeal.nutrient && meal.nutrient) {
+          Object.keys(meal.nutrient).forEach((key) => {
+            existingMeal.nutrient[key] =
+              toNum(existingMeal.nutrient[key]) + toNum(meal.nutrient[key]);
+          });
+        }
+      } else {
+        grouped.push({
+          ...meal,
+          count: 1, // 횟수 초기값
+        });
+      }
+
+      return grouped;
+    }, [])
+    .sort((a, b) => toNum(b.nutrient?.[nutrientKey]) - toNum(a.nutrient?.[nutrientKey]));
+};

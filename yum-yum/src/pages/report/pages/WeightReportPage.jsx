@@ -4,6 +4,7 @@ import LineCharts from '../charts/LineCharts';
 import WaterWeightInfo from '../components/WaterWeightInfo';
 
 export default function WeightReportPage({
+  originDate,
   fullDate,
   activePeriod,
   setActivePeriod,
