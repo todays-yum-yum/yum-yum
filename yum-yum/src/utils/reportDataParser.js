@@ -33,7 +33,7 @@ export function normalizeDataRange(rawData, selectedDate, period) {
   // rawData를 Map으로 변환해서 빠른 조회 가능
   const dataMap = new Map(rawData.map((d) => [d.date, d]));
 
-  // console.log(start, end, dataMap);
+  // console.log("normalize : ", start, end, rawData, dataMap);
 
   // 모든 날짜를 돌면서 없는 날은 0으로 채움
   return allDays.map((day) => {
@@ -104,7 +104,7 @@ export const dataSummary = (allFoods) => {
 
 // 식단 데이터 압축 -> 동일한 데이터 합치고 횟수 세기
 export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
-  console.log('여기 : ', data);
+  // console.log('여기 : ', data);
 
   return data && data.length > 0
     ? data

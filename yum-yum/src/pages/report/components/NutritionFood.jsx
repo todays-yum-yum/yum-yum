@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import BasicButton from '@/components/button/BasicButton';
 import { toNum } from '../../../utils/NutrientNumber';
+import clsx from 'clsx';
 
 function FoodData({ foodName, percent, value, count }) {
-  const textStyle = 'w-30 font-bold text-xl text-center';
+  const textStyle = 'font-bold text-xl text-center';
 
   // 음식 정보 상세
   return (
     <div className='w-full flex flex-row items-center justify-around'>
-      <span className={textStyle}>{foodName}</span>
-      <span className={textStyle}>{percent}%</span>
-      <span className={textStyle}>{value}g</span>
-      <span className={textStyle}>{count}회</span>
+      <span className={clsx(textStyle, 'w-45')}>{foodName}</span>
+      <span className={clsx(textStyle, 'w-15')}>{percent}%</span>
+      <span className={clsx(textStyle, 'w-25')}>{value}g</span>
+      <span className={clsx(textStyle, 'w-20')}>{count}회</span>
     </div>
   );
 }

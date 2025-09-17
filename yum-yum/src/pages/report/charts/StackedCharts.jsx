@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, CartesianGrid } from 'recharts';
-import { toNum } from '../../../utils/NutrientNumber';
+import { toNum } from '@/utils/NutrientNumber';
 import { roundTo1 } from '@/utils/NutrientNumber';
 
 export default function StackedCharts({ foodData }) {
@@ -28,6 +28,7 @@ export default function StackedCharts({ foodData }) {
     return types;
   };
 
+  // 영양소 데이터
   const valueType = nutritionType(foodData.name);
 
   // 총합
@@ -35,6 +36,7 @@ export default function StackedCharts({ foodData }) {
     return sum + toNum(food.nutrient?.[valueType]);
   }, 0));
 
+  // 최고 순위 3개 및 기타 수치
   const top1 = roundTo1(toNum(foodData.food[0]?.nutrient?.[valueType])) ?? 0;
   const top2 = roundTo1(toNum(foodData.food[1]?.nutrient?.[valueType])) ?? 0;
   const top3 = roundTo1(toNum(foodData.food[2]?.nutrient?.[valueType])) ?? 0;
@@ -57,6 +59,7 @@ export default function StackedCharts({ foodData }) {
   // 마지막 요소 확인
   const lastElement = elements[elements.length - 1];
 
+  // 차트 데이터 매핑
   const chartData = {
     name: foodData.name,
     top1: top1,
@@ -66,7 +69,7 @@ export default function StackedCharts({ foodData }) {
     goal: foodData.goal
   };
 
-  console.log('chartData:', chartData);
+  // console.log('chartData:', chartData);
 
   return (
     <BarChart width={400} height={40} data={[chartData]} layout='vertical'>
@@ -120,18 +123,18 @@ export default function StackedCharts({ foodData }) {
         />
       )}
 
-      <ReferenceLine
+      {/* <ReferenceLine
         x={chartData.goal} // 목표값 위치
-        stroke='red'
+        stroke='black'
         strokeWidth={2}
         strokeDasharray='4 4' // 점선
         label={{
           position: 'insideBottomRight',
           value: `목표 ${chartData.goal}g`,
-          fill: 'red',
+          fill: 'black',
           fontSize: 12,
         }}
-      />
+      /> */}
     </BarChart>
   );
 }

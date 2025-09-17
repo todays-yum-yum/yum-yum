@@ -12,14 +12,17 @@ import Carbohydrate from '@/assets/icons/icon-carbohydrate.svg?react';
 import Fat from '@/assets/icons/icon-fat.svg?react';
 import Protein from '@/assets/icons/icon-protein.svg?react';
 
+// 훅
 import {
   useDailyReportData,
   useMonthlyReportData,
   useWeeklyReportData,
 } from '@/hooks/useReportData';
+
+// 유틸
 import { dataSummary, normalizeDataRange } from '@/utils/reportDataParser';
-import { getAllMealsSorted } from './../../../utils/reportDataParser';
-import { toNum } from './../../../utils/NutrientNumber';
+import { getAllMealsSorted } from '@/utils/reportDataParser';
+import { toNum } from '@/utils/NutrientNumber';
 import { roundTo1 } from '@/utils/NutrientNumber';
 
 const userId = 'test-user';
@@ -32,6 +35,7 @@ export default function DietReportPage({
   next,
   canMove,
 }) {
+  // 데이터
   const {
     userData: dailyUserData,
     dailyData,
@@ -54,6 +58,7 @@ export default function DietReportPage({
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
 
+  // 영양정보, 탄단지 내림차순 정보
   const [nutrient, setNutrient] = useState({});
   const [carbsSortedFoods, setCarbsSortedFoods] = useState([]);
   const [proteinSortedFoods, setProteinSortedFoods] = useState([]);
@@ -103,13 +108,47 @@ export default function DietReportPage({
 
   useEffect(() => {
     if (activePeriod === '일간') {
-      setCarbsSortedFoods();
-      setProteinSortedFoods();
-      setFatSortedFoods();
+      setCarbsSortedFoods(
+        getAllMealsSorted(
+          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
+          'carbs',
+        ),
+      );
+
+      setProteinSortedFoods(
+        getAllMealsSorted(
+          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
+          'protein',
+        ),
+      );
+
+      setFatSortedFoods(
+        getAllMealsSorted(
+          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
+          'fat',
+        ),
+      );
     } else if (activePeriod === '주간') {
-      setCarbsSortedFoods();
-      setProteinSortedFoods();
-      setFatSortedFoods();
+      setCarbsSortedFoods(
+        getAllMealsSorted(
+          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
+          'carbs',
+        ),
+      );
+
+      setProteinSortedFoods(
+        getAllMealsSorted(
+          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
+          'protein',
+        ),
+      );
+
+      setFatSortedFoods(
+        getAllMealsSorted(
+          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
+          'fat',
+        ),
+      );
     } else if (activePeriod === '월간') {
       setCarbsSortedFoods(
         getAllMealsSorted(
@@ -134,6 +173,7 @@ export default function DietReportPage({
     }
   }, [nutrient]);
 
+  // 스택 차트, 영양정보, 영양소별 음식 정보 매핑
   const topChart = [
     {
       name: '탄수화물',
@@ -205,7 +245,7 @@ export default function DietReportPage({
                     {nutritionIcon[data.name]}
                   </span>
                   <span className='w-20 font-bold text-xl text-center'>{data.name}</span>
-                  <span className='w-10 font-bold text-xl text-center'>{data.total}g</span>
+                  <span className='w-20 font-bold text-xl text-center'>{data.total}g</span>
                 </div>
 
                 {/* 스택 차트 */}
