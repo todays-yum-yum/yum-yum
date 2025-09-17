@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import BasicButton from '@/components/button/BasicButton';
 import { toNum } from '../../../utils/NutrientNumber';
 import clsx from 'clsx';
+import { roundTo1 } from '@/utils/NutrientNumber';
 
 function FoodData({ foodName, percent, value, count }) {
   const textStyle = 'font-bold text-xl text-center';
@@ -64,7 +65,7 @@ export default function NutritionFood({ foodData }) {
           const dynamicProps = {
             foodName: food.foodName,
             percent: percent,
-            value: foodValue.toFixed(1),
+            value: roundTo1(foodValue),
             count: food.count,
           };
 

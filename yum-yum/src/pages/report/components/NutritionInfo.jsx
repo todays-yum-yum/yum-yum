@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { calculateNutrientRatio } from '../../../utils/calorieCalculator';
 import { toNum } from '../../../utils/NutrientNumber';
+import { roundTo1 } from '@/utils/NutrientNumber';
 
 
 function InfoData({ label, percent, value, isSub }) {
@@ -42,47 +43,47 @@ export default function NutritionInfo({ nutritionData }) {
     {
       label: '총 열량',
       percent: '',
-      value: `${nutritionData.totalCalories?.toFixed(1) ?? 0} Kcal`,
+      value: `${Math.round(nutritionData.totalCalories ?? 0)} Kcal`,
     },
     {
       label: '탄수화물',
       percent: toNum(carbsRatio),
-      value: `${nutritionData.totalCarbs?.toFixed(1) ?? 0} g`,
+      value: `${roundTo1(nutritionData.totalCarbs ?? 0)} g`,
       subs: [
-        { label: '당류', value: `${nutritionData.totalSugar?.toFixed(1) ?? 0} g`, isSub: true },
-        { label: '대체감미료', value: `${nutritionData.totalSweetener?.toFixed(1) ?? 0} g`, isSub: true },
-        { label: '식이섬유', value: `${nutritionData.totalFiber?.toFixed(1) ?? 0} g`, isSub: true },
+        { label: '당류', value: `${roundTo1(nutritionData.totalSugar ?? 0)} g`, isSub: true },
+        { label: '대체감미료', value: `${roundTo1(nutritionData.totalSweetener ?? 0)} g`, isSub: true },
+        { label: '식이섬유', value: `${roundTo1(nutritionData.totalFiber ?? 0)} g`, isSub: true },
       ],
     },
     {
       label: '단백질',
       percent: toNum(proteinsRatio),
-      value: `${nutritionData.totalProtein?.toFixed(1) ?? 0} g`,
+      value: `${roundTo1(nutritionData.totalProtein?? 0)} g`,
     },
     {
       label: '지방',
       percent:  toNum(fatsRatio),
-      value: `${nutritionData.totalFat?.toFixed(1) ?? 0} g`,
+      value: `${roundTo1(nutritionData.totalFat ?? 0)} g`,
       subs: [
-        { label: '포화지방산', value: `${nutritionData.totalSaturatedFat?.toFixed(1) ?? 0} g`, isSub: true },
-        { label: '트랜스지방', value: `${nutritionData.totalTransFat?.toFixed(1) ?? 0} g`, isSub: true },
-        { label: '불포화지방', value: `${nutritionData.totalUnsaturatedFat?.toFixed(1) ?? 0} g`, isSub: true },
+        { label: '포화지방산', value: `${roundTo1(nutritionData.totalSaturatedFat ?? 0)} g`, isSub: true },
+        { label: '트랜스지방', value: `${roundTo1(nutritionData.totalTransFat ?? 0)} g`, isSub: true },
+        { label: '불포화지방', value: `${roundTo1(nutritionData.totalUnsaturatedFat?? 0)} g`, isSub: true },
       ],
     },
     {
       label: '콜레스테롤',
       percent: '',
-      value: `${nutritionData.totalCholesterol?.toFixed(1) ?? 0} mg`,
+      value: `${roundTo1(nutritionData.totalCholesterol ?? 0)} mg`,
     },
     {
       label: '나트륨',
       percent: '',
-      value: `${nutritionData.totalSodium?.toFixed(1) ?? 0} mg`,
+      value: `${roundTo1(nutritionData.totalSodium ?? 0)} mg`,
     },
     {
       label: '카페인',
       percent: '',
-      value: `${nutritionData.totalCaffeine?.toFixed(1) ?? 0} mg`,
+      value: `${roundTo1(nutritionData.totalCaffeine ?? 0)} mg`,
     },
   ];
 

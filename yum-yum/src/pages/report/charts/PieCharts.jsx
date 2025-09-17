@@ -1,11 +1,7 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
-import { calculateNutrientRatio } from '../../../utils/calorieCalculator';
-
-const safeNumber = (val) => {
-  const num = typeof val === 'number' ? val : Number(val);
-  return Number.isFinite(num) ? parseFloat(num.toFixed(1)) : 0;
-};
+import { calculateNutrientRatio } from '@/utils/calorieCalculator';
+import { roundTo1, toNum } from '@/utils/NutrientNumber';
 
 export default function PieCharts({ data }) {
   const PALETTES = ['#FF5094', '#2F73E5', '#FFD653'];
@@ -19,18 +15,18 @@ export default function PieCharts({ data }) {
           {
             name: '탄수화물',
             value: carbsRatio,
-            gram: safeNumber(data.totalCarbs)
+            gram: roundTo1(toNum(data.totalCarbs))
             
           },
           {
             name: '단백질',
             value: proteinsRatio, 
-            gram: safeNumber(data.totalProtein),
+            gram: roundTo1(toNum(data.totalProtein)),
           },
           {
             name: '지방',
             value: fatsRatio,
-            gram: safeNumber(data.totalFat),
+            gram: roundTo1(toNum(data.totalFat)),
           },
         ]
       : [
@@ -73,7 +69,7 @@ export default function PieCharts({ data }) {
         fontSize={16}
         fontWeight={400}
       >
-        {total === 0 ? '0%' : `${(percent * 100).toFixed(0)}%`}
+        {total === 0 ? '0%' : `${value}%`}
       </text>
       // 값이 없을때 0% 표기
     );
