@@ -9,9 +9,9 @@ export default function TotalBarChart() {
   const foods = Object.values(selectedFoods); // 선택된 음식
 
   // 총 탄수화물, 총 단백질, 총 지방, 총 합
-  const totalCarbs = foods.reduce((sum, f) => sum + toNum(f.nutrient?.carbs), 0);
-  const totalProtein = foods.reduce((sum, f) => sum + toNum(f.nutrient?.protein), 0);
-  const totalFat = foods.reduce((sum, f) => sum + toNum(f.nutrient?.fat), 0);
+  const totalCarbs = roundTo1(foods.reduce((sum, f) => sum + toNum(f.nutrient?.carbs), 0));
+  const totalProtein = roundTo1(foods.reduce((sum, f) => sum + toNum(f.nutrient?.protein), 0));
+  const totalFat = roundTo1(foods.reduce((sum, f) => sum + toNum(f.nutrient?.fat), 0));
   const totalNutrient = totalCarbs + totalProtein + totalFat;
 
   // 라벨에 보여지는 퍼센트
