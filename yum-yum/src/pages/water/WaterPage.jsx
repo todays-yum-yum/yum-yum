@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { toNum } from '@/utils/WaterNumber';
 import { format } from 'date-fns';
 import { useWaterStore } from '@/stores/useWaterStore.js';
-import { toNum } from '@/utils/WaterNumber';
 import {
   addWaterIntake,
   getWaterIntake,
@@ -74,7 +74,12 @@ export default function WaterPage({ defaultDate = new Date() }) {
 
   // + 버튼
   const handleInc = () => {
-    setWaterAmount(Math.max(waterAmount + waterStep, 0));
+    if (waterAmount + waterStep > 10000) {
+      toast.error('최대 10000ml까지만 기록할 수 있어요!');
+      setWaterAmount(10000);
+    } else {
+      setWaterAmount(waterAmount + waterStep);
+    }
   };
 
   // - 버튼
@@ -82,13 +87,21 @@ export default function WaterPage({ defaultDate = new Date() }) {
     setWaterAmount(Math.max(waterAmount - waterStep, 0));
   };
 
-  // 수분 섭취량 설정 버튼
-  const handleWaterIntakeModify = async () => {
-    try {
-      await saveWaterSettings('test-user', oneTimeIntake, targetIntake);
+  const handleWaterAmountChange = (e) => {
+    let v = toNum(e.target.value);
 
-      setOneTimeIntake(oneTimeIntake);
-      setTargetIntake(targetIntake);
+    // 10000까지 입력 제한
+    if (v > 10000) {
+      toast.error('최대 10000ml까지만 기록할 수 있어요!');
+      return;
+    }
+    setWaterAmount(v);
+  };
+
+  // 수분 섭취량 설정 버튼
+  const saveWaterIntakeSettings = async (newOneTime, newTarget) => {
+    try {
+      await saveWaterSettings('test-user', newOneTime, newTarget);
 
       toast.success('설정 저장 완료!');
       setOpenModal(false);
@@ -108,10 +121,11 @@ export default function WaterPage({ defaultDate = new Date() }) {
       // 캐시 무효화
       queryClient.invalidateQueries(['dailyData', 'test-user', formattedSaveDate]);
 
+      // 목표 섭취량 같거나 이상이면
       if (waterAmount >= targetIntake) {
-        toast.success('오늘 목표 달성! 대단해요! 🎉');
+        toast.success('오늘 목표 달성 완료! 🎉');
       } else {
-        toast.success('물 한 잔 추가 💧 좋은 습관이에요 👍');
+        toast.success('물 한 잔 추가! 💧');
       }
 
       navigate('/');
@@ -144,10 +158,8 @@ export default function WaterPage({ defaultDate = new Date() }) {
         <div className='flex items-end justify-center'>
           <input
             type='number'
-            value={toNum(waterAmount)}
-            min={1}
-            max={10000}
-            onChange={(e) => setWaterAmount(toNum(e.target.value))}
+            value={waterAmount}
+            onChange={handleWaterAmountChange}
             className='no-spinner [field-sizing:content] text-4xl font-extrabold text-right outline-none'
             // [field-sizing:content]: 인풋 글자수에 따라 width늘어남 테일윈드에서는 없어서 []로 적용
           />
@@ -190,11 +202,13 @@ export default function WaterPage({ defaultDate = new Date() }) {
       <WaterIntakeModal
         isOpenModal={openModal}
         onCloseModal={() => setOpenModal(false)}
-        onBtnClick={handleWaterIntakeModify}
+        onBtnClick={(newOneTime, newTarget) => {
+          setOneTimeIntake(newOneTime);
+          setTargetIntake(newTarget);
+          saveWaterIntakeSettings(newOneTime, newTarget);
+        }}
         oneTimeIntake={oneTimeIntake}
-        setOneTimeIntake={setOneTimeIntake}
         targetIntake={targetIntake}
-        setTargetIntake={setTargetIntake}
       />
     </div>
   );
