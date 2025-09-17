@@ -11,11 +11,13 @@ import MealHeader from '../component/MealHeader';
 import FoodList from '../component/FoodList';
 import BasicButton from '@/components/button/BasicButton';
 import TotalBarChart from '../component/TotalBarChart';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM월 dd일' }) {
   const { selectedFoods, deleteFood, clearFoods } = useSelectedFoodsStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const { type } = useParams();
   const [didSubmit, setDidSubmit] = useState(false);
   const selectedDate = location.state?.date || defaultDate;
@@ -85,6 +87,9 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
       toast.success('기록이 완료 되었어요!');
       setDidSubmit(true);
       clearFoods();
+
+      // 캐시 무효화
+      queryClient.invalidateQueries(['dailyData', 'test-user', formattedSaveDate]);
       navigate('/', { replace: true });
     } catch (error) {
       toast.error('식단 기록 실패!');
