@@ -148,7 +148,7 @@ export function normalizerMeal(meal) {
 
 // 수분 데이터 파싱 함수
 export function normalizerWater(water, age, gender) {
-  if (!water) return null;
+  if (!water) water = 0;
   // dailyTotal 계산이 안되어있는 경우?
   const total = water?.dailyTotal || waterDailySum(water.intakes);
 
