@@ -19,7 +19,7 @@ import { ko } from 'date-fns/locale';
 const today = new Date();
 const dateFormat = 'yyyy년 MM월 dd일';
 
-function dateFormatting(date) {
+export function dateFormatting(date) {
   return format(date, dateFormat, { locale: ko });
 }
 
@@ -152,6 +152,22 @@ export const parseDateString = (dateString) => {
     fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
   };
 };
+
+export const parseKeyDateString = (dateString) => {
+  const regex = /^(\d{4})-(\d{1,2})-(\d{2})$/
+  
+  const match = dateString.match(regex);
+
+  const [full, year, month, date] = match;
+
+  return {
+    year,
+    month: month.padStart(2, '0'),
+    date: date.padStart(2, '0'),
+    fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
+  };
+};
+
 
 // 오늘보다 미래로 갈수 없게, 이동 여부 가능 체크
 export const canMoveDate = (date, days) => {

@@ -7,7 +7,10 @@ import {
   useWeeklyReportData,
   useMonthlyReportData,
 } from '@/hooks/useReportData';
-import { normalizeDataRange } from './../../../utils/reportDataParser';
+import { useUserData } from '@/hooks/useUser';
+
+import { normalizeDataRange, waterDataSummary } from '@/utils/reportDataParser';
+import { getWeeklyAverages } from '../../../utils/reportDataParser';
 
 const userId = 'test-user';
 export default function WaterReportPage({
@@ -20,55 +23,71 @@ export default function WaterReportPage({
   canMove,
 }) {
   const {
-    userData: dailyUserData,
     dailyData,
     isLoading: daliyIsLoading,
     isError: daliyIsError,
   } = useDailyReportData(userId, originDate);
   const {
-    userData: weeklyUserData,
     weeklyData,
     isLoading: weeklyIsLoading,
     isError: weeklyIsError,
   } = useWeeklyReportData(userId, originDate);
   const {
-    userData: monthlyUserData,
     monthlyData,
     isLoading: monthlyIsLoading,
     isError: monthlyIsError,
   } = useMonthlyReportData(userId, originDate);
+  const { userData } = useUserData(userId, originDate);
 
-  const [waters, setWaters] = useState({});
+  const [waters, setWaters] = useState([]);
+  const [calcWater, setCalcWater] = useState({});
+
+  useEffect(() => {
+    setWaters([]);
+    setCalcWater(null);
+  }, [activePeriod]);
 
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
-      setWaters(
-        normalizeDataRange(dailyData?.waterData ?? [], originDate, activePeriod),
+      const normalizedWaters = normalizeDataRange(
+        dailyData?.waterData ?? [],
+        originDate,
+        activePeriod,
       );
+      setWaters(normalizedWaters);
+      setCalcWater(waterDataSummary(normalizedWaters));
     }
   }, [dailyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '주간' && weeklyData) {
-      setWaters(
-        normalizeDataRange(weeklyData?.waterData ?? [], originDate, activePeriod),
+      const normalizedWaters = normalizeDataRange(
+        weeklyData?.waterData ?? [],
+        originDate,
+        activePeriod,
       );
+      setWaters(normalizedWaters);
+      setCalcWater(waterDataSummary(normalizedWaters));
     }
   }, [weeklyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '월간' && monthlyData) {
-      setWaters(
-        normalizeDataRange(monthlyData?.waterData ?? [], originDate, activePeriod),
+      const normalizedWaters = normalizeDataRange(
+        monthlyData?.waterData ?? [],
+        originDate,
+        activePeriod,
       );
 
-      
+      const weeklyAverages = getWeeklyAverages(normalizedWaters, originDate);
+      setWaters(weeklyAverages);
+      setCalcWater(waterDataSummary(normalizedWaters));
     }
   }, [monthlyData, activePeriod, originDate]);
 
-  useEffect(() => {
-    console.log(waters[0]?.value)
-  }, [waters])
+  // useEffect(() => {
+  //   console.log('waters : ', activePeriod, ':', waters);
+  // }, [waters]);
 
   const onPrevPeriod = () => {
     prev();
@@ -84,17 +103,23 @@ export default function WaterReportPage({
         date={fullDate}
         period='일간'
         unit='L'
-        value={waters[0]?.value.dailyTotal}
+        value={calcWater?.totalWaters}
         activePeriod={activePeriod}
         prevDate={onPrevPeriod}
         nextDate={onNextPeriod}
         canMove={canMove}
         onPeriodChange={setActivePeriod}
       >
-        <LineCharts />
+        <LineCharts datas={waters} activePeriod={activePeriod} />
       </ChartArea>
       <section>
-        <WaterWeightInfo period={activePeriod} date={fullDate} unit='L' datas={waters[0]?.value.intakes} />
+        <WaterWeightInfo
+          period={activePeriod}
+          date={fullDate}
+          unit='L'
+          total={calcWater?.totalWaters}
+          datas={waters || []}
+        />
       </section>
     </main>
   );
