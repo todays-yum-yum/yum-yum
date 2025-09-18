@@ -57,8 +57,12 @@ const parseNutritionData = (jsonData) => {
       },
       foodSize: size, // 기준량
       foodUnit: unit, // 식품 양 단위
-      makerName: item.mkrNm || '', // 제조사
-      company: item.companyNm || '', // 제조사
+      makerName:
+        item.companyNm && item.companyNm !== '해당없음'
+          ? item.companyNm
+          : item.mkrNm && item.mkrNm !== '해당없음'
+            ? item.mkrNm
+            : '',
     };
   });
 };
