@@ -54,6 +54,8 @@ export default function ChartArea({
 
   const unitInfo = unitConfig[unit];
 
+  console.log("value", value)
+
   return (
     <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>
       {/* 날짜 및 날짜 변경 버튼 */}
@@ -86,7 +88,7 @@ export default function ChartArea({
           <span className='text-2xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}
           </span>
-          <span className='text-4xl font-bold'>{unit === "Kcal" ? Math.round(toNum(value)) : roundTo1(toNum(value))}</span>
+          <span className='text-4xl font-bold'>{unit === "Kcal" ? Math.round(toNum(value) || 0) : roundTo1(toNum(value) || 0)}</span>
           <span className='text-2xl font-bold'> {unitInfo.postfix}</span>
         </article>
       )}
