@@ -110,7 +110,7 @@ export default function WaterReportPage({
         canMove={canMove}
         onPeriodChange={setActivePeriod}
       >
-        <LineCharts datas={waters} activePeriod={activePeriod} />
+        <LineCharts datas={waters} activePeriod={activePeriod} unit='L'/>
       </ChartArea>
       <section>
         <WaterWeightInfo

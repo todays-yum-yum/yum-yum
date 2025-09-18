@@ -32,21 +32,21 @@ function InfoData({ datas, unit, period }) {
     switch (period) {
       case '일간': {
         if (unit === 'L') {
-          return convertMlToL(toNum(datas.amount) || 0);
+          return roundTo1(convertMlToL(toNum(datas.amount) || 0));
         }
         return datas.amount;
       }
 
       case '주간': {
         if (unit === 'L') {
-          return convertMlToL(toNum(datas?.value?.dailyTotal ?? 0));
+          return roundTo1(convertMlToL(toNum(datas?.value?.dailyTotal ?? 0)));
         }
         return '';
       }
       case '월간': {
         if(unit === "L") {
           const amout = datas?.value?.avgDailyTotal ?? 0;
-          return convertMlToL(toNum(amout));
+          return roundTo1(convertMlToL(toNum(amout)));
         }
         return '';
       }
