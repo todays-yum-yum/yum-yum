@@ -55,7 +55,7 @@ export default function LineCharts({ datas, activePeriod }) {
       <XAxis dataKey='name' />
       <YAxis />
       <Tooltip />
-      <Line type='monotone' name={`섭취량`} dataKey='pv' stroke='#8884d8' activeDot={{ r: 8 }} />
+      <Line type='monotone' name={`섭취량`} dataKey='pv' stroke='#F407A8' activeDot={{ r: 8 }} />
     </LineChart>
   );
 }
