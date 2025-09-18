@@ -11,6 +11,8 @@ import MealHeader from '../component/MealHeader';
 import FoodList from '../component/FoodList';
 import BasicButton from '@/components/button/BasicButton';
 import TotalBarChart from '../component/TotalBarChart';
+
+import { Timestamp } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM월 dd일' }) {
@@ -59,7 +61,7 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
         makerName: f.makerName ?? '',
         foodSize: f.foodSize ?? 0,
         foodUnit: f.foodUnit ?? 'g',
-
+        createdAt: Timestamp.now(),
         nutrient: {
           kcal: toNum(f.nutrient?.kcal),
           carbs: toNum(f.nutrient?.carbs),
