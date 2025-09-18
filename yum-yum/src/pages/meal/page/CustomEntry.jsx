@@ -39,7 +39,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
 
   return (
     <div className='flex flex-col h-full'>
-      <div className='flex justify-between items-center px-5 py-3 bg-gray-50'>
+      <div className='sticky top-[118px] z-30 flex justify-between items-center px-5 py-3 bg-gray-50'>
         {/* 직접 등록 버튼 */}
         <div className='flex gap-2 items-center'>
           <div className='flex items-center justify-center'>
