@@ -31,7 +31,7 @@ export const useDailyReportData = (userId, selectedDate) => {
     queryKey: ['mealData', userId, selectedDate, 'daily'],
     queryFn: () => getDailyData(userId, newDate),
     select: (response) => response.data,
-    staleTime: 0.5 * 60 * 1000, // 1분
+    staleTime: 0.5 * 60 * 1000, 
     enabled: !!userId && !!selectedDate,
   });
 
@@ -54,8 +54,8 @@ export const useWeeklyReportData = (userId, selectedDate) => {
   const startDay = parseDateString(getStartDateOfWeek(selectedDate));
   const endDay = parseDateString(getEndDateOfWeek(selectedDate));
 
-  const startOfDay = new Date(startDay.year, startDay.month - 1, startDay.date);
-  const endOfDay = new Date(endDay.year, endDay.month - 1, endDay.date);
+  const startOfDay = getTodayKey(new Date(startDay.year, startDay.month - 1, startDay.date));
+  const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date));
 
   // 사용자 데이터 불러오기
   const userQuery = useQuery({
@@ -70,7 +70,7 @@ export const useWeeklyReportData = (userId, selectedDate) => {
     queryKey: ['mealData', userId, selectedDate, 'weekly'],
     queryFn: () => getWeeklyData(userId, startOfDay, endOfDay),
     select: (response) => response.data,
-    staleTime: 0.5 * 60 * 1000, // 1분
+    staleTime: 0.5 * 60 * 1000,
     enabled: !!userId && !!selectedDate,
   });
 
@@ -93,8 +93,8 @@ export const useMonthlyReportData = (userId, selectedDate) => {
   const startDay = parseDateString(getStartDateOfMonth(selectedDate));
   const endDay = parseDateString(getEndDateOfMonth(selectedDate));
 
-  const startOfDay = new Date(startDay.year, startDay.month - 1, startDay.date);
-  const endOfDay = new Date(endDay.year, endDay.month - 1, endDay.date);
+  const startOfDay = getTodayKey(new Date(startDay.year, startDay.month - 1, startDay.date));
+  const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date));
 
   // 사용자 데이터 불러오기
   const userQuery = useQuery({
@@ -112,7 +112,7 @@ export const useMonthlyReportData = (userId, selectedDate) => {
     staleTime: 0.5 * 60 * 1000,
     enabled: !!userId && !!selectedDate,
   });
-
+  
   return {
     // 사용자 데이터
     userData: userQuery.data,

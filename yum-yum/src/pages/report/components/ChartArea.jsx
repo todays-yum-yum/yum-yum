@@ -2,6 +2,8 @@ import React from 'react';
 import RoundButton from '@/components/button/RoundButton';
 import PrevDateIcon from '@/assets/icons/icon-left.svg?react';
 import NextDateIcon from '@/assets/icons/icon-right.svg?react';
+import { roundTo1 } from '@/utils/NutrientNumber';
+import { toNum } from './../../../utils/NutrientNumber';
 
 // 단위 기간별 접두어
 const periodPrefixConfig = {
@@ -52,6 +54,8 @@ export default function ChartArea({
 
   const unitInfo = unitConfig[unit];
 
+  console.log("value", value)
+
   return (
     <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>
       {/* 날짜 및 날짜 변경 버튼 */}
@@ -84,7 +88,7 @@ export default function ChartArea({
           <span className='text-2xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}
           </span>
-          <span className='text-4xl font-bold'>{value.toFixed(1)}</span>
+          <span className='text-4xl font-bold'>{unit === "Kcal" ? Math.round(toNum(value) || 0) : roundTo1(toNum(value) || 0)}</span>
           <span className='text-2xl font-bold'> {unitInfo.postfix}</span>
         </article>
       )}

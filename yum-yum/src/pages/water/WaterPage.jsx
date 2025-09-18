@@ -18,6 +18,7 @@ import DropIcon from '@/assets/icons/icon-drop.svg?react';
 import PlusIcon from '@/assets/icons/icon-plus.svg?react';
 import MinusIcon from '@/assets/icons/icon-minus.svg?react';
 import SettingIcon from '@/assets/icons/icon-setting.svg?react';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function WaterPage({ defaultDate = new Date() }) {
   const {
@@ -31,6 +32,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [openModal, setOpenModal] = useState(false);
   const selectedDate = location.state?.date || defaultDate;
   const waterStep = oneTimeIntake; // 1회 섭취량 기준
@@ -115,6 +117,9 @@ export default function WaterPage({ defaultDate = new Date() }) {
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
       await addWaterIntake('test-user', formattedSaveDate, waterAmount);
       // await addWaterIntake(user.uid, formattedSaveDate, waterAmount);
+
+      // 캐시 무효화
+      queryClient.invalidateQueries(['dailyData', 'test-user', formattedSaveDate]);
 
       // 목표 섭취량 같거나 이상이면
       if (waterAmount >= targetIntake) {

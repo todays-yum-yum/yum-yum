@@ -7,7 +7,7 @@ import FoodList from '../component/FoodList';
 import MealHeader from '../component/MealHeader';
 import { useSearchFoodStore } from '../../../stores/useSearchFoodStore';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
-import { fetchNutritionData } from '../../../services/searchFoodApi';
+import { useSearchFoodData } from '../../../hooks/useSearchFoodData';
 
 export default function FoodSearchResultsPage() {
   const location = useLocation();
@@ -16,18 +16,17 @@ export default function FoodSearchResultsPage() {
   const date = location.state?.date; // 추가 타입
   const { searchFoodResults: foodItems, setSearchFoodResults } = useSearchFoodStore();
   const { selectedFoods, clearFoods } = useSelectedFoodsStore();
-
+  const { searchData, isLoading, isError, refetch } = useSearchFoodData(searchItem);
   const [searchInputValue, setSearchInputValue] = useState(searchItem || '');
   const navigate = useNavigate();
 
   // 음식 검색
   useEffect(() => {
-    // 검색 로직 추가
-    if (searchItem) {
-      // console.log('검색 실행:', searchItem);
-      searchFood(searchItem);
+    if (searchData) {
+      console.log('검색결과:', searchData);
+      setSearchFoodResults(searchData);
     }
-  }, [searchItem]);
+  }, [searchData]);
 
   // 헤더 입력값
   const onSearchChange = (e) => {
@@ -49,13 +48,6 @@ export default function FoodSearchResultsPage() {
     navigate(`/meal/${type}/total`, {
       state: { date },
     });
-  };
-
-  // 음식 검색 API 실행 함수
-  const searchFood = async (searchItem) => {
-    const foods = await fetchNutritionData(searchItem);
-    // console.log('파싱된 음식 데이터:', foods);
-    setSearchFoodResults(foods);
   };
 
   return (
