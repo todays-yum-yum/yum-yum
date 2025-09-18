@@ -147,13 +147,13 @@ export function normalizerMeal(meal) {
 }
 
 // 수분 데이터 파싱 함수
-export function normalizerWater(water, age, gender) {
+export function normalizerWater({ water, age, gender, targetIntake }) {
   if (!water) water = 0;
   // dailyTotal 계산이 안되어있는 경우?
   const total = water?.dailyTotal || waterDailySum(water.intakes);
 
   // 목표 수분량 = 보건복지부 기준 권장량
-  const goal = calculateWaterIntake(age, gender);
+  const goal = targetIntake || calculateWaterIntake(age, gender);
   return {
     id: water.id,
     current: convertMlToL(total),
