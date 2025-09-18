@@ -1,10 +1,52 @@
 // 유저 로그인 상태 확인 훅
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
+import { loginUser } from '../services/userApi';
+import { useUserStore } from '../stores/useUserStore';
 
 export default function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // 초기값을 true로 설정 (임시)
+  const {
+    user,
+    isAuthenticated, // default: false
+    isLoading,
+    error,
+    setLoading,
+    setError,
+    clearError,
+    loginSuccess,
+    loginFailure,
+    logout: logoutStore,
+  } = useUserStore();
 
-  // 이곳에서 쿠키를 확인하여 로그인 상태를 업데이트
+  // 로그인
+  const login = useCallback(
+    async (userId, password) => {
+      setLoading(true);
+      clearError();
 
-  return { isAuthenticated };
+      const result = await loginUser({ userid: userId, password });
+      // console.log(result);
+      if (result.success) {
+        loginSuccess(result.user.uid);
+        toast.success('로그인 성공!');
+        return { success: true };
+      } else {
+        loginFailure(result.error);
+        toast.error(result.error);
+        return { success: false, error: result.error };
+      }
+    },
+    [setLoading, clearError, loginSuccess, loginFailure],
+  );
+
+  // 이메일 중복확인
+
+  // 이메일 인증
+
+  // 회원가입
+
+  return {
+    isAuthenticated,
+    login,
+  };
 }

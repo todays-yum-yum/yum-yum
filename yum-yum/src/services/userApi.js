@@ -1,6 +1,7 @@
 // services/userApi.js
-import { doc, getDoc } from 'firebase/firestore';
-import { firestore } from './firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, firestore } from './firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 // 사용자 데이터 가져오기(전체 데이터)
 export async function getUserData(userId) {
@@ -46,5 +47,87 @@ export async function getUserWeightData(userId) {
       success: false,
       error: error.message,
     };
+  }
+}
+
+//-------------------------------------------------------
+
+// 유저 로그인
+export async function loginUser({ userid, password }) {
+  // console.log('service userid, password check:', userid, password);
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, userid, password);
+    const user = userCredential.user;
+
+    return {
+      success: true,
+      user,
+    };
+  } catch (error) {
+    throw new Error(error); // debug용
+    /*
+      return {
+        success: false,
+        error: error.message
+      }
+    */
+  }
+}
+
+// Firebase Authentication 계정 생성
+export async function registerUser({ username, userid, password }) {
+  try {
+    // Firebase Auth에 이메일/비밀번호로 계정 생성
+    const userCredential = await createUserWithEmailAndPassword(auth, userid, password);
+    const user = userCredential.user;
+
+    return {
+      success: true,
+      user,
+    };
+  } catch (error) {
+    throw new Error('ERROR: ', error); // debug 용
+    // return {
+    //   success: false,
+    //   error: error.message
+    // }
+  }
+}
+
+/**
+ * FireStore에 유저 정보 저장
+ * @param {Object} user
+ */
+const userDocData = (user) => {
+  return {
+    Uid: user.Uid,
+    userId: user.userId,
+    age: user.age,
+    gender: user.gender,
+    goals: { targetExercise: user.targetExercise, targetWeight: user.targetWeight },
+    height: user.height,
+    name: user.name,
+    oneTimeIntake: 500,
+    targetIntake: 1000,
+    weight: user.weight,
+  };
+};
+export async function addUserFireStroe(user) {
+  console.log(user);
+  try {
+    const userRef = doc(firestore, 'users', user.Uid);
+    const userData = userDocData(user);
+    setDoc(userRef, userData);
+
+    return {
+      success: true,
+      data: user.Uid,
+    };
+  } catch (error) {
+    throw new Error('ERROR: ', error); // debug 용
+    // return {
+    //   success: false,
+    //   error: error.message
+    // }
   }
 }
