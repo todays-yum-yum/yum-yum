@@ -29,7 +29,7 @@ export default function AiReportPage({
   const newDate = new Date(parsedDate.year, parsedDate.month - 1, parsedDate.date);
   const selectedDate = getTodayKey(newDate);
 
-  const currentTimePeriod = getCurrentTimePeriod(selectedDate);
+  const currentTimePeriod = getCurrentTimePeriod(newDate);
   const [searchType, setSearchType] = useState(searchConfig[activePeriod]);
 
   const onPrevPeriod = () => {
