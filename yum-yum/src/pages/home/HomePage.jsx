@@ -9,7 +9,7 @@ import { ko } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
+// 컴포넌트
 import DateHeader from '@/components/common/DateHeader';
 import OnBoarding from '@/components/common/OnBoarding';
 import Modal from '@/components/Modal';
@@ -22,8 +22,11 @@ import CalorieHeader from './card/calorie/CalorieHeader';
 import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
 import WeightInput from './modal/WeightInput';
+// 훅
 import { useWeight } from '../../hooks/useWeight';
 import { usePageData } from '../../hooks/useMainPageData';
+import { useUserData } from '../../hooks/useUser';
+// 스토어
 import { useHomeStore } from '../../stores/useHomeStore';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 
@@ -48,10 +51,11 @@ export default function HomePage() {
     goalWeight,
     setDailyData,
     waterData,
-    mealData,
+    mealData, // 필요한 부분 파싱된 데이터
   } = useHomeStore();
   const { saveWeightMutation } = useWeight(userId, selectedDate);
-  const { userData, dailyData, isLoading, isError } = usePageData(userId, selectedDate);
+  const { dailyData, dailyLoading } = usePageData(userId, selectedDate);
+  const { userData } = useUserData(userId, selectedDate);
   const { clearFoods, addFood } = useSelectedFoodsStore();
 
   const {

@@ -4,15 +4,6 @@ import { getUserData } from '../services/userApi';
 import { getDailyData } from '../services/dailyDataApi';
 
 export const usePageData = (userId, selectedDate) => {
-  // 사용자 데이터 불러오기
-  const userQuery = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => getUserData(userId),
-    select: (response) => response.data,
-    staleTime: 10 * 60 * 1000, // 10분
-    enabled: !!userId, // userId가 있을 때만 실행
-  });
-
   // 선택된 날짜의 물, 식사 데이터
   const dailyDataQuery = useQuery({
     queryKey: ['dailyData', userId, selectedDate],
@@ -27,16 +18,9 @@ export const usePageData = (userId, selectedDate) => {
   const refetchDaily = () => dailyDataQuery.refetch();
 
   return {
-    // 사용자 데이터
-    userData: userQuery.data,
-    userLoading: userQuery.isLoading,
-
     // 일일 데이터
     dailyData: dailyDataQuery.data,
     dailyLoading: dailyDataQuery.isLoading,
-
-    // 전체 로딩 상태
-    isLoading: userQuery.isLoading || dailyDataQuery.isLoading,
 
     // 수동 갱신 (일일 데이터)
     refetchDaily,
