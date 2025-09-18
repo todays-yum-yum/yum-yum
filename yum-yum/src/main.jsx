@@ -16,11 +16,9 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById('root')).render(
-  // <StrictMode>
-    <CookiesProvider>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </CookiesProvider>
-  // </StrictMode>,
-);
+  <CookiesProvider>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </CookiesProvider>,
+

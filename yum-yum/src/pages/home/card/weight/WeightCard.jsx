@@ -39,7 +39,12 @@ export default function WeightCard({ currentWeight = 0, targetWeight = 0, onWeig
               isGoalReached ? 'text-primary' : 'text-secondary'
             }`}
           >
-            {isGoalReached ? '완료!' : `${remainingWegiht?.toFixed(1)}kg!`}
+            {/* 감소는 - 증가는 + 표시 */}
+            {isGoalReached
+              ? '완료!'
+              : remainingWegiht && remainingWegiht < 0
+                ? `${remainingWegiht?.toFixed(1)}kg!`
+                : `+${remainingWegiht?.toFixed(1)}kg!`}
           </div>
         </div>
       </div>
