@@ -90,8 +90,8 @@ export function calculateNutrientRatio(carbs = 0, proteins = 0, fats = 0) {
   const totalCalories = carbs * 4 + proteins * 4 + fats * 9;
 
   return {
-    carbsRatio: totalCalories > 0 ? Math.round((carbs * 4) / totalCalories * 100) : 0,
-    proteinsRatio : totalCalories > 0 ? Math.round((proteins * 4) / totalCalories * 100) : 0,
-    fatsRatio : totalCalories > 0 ? Math.round((fats * 9) / totalCalories * 100) : 0,
+    carbsRatio: Math.round((carbs * 4) / totalCalories * 100),
+    proteinsRatio : Math.round((proteins * 4) / totalCalories * 100),
+    fatsRatio : Math.round((fats * 9) / totalCalories * 100),
   }
 }

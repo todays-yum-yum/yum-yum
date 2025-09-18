@@ -2,10 +2,10 @@ import { collection, query, where, orderBy, getDocs, Timestamp } from 'firebase/
 import { firestore } from './../services/firebase';
 
 export const getMonthlyData = async (userId, startDay, endDay) => {
-  const startOfDay = startDay;
-  const endOfDay = endDay;
+  const startOfDay = startDay.toISOString().split('T')[0];
+  const endOfDay = endDay.toISOString().split('T')[0];
 
-  // console.log("여기", startOfDay)
+  console.log("여기", startOfDay)
 
   try {
     // 컬렉션 참조 생성
@@ -37,8 +37,9 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
       ...doc.data(),
     }));
 
-    // console.log(startOfDay, endOfDay, mealQuery);
-
+    
+    console.log(mealData)
+    
     return {
       success: true,
       data: {

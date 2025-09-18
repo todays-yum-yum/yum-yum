@@ -12,18 +12,13 @@ import Carbohydrate from '@/assets/icons/icon-carbohydrate.svg?react';
 import Fat from '@/assets/icons/icon-fat.svg?react';
 import Protein from '@/assets/icons/icon-protein.svg?react';
 
-// 훅
 import {
   useDailyReportData,
   useMonthlyReportData,
   useWeeklyReportData,
 } from '@/hooks/useReportData';
-
-// 유틸
 import { dataSummary, normalizeDataRange } from '@/utils/reportDataParser';
-import { getAllMealsSorted } from '@/utils/reportDataParser';
-import { toNum } from '@/utils/NutrientNumber';
-import { roundTo1 } from '@/utils/NutrientNumber';
+import { getAllMealsSorted } from './../../../utils/reportDataParser';
 
 const userId = 'test-user';
 export default function DietReportPage({
@@ -35,7 +30,6 @@ export default function DietReportPage({
   next,
   canMove,
 }) {
-  // 데이터
   const {
     userData: dailyUserData,
     dailyData,
@@ -58,11 +52,7 @@ export default function DietReportPage({
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
 
-  // 영양정보, 탄단지 내림차순 정보
   const [nutrient, setNutrient] = useState({});
-  const [carbsSortedFoods, setCarbsSortedFoods] = useState([]);
-  const [proteinSortedFoods, setProteinSortedFoods] = useState([]);
-  const [fatSortedFoods, setFatSortedFoods] = useState([]);
 
   const onPrevPeriod = () => {
     prev();
@@ -80,122 +70,66 @@ export default function DietReportPage({
   };
 
   useEffect(() => {
-    if (activePeriod === '일간' && dailyData) {
+    if (activePeriod === '일간') {
       setNutrient(
         dataSummary(normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod)),
       );
-      setActiveDetailTab('영양 정보');
-    }
-  }, [dailyData, activePeriod, originDate]);
-
-  useEffect(() => {
-    if (activePeriod === '주간' && weeklyData) {
+    } else if (activePeriod === '주간') {
       setNutrient(
         dataSummary(normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod)),
       );
-      setActiveDetailTab('영양 정보');
-    }
-  }, [weeklyData, activePeriod, originDate]);
-
-  useEffect(() => {
-    if (activePeriod === '월간' && monthlyData) {
+    } else if (activePeriod === '월간') {
       setNutrient(
         dataSummary(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)),
       );
-      setActiveDetailTab('영양 정보');
+      console.log(getAllMealsSorted(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)));
     }
-  }, [monthlyData, activePeriod, originDate]);
+  }, [dailyData, weeklyData, monthlyData, activePeriod]);
 
-  useEffect(() => {
-    if (activePeriod === '일간') {
-      setCarbsSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
-          'carbs',
-        ),
-      );
-
-      setProteinSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
-          'protein',
-        ),
-      );
-
-      setFatSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
-          'fat',
-        ),
-      );
-    } else if (activePeriod === '주간') {
-      setCarbsSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
-          'carbs',
-        ),
-      );
-
-      setProteinSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
-          'protein',
-        ),
-      );
-
-      setFatSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
-          'fat',
-        ),
-      );
-    } else if (activePeriod === '월간') {
-      setCarbsSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod),
-          'carbs',
-        ),
-      );
-
-      setProteinSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod),
-          'protein',
-        ),
-      );
-
-      setFatSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod),
-          'fat',
-        ),
-      );
-    }
-  }, [nutrient]);
-
-  // 스택 차트, 영양정보, 영양소별 음식 정보 매핑
   const topChart = [
     {
       name: '탄수화물',
-      food: carbsSortedFoods ?? [],
+      food: [
+        { name: '쌀밥', percent: 56, value: 49.2, count: 1 },
+        { name: '계란', percent: 26, value: 22.8, count: 1 },
+        { name: '빵', percent: 11, value: 10, count: 1 },
+        { name: '과자', percent: 5, value: 5, count: 1 },
+      ],
       goal: 120,
-      total: roundTo1(toNum(nutrient.totalCarbs)),
+      top1: 40,
+      top2: 20,
+      top3: 10,
+      etc: 0,
     },
     {
       name: '단백질',
-      food: proteinSortedFoods ?? [],
+      food: [
+        { name: '쌀밥', percent: 56, value: 49.2, count: 1 },
+        { name: '계란', percent: 26, value: 22.8, count: 1 },
+        { name: '빵', percent: 11, value: 10, count: 1 },
+        { name: '과자', percent: 5, value: 5, count: 1 },
+      ],
       goal: 120,
-      total: roundTo1(toNum(nutrient.totalProtein)),
+      top1: 60,
+      top2: 30,
+      top3: 10,
+      etc: 30,
     },
     {
       name: '지방',
-      food: fatSortedFoods ?? [],
+      food: [
+        { name: '쌀밥', percent: 56, value: 49.2, count: 1 },
+        { name: '계란', percent: 26, value: 22.8, count: 1 },
+        { name: '빵', percent: 11, value: 10, count: 1 },
+        { name: '과자', percent: 5, value: 5, count: 1 },
+      ],
       goal: 50,
-      total: roundTo1(toNum(nutrient.totalFat)),
+      top1: 20,
+      top2: 20,
+      top3: 10,
+      etc: 0,
     },
   ];
-
-  // console.log(topChart ?? {});
 
   return (
     <main className='flex flex-col gap-7.5'>
@@ -245,11 +179,11 @@ export default function DietReportPage({
                     {nutritionIcon[data.name]}
                   </span>
                   <span className='w-20 font-bold text-xl text-center'>{data.name}</span>
-                  <span className='w-20 font-bold text-xl text-center'>{data.total}g</span>
+                  <span className='w-10 font-bold text-xl text-center'>{458}g</span>
                 </div>
 
                 {/* 스택 차트 */}
-                <StackedCharts foodData={data} />
+                <StackedCharts data={data} />
 
                 {/* 음식 목록 */}
                 <NutritionFood foodData={data} />

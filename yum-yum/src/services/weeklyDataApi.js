@@ -2,8 +2,8 @@ import { collection, query, where, orderBy, getDocs, Timestamp } from 'firebase/
 import { firestore } from './../services/firebase';
 
 export const getWeeklyData = async (userId, startDay, endDay) => {
-  const startOfDay = startDay;
-  const endOfDay = endDay;
+  const startOfDay = startDay.toISOString().split('T')[0];
+  const endOfDay = endDay.toISOString().split('T')[0];
 
   try {
     // 컬렉션 참조 생성
@@ -35,8 +35,6 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
       id: doc.id,
       ...doc.data(),
     }));
-
-    // console.log(startOfDay, endOfDay, mealQuery);
 
     return {
       success: true,
