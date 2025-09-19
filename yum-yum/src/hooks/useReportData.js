@@ -18,15 +18,6 @@ export const useDailyReportData = (userId, selectedDate) => {
 
   const newDate = getTodayKey(new Date(day.year, day.month - 1, day.date));
 
-  // 사용자 데이터 불러오기
-  const userQuery = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => getUserData(userId),
-    select: (response) => response.data,
-    staleTime: 10 * 60 * 1000,
-    enabled: !!userId,
-  });
-
   const dailyDataQuery = useQuery({
     queryKey: ['mealData', userId, selectedDate, 'daily'],
     queryFn: () => getDailyData(userId, newDate),
@@ -36,16 +27,12 @@ export const useDailyReportData = (userId, selectedDate) => {
   });
 
   return {
-    // 사용자 데이터
-    userData: userQuery.data,
-    userLoading: userQuery.isLoading,
-
     // 데이터
     dailyData: dailyDataQuery.data,
     dailyLoading: dailyDataQuery.isLoading,
 
     // 전체 로딩 상태
-    isLoading: userQuery.isLoading || dailyDataQuery.isLoading,
+    isLoading: dailyDataQuery.isLoading,
   };
 };
 
@@ -55,16 +42,8 @@ export const useWeeklyReportData = (userId, selectedDate) => {
   const endDay = parseDateString(getEndDateOfWeek(selectedDate));
 
   const startOfDay = getTodayKey(new Date(startDay.year, startDay.month - 1, startDay.date));
-  const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date));
+  const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date + 1));
 
-  // 사용자 데이터 불러오기
-  const userQuery = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => getUserData(userId),
-    select: (response) => response.data,
-    staleTime: 10 * 60 * 1000, // 10분
-    enabled: !!userId, // userId가 있을 때만 실행
-  });
 
   const weeklyDataQuery = useQuery({
     queryKey: ['mealData', userId, selectedDate, 'weekly'],
@@ -75,16 +54,12 @@ export const useWeeklyReportData = (userId, selectedDate) => {
   });
 
   return {
-    // 사용자 데이터
-    userData: userQuery.data,
-    userLoading: userQuery.isLoading,
-
     // 데이터
     weeklyData: weeklyDataQuery.data,
     weeklyLoading: weeklyDataQuery.isLoading,
 
     // 전체 로딩 상태
-    isLoading: userQuery.isLoading || weeklyDataQuery.isLoading,
+    isLoading: weeklyDataQuery.isLoading,
   };
 };
 
@@ -94,16 +69,7 @@ export const useMonthlyReportData = (userId, selectedDate) => {
   const endDay = parseDateString(getEndDateOfMonth(selectedDate));
 
   const startOfDay = getTodayKey(new Date(startDay.year, startDay.month - 1, startDay.date));
-  const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date));
-
-  // 사용자 데이터 불러오기
-  const userQuery = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => getUserData(userId),
-    select: (response) => response.data,
-    staleTime: 10 * 60 * 1000, // 10분
-    enabled: !!userId, // userId가 있을 때만 실행
-  });
+  const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date + 1));
 
   const monthlyDataQuery = useQuery({
     queryKey: ['mealData', userId, selectedDate, 'monthly'],
@@ -114,15 +80,11 @@ export const useMonthlyReportData = (userId, selectedDate) => {
   });
   
   return {
-    // 사용자 데이터
-    userData: userQuery.data,
-    userLoading: userQuery.isLoading,
-
     // 데이터
     monthlyData: monthlyDataQuery.data,
     monthlyLoading: monthlyDataQuery.isLoading,
 
     // 전체 로딩 상태
-    isLoading: userQuery.isLoading || monthlyDataQuery.isLoading,
+    isLoading:  monthlyDataQuery.isLoading,
   };
 };

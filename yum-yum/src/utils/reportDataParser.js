@@ -1,11 +1,14 @@
 // utils/normalizeData.ts
-import { eachDayOfInterval, format } from 'date-fns';
+import { eachDayOfInterval, eachWeekOfInterval, endOfWeek, format } from 'date-fns';
 import {
+  dateFormatting,
+  getDayOfWeek,
   getEndDateOfMonth,
   getEndDateOfWeek,
   getStartDateOfMonth,
   getStartDateOfWeek,
   parseDateString,
+  parseKeyDateString,
 } from './dateUtils';
 import { toNum } from './NutrientNumber';
 
@@ -58,7 +61,7 @@ export const dataSummary = (allFoods) => {
     return result;
   }, 0);
 
-  console.log('allFoods', allFoods);
+  // console.log('allFoods', allFoods);
 
   return {
     totalCalories:
@@ -108,7 +111,8 @@ export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
 
   return data && data.length > 0
     ? data
-        .reduce((allMeals, dayData) => { // meal 데이터 합침
+        .reduce((allMeals, dayData) => {
+          // meal 데이터 합침
           if (dayData.value !== 0) {
             const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
 
@@ -123,7 +127,8 @@ export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
 
           return allMeals;
         }, [])
-        .reduce((grouped, meal) => { // 중복 제거 및 횟수 세기
+        .reduce((grouped, meal) => {
+          // 중복 제거 및 횟수 세기
           const existingMeal = grouped.find((item) => item.foodName === meal.foodName);
 
           if (existingMeal) {
@@ -144,6 +149,104 @@ export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
           return grouped;
         }, [])
         .sort((a, b) => toNum(b.nutrient?.[nutrientKey]) - toNum(a.nutrient?.[nutrientKey]))
-        // nutrientKey 기준으로 내림차순 정렬
-    : [];
+    : // nutrientKey 기준으로 내림차순 정렬
+      [];
 };
+
+
+const calculateWeeklyAverage = (weekData) => {
+
+  const validData = weekData.filter(data => 
+    data.value !== 0 && 
+    data.value?.dailyTotal !== undefined && 
+    data.value?.dailyTotal !== null
+  );
+  
+  if (validData.length === 0) {
+    return {
+      avgDailyTotal: 0,
+      validDaysCount: 0
+    };
+  }
+  
+  const totalSum = validData.reduce((sum, data) => sum + data.value.dailyTotal, 0);
+  
+  return {
+    avgDailyTotal: totalSum / validData.length,
+    validDaysCount: validData.length
+  };
+};
+
+export const getWeeklyAverages = (monthlyData, selectedDate) => {
+
+  const {year, month, date} = parseDateString(selectedDate)
+
+  const monthStart = new Date(year, month - 1, 1);
+  const monthEnd = new Date(year, month, 0);
+  
+  // 월간 주차들 가져오기 (일요일 시작)
+  const weeks = eachWeekOfInterval(
+    { start: monthStart, end: monthEnd },
+    { weekStartsOn: 0 } // 0 = 일요일
+  );
+  
+  return weeks.map(weekStart => {
+    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
+    
+    // 해당 주의 데이터 필터링
+    const weekData = monthlyData.filter(data => {
+      const dataDate = new Date(data.date);
+      return dataDate >= weekStart && dataDate <= weekEnd;
+    });
+    
+    return {
+      week: format(weekStart, 'yyyy-MM-dd'),
+      weekRange: `${format(weekStart, 'M/d')} ~ ${format(weekEnd, 'M/d')}`,
+      value: calculateWeeklyAverage(weekData),
+      dataCount: weekData.length
+    };
+  });
+};
+
+// ----
+
+export const convertMlToL = (ml) => ml / 1000;
+
+export const waterDataSummary = (allWaters) => {
+  // 유효한 값이 있는 경우의 날짜를 체크
+  const length = allWaters.reduce((result, water) => {
+    const value = water.value;
+
+    if (typeof value === 'object' && value !== null) {
+      result++;
+    }
+
+    return result;
+  }, 0);
+
+  // console.log('allWaters', allWaters);
+
+  return {
+    totalWaters:
+      length > 0 ? convertMlToL(allWaters.reduce((sum, w) => sum + (toNum(w?.value?.dailyTotal ?? 0) || 0), 0) / length) : 0,
+  };
+};
+
+export function formatTime(time, period) {
+  if (!time) return '';
+
+  if (period === '일간') {
+    const date = new Date(time * 1000);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${hours}:${minutes}`;
+  } else if (period === '주간') {
+    const { year, month, date } = parseKeyDateString(time);
+    const day = getDayOfWeek(dateFormatting(new Date(year, month - 1, date)));
+
+    return `${month}월 ${date}일 (${day})`;
+  }
+
+  return '';
+}
