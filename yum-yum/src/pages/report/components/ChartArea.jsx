@@ -103,7 +103,7 @@ export default function ChartArea({
             {periodPrefix} {unitInfo.prefix} :{' '}
           </span>
           <span className='text-4xl font-bold'>
-            {valueNormaize()}
+            {valueNormaize() ?? 0}
           </span>
           <span className='text-2xl font-bold'> {unitInfo.postfix}</span>
         </article>

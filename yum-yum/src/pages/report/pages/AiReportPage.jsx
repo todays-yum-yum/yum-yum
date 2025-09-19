@@ -7,6 +7,7 @@ import { useNutritionAnalysis } from './../../../hooks/useNutritionAnalysis';
 import { getCurrentTimePeriod } from '../../../data/timePeriods';
 
 import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
+import { callUserUid } from '@/utils/localStorage';
 
 const searchConfig = {
   일간: 'daily',
@@ -14,7 +15,7 @@ const searchConfig = {
   월간: 'monthly',
 };
 
-const userId = 'test-user';
+const userId = callUserUid();
 export default function AiReportPage({
   originDate,
   fullDate,
@@ -31,11 +32,11 @@ export default function AiReportPage({
     parsedDate.year,
     parsedDate.month - 1,
     parsedDate.date,
-    19,0,0,0 
-    // now.getHours(),
-    // now.getMinutes(),
-    // now.getSeconds(),
-    // now.getMilliseconds(),
+    // 19,0,0,0, 
+    now.getHours(),
+    now.getMinutes(),
+    now.getSeconds(),
+    now.getMilliseconds(),
   );
   const selectedDate = getTodayKey(newDate);
 
@@ -74,15 +75,13 @@ export default function AiReportPage({
     setNutritionResults([])
   }, [activePeriod]);
 
-
-
   useEffect(() => {
     setNutritionResults(data)
   }, [data])
 
-  useEffect(() => {
-    console.log(nutritionResults)
-  },[nutritionResults])
+  // useEffect(() => {
+  //   console.log(nutritionResults)
+  // },[nutritionResults])
 
   return (
     <main className='flex flex-col gap-7.5'>
@@ -104,7 +103,7 @@ export default function AiReportPage({
           <article className='text-xl'>
             <p className=''>
               {mealsLoading && <span>식단 불러오는 중…</span>}
-              {mealsError && <span>식단 조회 실패: {mealsErrorMsg.message}</span>}
+              {mealsError && <span>식단 조회 실패: 다시 시도해주세요</span>}
               {isLoading && <span>AI 결과 불러오는 중...</span>}
 
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}

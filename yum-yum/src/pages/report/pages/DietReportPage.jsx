@@ -25,8 +25,9 @@ import { getAllMealsSorted } from '@/utils/reportDataParser';
 import { toNum } from '@/utils/NutrientNumber';
 import { roundTo1 } from '@/utils/NutrientNumber';
 import { useUserData } from '@/hooks/useUser';
+import { callUserUid } from '@/utils/localStorage';
 
-const userId = 'test-user';
+const userId = callUserUid();
 export default function DietReportPage({
   originDate,
   fullDate,
@@ -203,7 +204,7 @@ export default function DietReportPage({
         date={fullDate}
         period='일간'
         unit='Kcal'
-        value={nutrient.totalCalories}
+        value={nutrient?.totalCalories ?? 0}
         activePeriod={activePeriod}
         prevDate={onPrevPeriod}
         nextDate={onNextPeriod}
