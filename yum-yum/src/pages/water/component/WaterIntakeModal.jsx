@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { toNum } from '@/utils/WaterNumber';
+import React, { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 // 컴포넌트
 import Modal from '@/components/Modal';
 import Input from '@/components/common/Input';
 // 아이콘
 import LightIcon from '@/assets/icons/icon-light-bulb.svg?react';
-import toast from 'react-hot-toast';
 
 export default function WaterIntakeModal({
   isOpenModal,
@@ -14,90 +13,115 @@ export default function WaterIntakeModal({
   oneTimeIntake,
   targetIntake,
 }) {
-  const [validOneTime, setValidOneTime] = useState(true);
-  const [validTarget, setValidTarget] = useState(true);
-  const [localOneTime, setLocalOneTime] = useState(oneTimeIntake);
-  const [localTarget, setLocalTarget] = useState(targetIntake);
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: {
+      oneTimeIntake,
+      targetIntake,
+    },
+    mode: 'onBlur',
+  });
 
-  // 모달이 열릴 때마다 초기화
+  // 모달 열릴때 초기화
   useEffect(() => {
     if (isOpenModal) {
-      setLocalOneTime(oneTimeIntake);
-      setLocalTarget(targetIntake);
+      reset({ oneTimeIntake, targetIntake });
     }
-  }, [isOpenModal, oneTimeIntake, targetIntake]);
+  }, [isOpenModal, oneTimeIntake, targetIntake, reset]);
 
   // 확인 버튼
-  const handleConfirm = () => {
-    onBtnClick(localOneTime, localTarget);
+  const onConfirm = (data) => {
+    onBtnClick(data);
   };
 
-  const intakeSetting = [
-    {
-      label: '1회 섭취량',
-      value: localOneTime,
-      placeholder: '50 ~ 1,000',
-      onChange: (e) => setLocalOneTime(toNum(e.target.value)),
-      onBlur: (e) => {
-        const v = toNum(e.target.value);
-        if (v === '' || v === 0) {
-          toast.error('1회 섭취량을 입력해주세요');
-          setValidOneTime(false);
-        } else if (v < 50 || v > 1000) {
-          toast.error('1회 섭취량은 50 ~ 1000ml 사이여야 해요!');
-          setValidOneTime(false);
-        } else {
-          setValidOneTime(true);
-        }
-      },
-    },
-    {
-      label: '목표 섭취량',
-      value: localTarget,
-      placeholder: '500 ~ 10,000',
-      onChange: (e) => setLocalTarget(toNum(e.target.value)),
-      onBlur: (e) => {
-        const v = toNum(e.target.value);
-        if (v === '' || v === 0) {
-          toast.error('목표 섭취량을 입력해주세요');
-          setValidTarget(false);
-        } else if (v < 500 || v > 10000) {
-          toast.error('목표 섭취량은 500 ~ 10000ml 사이여야 해요!');
-          setValidTarget(false);
-        } else {
-          setValidTarget(true);
-        }
-      },
-    },
-  ];
   return (
     <Modal
       isOpenModal={isOpenModal}
       onCloseModal={onCloseModal}
       title='수분 섭취량 설정'
       btnLabel='확인'
-      onBtnClick={handleConfirm}
       showClose={true}
-      btnDisabled={!validOneTime || !validTarget || localOneTime === 0 || localTarget === 0}
+      onBtnClick={handleSubmit(onConfirm)}
     >
       <div className='flex flex-col gap-[28px]'>
         <div className='flex flex-col gap-[20px]'>
-          {intakeSetting.map((item) => (
-            <div key={item.label} className='flex items-center justify-between'>
-              <span className='w-full font-bold'>{item.label}</span>
-              <Input
-                type='number'
-                value={item.value}
-                endAdornment='ml'
-                placeholder={item.placeholder}
-                noSpinner
-                onChange={item.onChange}
-                onBlur={item.onBlur}
-              />
-            </div>
-          ))}
+          {/* 1회 섭취량 */}
+          <Controller
+            name='oneTimeIntake'
+            control={control}
+            rules={{
+              required: '1회 섭취량을 입력해주세요',
+              pattern: {
+                value: /^[0-9]+$/,
+                message: '숫자만 입력 가능합니다',
+              },
+              min: { value: 50, message: '50ml 이상 입력해주세요.' },
+              max: { value: 1000, message: '1000ml 이하로 입력해주세요.' },
+            }}
+            render={({ field, fieldState }) => (
+              <div className=''>
+                <div className='flex items-center justify-between'>
+                  <label htmlFor='oneTimeIntake' className='w-full font-bold'>
+                    1회 섭취량
+                  </label>
+                  <Input
+                    {...field}
+                    id='oneTimeIntake'
+                    type='number'
+                    noSpinner
+                    endAdornment='ml'
+                    placeholder='50 ~ 1,000'
+                    status={fieldState.error ? 'error' : 'default'}
+                  />
+                </div>
+                {fieldState.error && (
+                  <p className='text-[var(--color-error)] text-sm mt-1 text-right'>
+                    {fieldState.error.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+
+          {/* 목표 섭취량 */}
+          <Controller
+            name='targetIntake'
+            control={control}
+            rules={{
+              required: '목표 섭취량을 입력해주세요',
+              pattern: {
+                value: /^[0-9]+$/,
+                message: '숫자만 입력 가능합니다',
+              },
+              min: { value: 500, message: '500ml 이상 입력해주세요.' },
+              max: { value: 10000, message: '10000ml 이하로 입력해주세요.' },
+            }}
+            render={({ field, fieldState }) => (
+              <div>
+                <div className='flex items-center justify-between'>
+                  <label htmlFor='targetIntake' className='w-full font-bold'>
+                    목표 섭취량
+                  </label>
+                  <Input
+                    {...field}
+                    id='targetIntake'
+                    type='number'
+                    noSpinner
+                    endAdornment='ml'
+                    placeholder='500 ~ 10,000'
+                    status={fieldState.error ? 'error' : 'default'}
+                  />
+                </div>
+                {fieldState.error && (
+                  <p className='text-[var(--color-error)] text-sm mt-1 text-right'>
+                    {fieldState.error.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
         </div>
 
+        {/* 수분 섭취 참고 */}
         <div className='flex flex-col gap-[8px] p-[20px] bg-gray-50 rounded-2xl'>
           <div className='flex gap-[4px]'>
             <div className='flex items-center justify-center'>
