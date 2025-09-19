@@ -66,6 +66,7 @@ export default function SignupStep2({ onPrev }) {
           rules={{
             validate: (value) => {
               if (!value) return true;
+              if (!/^\d{1,3}(\.\d)?$/.test(value)) return '소수점 첫째 자리까지만 입력 가능합니다';
               if (value < 20) return '20kg 이상 입력해주세요.';
               if (value > 300) return '300kg 이하로 입력해주세요.';
             },
@@ -80,7 +81,8 @@ export default function SignupStep2({ onPrev }) {
                 id='targetWeight'
                 type='number'
                 noSpinner
-                placeholder='0'
+                step='0.1'
+                placeholder='00.0'
                 endAdornment='kg'
                 status={fieldState.error ? 'error' : 'default'}
                 errorMessage={fieldState.error?.message}

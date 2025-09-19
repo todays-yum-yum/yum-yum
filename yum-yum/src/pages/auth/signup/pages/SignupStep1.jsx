@@ -180,6 +180,10 @@ export default function SignupStep1({ onNext }) {
           control={control}
           rules={{
             required: '나이를 입력해주세요',
+            pattern: {
+              value: /^[0-9]+$/,
+              message: '숫자만 입력 가능합니다',
+            },
             min: { value: 14, message: '14세 이상만 가입 가능해요.' },
             max: { value: 120, message: '나이를 다시 확인해주세요.' },
           }}
@@ -208,6 +212,10 @@ export default function SignupStep1({ onNext }) {
           control={control}
           rules={{
             required: '키를 입력해주세요',
+            pattern: {
+              value: /^[0-9]+$/,
+              message: '숫자만 입력 가능합니다',
+            },
             min: { value: 50, message: '50cm 이상 입력해주세요.' },
             max: { value: 250, message: '250cm 이하로 입력해주세요.' },
           }}
@@ -236,6 +244,10 @@ export default function SignupStep1({ onNext }) {
           control={control}
           rules={{
             required: '현재 체중을 입력해주세요',
+            pattern: {
+              value: /^(?:\d{1,3}(?:\.\d)?|)$/,
+              message: '소수점 첫째 자리까지 입력 가능합니다',
+            },
             min: { value: 20, message: '20kg 이상 입력해주세요.' },
             max: { value: 300, message: '300kg 이하로 입력해주세요.' },
           }}
@@ -246,10 +258,11 @@ export default function SignupStep1({ onNext }) {
               </label>
               <Input
                 {...field}
-                htmlFor='weight'
+                id='weight'
                 type='number'
                 noSpinner
-                placeholder='0'
+                step='0.1'
+                placeholder='00.0'
                 endAdornment='kg'
                 status={fieldState.error ? 'error' : 'default'}
                 errorMessage={fieldState.error?.message}
