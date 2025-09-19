@@ -77,7 +77,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (dailyData) {
-      setDailyData(dailyData, userData.age, userData.gender);
+      setDailyData(dailyData, userData);
     }
   }, [dailyData]);
 
