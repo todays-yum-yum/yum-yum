@@ -50,7 +50,7 @@ export default function ChartArea({
   const periodPrefix =
     activePeriod === '일간'
       ? periodPrefixConfig[activePeriod]
-      : periodPrefixConfig[activePeriod] + (unit === 'AI' ? '' : ' 평균');
+      : periodPrefixConfig[activePeriod] + (unit === 'AI' || unit === 'Kg' ? '' : ' 평균');
 
   const unitInfo = unitConfig[unit];
 

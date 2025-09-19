@@ -1,5 +1,5 @@
 // utils/normalizeData.ts
-import { eachDayOfInterval, eachWeekOfInterval, endOfWeek, format } from 'date-fns';
+import { eachDayOfInterval, eachWeekOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
 import {
   dateFormatting,
   getDayOfWeek,
@@ -11,6 +11,7 @@ import {
   parseKeyDateString,
 } from './dateUtils';
 import { toNum } from './NutrientNumber';
+import { ko } from 'date-fns/locale';
 
 export function normalizeDataRange(rawData, selectedDate, period) {
   let startDay;
@@ -153,59 +154,174 @@ export const getAllMealsSorted = (data, nutrientKey = 'kcal') => {
       [];
 };
 
+// ----
 
 const calculateWeeklyAverage = (weekData) => {
-
-  const validData = weekData.filter(data => 
-    data.value !== 0 && 
-    data.value?.dailyTotal !== undefined && 
-    data.value?.dailyTotal !== null
+  const validData = weekData.filter(
+    (data) =>
+      data.value !== 0 && data.value?.dailyTotal !== undefined && data.value?.dailyTotal !== null,
   );
-  
+
   if (validData.length === 0) {
     return {
       avgDailyTotal: 0,
-      validDaysCount: 0
+      validDaysCount: 0,
     };
   }
-  
+
   const totalSum = validData.reduce((sum, data) => sum + data.value.dailyTotal, 0);
-  
+
   return {
     avgDailyTotal: totalSum / validData.length,
-    validDaysCount: validData.length
+    validDaysCount: validData.length,
   };
 };
 
-export const getWeeklyAverages = (monthlyData, selectedDate) => {
-
-  const {year, month, date} = parseDateString(selectedDate)
+export const getWaterMonthlyAverages = (monthlyData, selectedDate) => {
+  const { year, month, date } = parseDateString(selectedDate);
 
   const monthStart = new Date(year, month - 1, 1);
   const monthEnd = new Date(year, month, 0);
-  
+
   // 월간 주차들 가져오기 (일요일 시작)
   const weeks = eachWeekOfInterval(
     { start: monthStart, end: monthEnd },
-    { weekStartsOn: 0 } // 0 = 일요일
+    { weekStartsOn: 0 }, // 0 = 일요일
   );
-  
-  return weeks.map(weekStart => {
+
+  return weeks.map((weekStart) => {
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
-    
+
     // 해당 주의 데이터 필터링
-    const weekData = monthlyData.filter(data => {
+    const weekData = monthlyData.filter((data) => {
       const dataDate = new Date(data.date);
       return dataDate >= weekStart && dataDate <= weekEnd;
     });
-    
+
     return {
       week: format(weekStart, 'yyyy-MM-dd'),
       weekRange: `${format(weekStart, 'M/d')} ~ ${format(weekEnd, 'M/d')}`,
       value: calculateWeeklyAverage(weekData),
-      dataCount: weekData.length
+      dataCount: weekData.length,
     };
   });
+};
+
+
+
+// ----
+
+export const getPeriodLastData = (datas) => {
+  // console.log("data", datas)
+  
+  const validData = datas.filter(
+    (data) =>
+      data.value !== 0
+  );
+
+  if (validData.length === 0) {
+    return {
+      weight: 0,
+      timestamp: 0,
+    };
+  }
+  const dataLength = validData.length;
+  const lastData = validData[dataLength - 1]
+
+  const changesLength = lastData?.value?.changes.length
+  const lastDataWeight = lastData?.value?.changes[changesLength - 1]
+
+  return lastDataWeight;
+}
+
+
+
+export const getWeightWeeklyData = (weeklyData, selectedDate) => {
+  const { year, month, date } = parseDateString(selectedDate);
+  const currentDate = new Date(year, month - 1, date);
+
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+  const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
+
+  const WeekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
+
+  return WeekDays.map((day) => {
+    const dayString = format(day, 'yyyy-MM-dd');
+    const dayData = weeklyData.find((item) => item.date === dayString);
+
+    let lastChange = null;
+    if (dayData?.value?.changes && Array.isArray(dayData.value.changes)) {
+      lastChange = dayData.value.changes[dayData.value.changes.length - 1];
+    }
+
+    return {
+      date: dayString,
+      dayOfWeek: format(new Date(day), 'EEE', { locale: ko }),
+      weight: lastChange?.weight ?? 0,
+      timestamp: lastChange?.timestamp || null,
+    };
+  });
+};
+
+export const getWeightMonthlyData = (weightData, selectedDate) => {
+  const { year, month } = parseDateString(selectedDate);
+  const monthStart = new Date(year, month - 1, 1);
+  const monthEnd = new Date(year, month, 0);
+  
+  const weeks = eachWeekOfInterval(
+    { start: monthStart, end: monthEnd },
+    { weekStartsOn: 0 }
+  );
+  
+  return weeks.map((weekStart, index) => {
+    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
+    
+    const weekWeightData = weightData.filter(item => {
+      const itemDate = new Date(item.date);
+
+      if (item.value === 0) return false;
+
+      return itemDate >= weekStart && itemDate <= weekEnd && item.value !== 0;
+    });
+    
+    const lastData = weekWeightData[weekWeightData.length - 1]?.value?.changes;
+    const lastWeight = weekWeightData[weekWeightData.length - 1]?.value?.changes[lastData.length - 1].weight
+
+    
+    return {
+      week: index + 1,
+      weekRange: `${format(weekStart, 'M/d')} ~ ${format(weekEnd, 'M/d')}`,
+      weight: lastWeight || 0,
+      measurementDays: weekWeightData.length
+    };
+  });
+};
+
+
+export const getWeightYearlyData = (weightData, selectedDate) => {
+  const { year } = parseDateString(selectedDate);
+  
+  return Array.from({ length: 12 }, (_, monthIndex) => {
+    const monthStart = new Date(year, monthIndex, 1);
+    const monthEnd = new Date(year, monthIndex + 1, 0);
+    // const monthString = format(monthStart, 'yyyy-MM');
+    
+    // 해당 월의 체중 데이터들
+    const monthWeightData = weightData.filter(item => {
+      const itemDate = new Date(item.date);
+      return itemDate >= monthStart && itemDate <= monthEnd  && item.value !== 0;
+    });
+
+    const lastData = monthWeightData[monthWeightData.length - 1]?.value?.changes;
+    const lastWeight = monthWeightData[monthWeightData.length - 1]?.value?.changes[lastData.length - 1].weight;
+    return {
+      month: monthIndex + 1,
+      monthName: format(monthStart, 'MMM', { locale: ko }), 
+      weight: lastWeight || 0,
+      measurementDays: monthWeightData.length
+    };
+  })
+  // .filter(month => month.measurementDays > 0);
 };
 
 // ----
@@ -228,7 +344,11 @@ export const waterDataSummary = (allWaters) => {
 
   return {
     totalWaters:
-      length > 0 ? convertMlToL(allWaters.reduce((sum, w) => sum + (toNum(w?.value?.dailyTotal ?? 0) || 0), 0) / length) : 0,
+      length > 0
+        ? convertMlToL(
+            allWaters.reduce((sum, w) => sum + (toNum(w?.value?.dailyTotal ?? 0) || 0), 0) / length,
+          )
+        : 0,
   };
 };
 

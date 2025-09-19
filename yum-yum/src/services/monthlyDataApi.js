@@ -11,6 +11,7 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
     // 컬렉션 참조 생성
     const mealRef = collection(firestore, 'users', userId, 'meal');
     const waterRef = collection(firestore, 'users', userId, 'water');
+    const weightRef = collection(firestore, 'users', userId, 'weight');
 
     const mealQuery = query(
       mealRef,
@@ -25,7 +26,15 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
       where('date', '<', endOfDay),
       orderBy('date'),
     );
-    const [waterSnap, mealSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery)]);
+    
+    const weightQuery = query(
+      weightRef,
+      where('date', '>=', startOfDay),
+      where('date', '<', endOfDay),
+      orderBy('date'),
+    );
+
+    const [waterSnap, mealSnap, weightSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery), getDocs(weightQuery)]);
 
     const waterData = waterSnap.docs.map((doc) => ({
       id: doc.id,
@@ -37,6 +46,12 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
       ...doc.data(),
     }));
 
+    const weightData = weightSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+
     // console.log(startOfDay, endOfDay, mealQuery);
 
     return {
@@ -44,6 +59,7 @@ export const getMonthlyData = async (userId, startDay, endDay) => {
       data: {
         waterData: waterData,
         mealData: mealData,
+        weightData: weightData,
       },
     };
   } catch (error) {
