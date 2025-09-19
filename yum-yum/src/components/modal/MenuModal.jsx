@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHomeStore } from '../../stores/useHomeStore';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
@@ -11,10 +11,18 @@ const menuItems = [
 ];
 
 export default function MenuModal({ isOpen, onClose }) {
-  if (!isOpen) return null;
   const navigate = useNavigate();
   const { selectedDate, originalMealData } = useHomeStore();
   const { clearFoods, addFood } = useSelectedFoodsStore();
+
+  // 모달 호출 시 스크롤 막기
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = 'hidden';
+    return () => (document.body.style.overflow = 'auto');
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const menuSelected = (item) => {
     // mealdata에 데이터 필터링 => addFood에 입력
@@ -30,8 +38,13 @@ export default function MenuModal({ isOpen, onClose }) {
   };
   return (
     // dark overlay 수정, 모달 하단 정렬
-    <div className='fixed inset-0 bg-black/30 flex justify-center items-end z-50 '>
-      <div className='bg-white rounded-lg p-4 w-full opacity-100'>
+    <>
+      <div
+        onClick={onClose}
+        className='fixed z-40 left-1/2 bottom-0 -translate-x-1/2 w-full max-w-[500px] h-full bg-black opacity-60'
+      ></div>
+
+      <div className='fixed z-50 left-1/2 bottom-0 -translate-x-1/2 flex flex-col w-full max-w-[500px] bg-white rounded-t-3xl p-5'>
         <ul className='text-center space-y-2'>
           <li className=' text-gray-500 p-2 border-b border-gray-300'>선택해주세요</li>
           {menuItems.map((item) => (
@@ -50,6 +63,6 @@ export default function MenuModal({ isOpen, onClose }) {
           </li>
         </ul>
       </div>
-    </div>
+    </>
   );
 }
