@@ -29,11 +29,13 @@ import { useUserData } from '../../hooks/useUser';
 // 스토어
 import { useHomeStore } from '../../stores/useHomeStore';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+// 아이디 호출
+import { callUserUid } from '@/utils/localStorage';
 
 registerLocale('ko', ko);
-const userId = 'test-user'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
 
 export default function HomePage() {
+  const userId = callUserUid(); // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
   const navigate = useNavigate();
   // zustand에서 UI 상태
   const {

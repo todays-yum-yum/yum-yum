@@ -13,6 +13,7 @@ export const useHomeStore = create((set, get) => ({
   // 호출 값들
   waterData: null, //{current, goal}
   mealData: null, // {id, breackfast, lunch, dinner, snack}
+  originalMealData: null, // 원본 식단 데이터
 
   // UI 상태
   selectedDate: new Date(),
@@ -31,12 +32,12 @@ export const useHomeStore = create((set, get) => ({
     if (!userData) return;
 
     const { tdee, targetCalories, currentWeight, goalWeight } = calorieCalculator({
-      weight: userData.weight,
-      height: userData.height,
-      gender: userData.gender,
-      age: userData.age,
-      excercise: userData.goals.targetExercise,
-      goalWeight: userData.goals.targetWeight,
+      weight: userData?.weight,
+      height: userData?.height,
+      gender: userData?.gender,
+      age: userData?.age,
+      excercise: userData?.goals.targetExercise,
+      goalWeight: userData?.goals.targetWeight,
     });
 
     set({
@@ -56,7 +57,7 @@ export const useHomeStore = create((set, get) => ({
       targetIntake: userData?.targetIntake,
     });
     const meal = normalizerMeal(data.mealData[0]);
-    set({ waterData: water, mealData: meal });
+    set({ waterData: water, mealData: meal, originalMealData: data.mealData[0]?.meals });
   },
 
   // 초기화
