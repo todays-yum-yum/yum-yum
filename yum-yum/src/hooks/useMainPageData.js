@@ -2,11 +2,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getUserData } from '../services/userApi';
 import { getDailyData } from '../services/dailyDataApi';
+import { getTodayKey } from '../utils/dateUtils';
 
 export const usePageData = (userId, selectedDate) => {
   // 선택된 날짜의 물, 식사 데이터
   const dailyDataQuery = useQuery({
-    queryKey: ['dailyData', userId, selectedDate],
+    queryKey: ['dailyData', userId, getTodayKey(selectedDate)],
     queryFn: () => getDailyData(userId, selectedDate),
     select: (resp) => resp.data,
     staleTime: 1 * 60 * 1000, // 1분
