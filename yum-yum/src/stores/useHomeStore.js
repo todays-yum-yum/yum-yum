@@ -31,12 +31,12 @@ export const useHomeStore = create((set, get) => ({
     if (!userData) return;
 
     const { tdee, targetCalories, currentWeight, goalWeight } = calorieCalculator({
-      weight: userData.weight,
-      height: userData.height,
-      gender: userData.gender,
-      age: userData.age,
-      excercise: userData.goals.targetExercise,
-      goalWeight: userData.goals.targetWeight,
+      weight: userData?.weight,
+      height: userData?.height,
+      gender: userData?.gender,
+      age: userData?.age,
+      excercise: userData?.goals.targetExercise,
+      goalWeight: userData?.goals.targetWeight,
     });
 
     set({
