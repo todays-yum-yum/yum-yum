@@ -71,8 +71,8 @@ export const saveWaterSettings = async (userId, oneTimeIntake, targetIntake) => 
     const docRef = doc(firestore, 'users', userId);
 
     await updateDoc(docRef, {
-      oneTimeIntake,
-      targetIntake,
+      oneTimeIntake: Number(oneTimeIntake),
+      targetIntake: Number(targetIntake),
     });
   } catch (error) {
     console.error('수분 섭취량 설정 수정 중 오류 발생:', error);
