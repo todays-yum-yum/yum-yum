@@ -1,19 +1,67 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 // 컴포넌트
 import BasicButton from '@/components/button/BasicButton';
 import Input from '@/components/common/Input';
 import AgreementsSection from '../components/AgreementsSection';
+import useAuth from '../../../../hooks/useAuth';
+import toast from 'react-hot-toast';
 
 export default function SignupStep1({ onNext }) {
-  const { control, handleSubmit, watch } = useFormContext();
+  const { control, handleSubmit, watch, setError, clearErrors } = useFormContext();
   const pw = watch('pw');
+  const email = watch('email');
+  const { checkEmail } = useAuth();
+
+  // 중복확인 상태 관리
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  // 중복확인 한 이메일
+  const [checkedEmail, setCheckedEmail] = useState('');
 
   // 성별
   const genderOption = [
     { value: 'female', label: '여성' },
     { value: 'male', label: '남성' },
   ];
+
+  const isCheckEmail = async (email) => {
+    if (!email) {
+      toast.error('이메일을 입력해주세요.');
+      return;
+    }
+    // console.log('중복 확인:', email);
+    try {
+      const result = await checkEmail(email);
+
+      // checkResult
+      if (result.result) {
+        //중복된 이메일
+        setError('email', {
+          type: 'manual',
+          message: result.message,
+        });
+        setIsEmailChecked(false);
+        setCheckedEmail('');
+      } else {
+        // 사용가능한 이메일
+        clearErrors('email');
+        toast.success(result.message);
+        setIsEmailChecked(true);
+        setCheckedEmail(email);
+      }
+    } catch (error) {
+      toast.error('이메일 확인 중 오류가 발생했습니다.');
+      setIsEmailChecked(false);
+      setCheckedEmail('');
+    }
+  };
+
+  // 이메일이 변경되면 중복확인 상태 초기화
+  useEffect(() => {
+    if (email !== checkedEmail) {
+      setIsEmailChecked(false);
+    }
+  }, [email, checkedEmail]);
 
   return (
     <>
@@ -56,6 +104,15 @@ export default function SignupStep1({ onNext }) {
               message: '올바른 이메일 형식이 아니에요.',
             },
             // 이메일 중복확인 추가
+            validate: (value) => {
+              if (value !== checkedEmail) {
+                return '이메일 중복확인을 해주세요.';
+              }
+              if (!isEmailChecked) {
+                return '이메일 중복확인을 해주세요.';
+              }
+              return true;
+            },
           }}
           render={({ field, fieldState }) => (
             <div className='flex flex-col gap-[8px]'>
@@ -71,11 +128,7 @@ export default function SignupStep1({ onNext }) {
                   errorMessage={fieldState.error?.message}
                   className='flex-1'
                 />
-                <BasicButton
-                  type='button'
-                  size='2xl'
-                  onClick={() => console.log('중복 확인:', field.value)}
-                >
+                <BasicButton type='button' size='2xl' onClick={() => isCheckEmail(field.value)}>
                   중복확인
                 </BasicButton>
               </div>

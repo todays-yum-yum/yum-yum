@@ -1,7 +1,17 @@
 // services/userApi.js
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  where,
+  getCountFromServer,
+  query,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { auth, firestore } from './firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { calculateWaterIntake } from '../utils/calorieCalculator';
 
 // 사용자 데이터 가져오기(전체 데이터)
 export async function getUserData(userId) {
@@ -74,11 +84,32 @@ export async function loginUser({ userid, password }) {
   }
 }
 
+// 이메일 중복 체크
+export async function checkUserEmail({ userId }) {
+  try {
+    const coll = collection(firestore, 'users');
+    const checkQuery = query(coll, where('userId', '==', userId));
+    const snapshot = await getCountFromServer(checkQuery);
+
+    // 비용 효율을 위한 집계함수 사용(단순하게 있는지 없는지 구분)
+    return snapshot.data().count > 0;
+  } catch (error) {
+    console.error('이메일 중복 확인 오류:', error);
+    throw error;
+  }
+}
+
 // Firebase Authentication 계정 생성
-export async function registerUser({ username, userid, password }) {
+export async function registerUser({ email, pw }) {
+  if (!email && !pw) {
+    return {
+      success: false,
+      error: '빈값임',
+    };
+  }
   try {
     // Firebase Auth에 이메일/비밀번호로 계정 생성
-    const userCredential = await createUserWithEmailAndPassword(auth, userid, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pw);
     const user = userCredential.user;
 
     return {
@@ -100,22 +131,26 @@ export async function registerUser({ username, userid, password }) {
  */
 const userDocData = (user) => {
   return {
-    Uid: user.Uid,
-    userId: user.userId,
-    age: user.age,
+    userId: user.email, // email
+    age: Number(user.age),
     gender: user.gender,
-    goals: { targetExercise: user.targetExercise, targetWeight: user.targetWeight },
-    height: user.height,
+    goals: {
+      goal: user?.goals,
+      targetExercise: user.targetExercise,
+      targetWeight: Number(user.targetWeight),
+    },
+    height: Number(user.height),
     name: user.name,
     oneTimeIntake: 500,
-    targetIntake: 1000,
-    weight: user.weight,
+    targetIntake: calculateWaterIntake(user.age, user.gender),
+    weight: Number(user.weight),
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   };
 };
-export async function addUserFireStroe(user) {
-  console.log(user);
+export async function addUserFireStore(user) {
   try {
-    const userRef = doc(firestore, 'users', user.Uid);
+    const userRef = doc(firestore, 'users', user.uid);
     const userData = userDocData(user);
     setDoc(userRef, userData);
 
@@ -124,6 +159,7 @@ export async function addUserFireStroe(user) {
       data: user.Uid,
     };
   } catch (error) {
+    console.log('error 발생!', error);
     throw new Error('ERROR: ', error); // debug 용
     // return {
     //   success: false,

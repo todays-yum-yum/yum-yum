@@ -15,12 +15,16 @@ export default function WeightCard({ currentWeight = 0, targetWeight = 0, onWeig
           <div className='space-y-3 mb-8'>
             <div className='flex justify-between items-center gap-1'>
               <span className='text-gray-800 text-mb font-bold'>현재 체중</span>
-              <span className='text-gray-800 text-mb font-bold'>{currentWeight?.toFixed(1)}kg</span>
+              <span className='text-gray-800 text-mb font-bold'>
+                {parseFloat(currentWeight)?.toFixed(1)}kg
+              </span>
             </div>
 
             <div className='flex justify-between items-center gap-1'>
               <span className='text-gray-800 text-mb font-bold'>목표 체중</span>
-              <span className='text-gray-800 text-mb font-bold'>{targetWeight?.toFixed(1)}kg</span>
+              <span className='text-gray-800 text-mb font-bold'>
+                {parseFloat(targetWeight)?.toFixed(1)}kg
+              </span>
             </div>
           </div>
         </div>
