@@ -8,7 +8,7 @@ import MealPage from '@/pages/meal/MealPage';
 import ReportPage from '@/pages/report/pages/ReportPage';
 import WaterPage from '@/pages/water/WaterPage';
 import LoginPage from '@/pages/auth/LoginPage';
-import SignUpPage from '@/pages/auth/SignUpPage';
+import SignUpPage from '@/pages/auth/signup/SignUpPage';
 import NonUserHomePage from '@/pages/home/NonUserHomePage';
 import SimpleLayout from '@/components/layout/SimpleLayout';
 import Layout from '@/components/layout/Layout';

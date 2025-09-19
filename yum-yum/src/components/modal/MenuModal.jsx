@@ -24,6 +24,15 @@ export default function MenuModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  // 모달 호출 시 스크롤 막기
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = 'hidden';
+    return () => (document.body.style.overflow = 'auto');
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
   const menuSelected = (item) => {
     // mealdata에 데이터 필터링 => addFood에 입력
     clearFoods();
