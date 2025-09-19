@@ -34,7 +34,7 @@ export default function SignUpPage() {
   const [signUpStep, setSignUpStep] = useState(1);
 
   const onSubmit = (data) => {
-    console.log('회원가입 데이터:', data);
+    // console.log('회원가입 데이터:', data);
     try {
       signUp(data);
       toast.success('회원가입 완료');
