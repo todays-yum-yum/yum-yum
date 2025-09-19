@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 // 컴포넌트
 import BasicButton from '@/components/button/BasicButton';
@@ -10,7 +10,13 @@ import toast from 'react-hot-toast';
 export default function SignupStep1({ onNext }) {
   const { control, handleSubmit, watch, setError, clearErrors } = useFormContext();
   const pw = watch('pw');
+  const email = watch('email');
   const { checkEmail } = useAuth();
+
+  // 중복확인 상태 관리
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  // 중복확인 한 이메일
+  const [checkedEmail, setCheckedEmail] = useState('');
 
   // 성별
   const genderOption = [
@@ -34,15 +40,28 @@ export default function SignupStep1({ onNext }) {
           type: 'manual',
           message: result.message,
         });
+        setIsEmailChecked(false);
+        setCheckedEmail('');
       } else {
         // 사용가능한 이메일
         clearErrors('email');
         toast.success(result.message);
+        setIsEmailChecked(true);
+        setCheckedEmail(email);
       }
     } catch (error) {
       toast.error('이메일 확인 중 오류가 발생했습니다.');
+      setIsEmailChecked(false);
+      setCheckedEmail('');
     }
   };
+
+  // 이메일이 변경되면 중복확인 상태 초기화
+  useEffect(() => {
+    if (email !== checkedEmail) {
+      setIsEmailChecked(false);
+    }
+  }, [email, checkedEmail]);
 
   return (
     <>
@@ -85,6 +104,15 @@ export default function SignupStep1({ onNext }) {
               message: '올바른 이메일 형식이 아니에요.',
             },
             // 이메일 중복확인 추가
+            validate: (value) => {
+              if (value !== checkedEmail) {
+                return '이메일 중복확인을 해주세요.';
+              }
+              if (!isEmailChecked) {
+                return '이메일 중복확인을 해주세요.';
+              }
+              return true;
+            },
           }}
           render={({ field, fieldState }) => (
             <div className='flex flex-col gap-[8px]'>
