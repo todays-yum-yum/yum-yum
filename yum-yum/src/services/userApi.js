@@ -132,18 +132,18 @@ export async function registerUser({ email, pw }) {
 const userDocData = (user) => {
   return {
     userId: user.email, // email
-    age: user.age,
+    age: Number(user.age),
     gender: user.gender,
     goals: {
       goal: user?.goals,
       targetExercise: user.targetExercise,
-      targetWeight: user.targetWeight,
+      targetWeight: Number(user.targetWeight),
     },
-    height: user.height,
+    height: Number(user.height),
     name: user.name,
     oneTimeIntake: 500,
     targetIntake: calculateWaterIntake(user.age, user.gender),
-    weight: user.weight,
+    weight: Number(user.weight),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
