@@ -7,7 +7,7 @@ import PrevIcon from '@/assets/icons/icon-left.svg?react';
 export default function Header() {
   const navigate = useNavigate();
   const isHeaderHiddenPage = location.pathname.startsWith('/meal'); // 헤더 없는 페이지
-  const isBackHiddenPage = ['/', '/report', '/mypage'].includes(location.pathname); // e뒤로가기 버튼 없는 페이지
+  const isBackHiddenPage = ['/', '/report', '/mypage', '/signup'].includes(location.pathname); // e뒤로가기 버튼 없는 페이지
 
   // 뒤로가기
   const handleBack = () => {
