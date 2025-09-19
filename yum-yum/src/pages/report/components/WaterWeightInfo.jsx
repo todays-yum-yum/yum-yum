@@ -22,20 +22,20 @@ function InfoData({ datas, unit, period }) {
       }
 
       case '주간': {
-        if(unit === "L") {
+        if (unit === 'L') {
           return formatTime(datas.date || '1970-01-01', period);
-        } else if(unit === "Kg") {
+        } else if (unit === 'Kg') {
           return datas.weekRange || '01/01~12/31';
         }
         return '';
       }
       case '월간': {
-        if(unit === "L") {
+        if (unit === 'L') {
           return datas?.weekRange ?? '';
-        } else if(unit === "Kg") {
+        } else if (unit === 'Kg') {
           return datas.monthName || '01/01~12/31';
         }
-        return 
+        return;
       }
 
       default:
@@ -49,7 +49,9 @@ function InfoData({ datas, unit, period }) {
         if (unit === 'L') {
           return roundTo1(convertMlToL(toNum(datas.amount) || 0));
         } else if (unit === 'Kg') {
-          return roundTo1(datas.weight || 0);
+          const normalize = datas.weight === 0 ? '-' : roundTo1(datas.weight || 0);
+
+          return normalize;
         }
         return datas.amount;
       }
@@ -57,8 +59,10 @@ function InfoData({ datas, unit, period }) {
       case '주간': {
         if (unit === 'L') {
           return roundTo1(convertMlToL(toNum(datas?.value?.dailyTotal ?? 0)));
-        } else if(unit === "Kg") {
-          return roundTo1(datas.weight || 0);
+        } else if (unit === 'Kg') {
+          const normalize = datas.weight === 0 ? '-' : roundTo1(datas.weight || 0);
+
+          return normalize;
         }
         return '';
       }
@@ -66,8 +70,10 @@ function InfoData({ datas, unit, period }) {
         if (unit === 'L') {
           const amout = datas?.value?.avgDailyTotal ?? 0;
           return roundTo1(convertMlToL(toNum(amout)));
-        } else if(unit === "Kg") {
-          return roundTo1(datas.weight || 0);
+        } else if (unit === 'Kg') {
+          const normalize = datas.weight === 0 ? '-' : roundTo1(datas.weight || 0);
+
+          return normalize;
         }
         return '';
       }
@@ -108,17 +114,15 @@ function InfoSection({ rowData, unit, period }) {
 }
 
 export default function WaterWeightInfo({ period, date, unit, total, datas = [] }) {
+  const periodLabel = () => {
+    let label = period !== '월간' ? date : date.slice(0, 5);
 
-const periodLabel = () => {
-  let label = period !== '월간' ? date : date.slice(0, 5);
+    if (unit === 'Kg') {
+      label = period === '월간' ? label : '현재';
+    }
 
-  if (unit === "Kg") {
-    label = period === '월간' ? label : "현재";
-  }
-
-  return label;
-};
-
+    return label;
+  };
 
   // console.log('datas', datas);
 
@@ -147,6 +151,16 @@ const periodLabel = () => {
     }
   };
 
+  const dataHeader = (total) => {
+    if(unit === "Kg") {
+      const normalize = total === 0 ? "-" : roundTo1(total || 0)
+
+      return normalize;
+    }
+
+    return roundTo1(total || 0)
+  }
+
   const dataByPeriod = datas ? getRowDataByPeriod(datas, period) : [];
 
   // console.log(datas, dataByPeriod);
@@ -159,7 +173,7 @@ const periodLabel = () => {
           <span className='w-55 font-bold text-xl'>{periodLabel()}</span>
           <span className='w-5 font-bold text-2xl'>{''} </span>
           <span className={clsx('w-30 font-bold text-2xl', 'text-right')}>
-            {roundTo1(toNum(total) || 0)} {unit}
+            {dataHeader(total)} {unit}
           </span>
         </div>
       </article>

@@ -54,6 +54,20 @@ export default function ChartArea({
 
   const unitInfo = unitConfig[unit];
 
+  const valueNormaize = () => {
+    const num = toNum(value) || 0;
+
+    if (unit === 'Kg') {
+      return num === 0 ? '-' : roundTo1(num);
+    }
+
+    if (unit === 'Kcal') {
+      return Math.round(num);
+    }
+
+    return roundTo1(num);
+  };
+
   // console.log("value", value)
 
   return (
@@ -88,7 +102,9 @@ export default function ChartArea({
           <span className='text-2xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}
           </span>
-          <span className='text-4xl font-bold'>{unit === "Kcal" ? Math.round(toNum(value) || 0) : roundTo1(toNum(value) || 0)}</span>
+          <span className='text-4xl font-bold'>
+            {valueNormaize()}
+          </span>
           <span className='text-2xl font-bold'> {unitInfo.postfix}</span>
         </article>
       )}
