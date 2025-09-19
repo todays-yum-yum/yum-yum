@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { toNum } from '@/utils/WaterNumber';
 import { format } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
 import { useWaterStore } from '@/stores/useWaterStore.js';
 import {
   addWaterIntake,
@@ -18,7 +19,6 @@ import DropIcon from '@/assets/icons/icon-drop.svg?react';
 import PlusIcon from '@/assets/icons/icon-plus.svg?react';
 import MinusIcon from '@/assets/icons/icon-minus.svg?react';
 import SettingIcon from '@/assets/icons/icon-setting.svg?react';
-import { useQueryClient } from '@tanstack/react-query';
 
 export default function WaterPage({ defaultDate = new Date() }) {
   const {
@@ -50,11 +50,10 @@ export default function WaterPage({ defaultDate = new Date() }) {
         }
       } catch (error) {
         console.error('불러오기 실패:', error);
-        throw error;
       }
     };
     fetchData();
-  }, [selectedDate, setWaterAmount]);
+  }, [selectedDate]);
 
   // 수분 섭취량 설정 불러오기
   useEffect(() => {
@@ -65,7 +64,6 @@ export default function WaterPage({ defaultDate = new Date() }) {
         setTargetIntake(settings.targetIntake);
       } catch (error) {
         console.error('불러오기 실패:', error);
-        throw error;
       }
     };
 
@@ -99,9 +97,16 @@ export default function WaterPage({ defaultDate = new Date() }) {
   };
 
   // 수분 섭취량 설정 버튼
-  const saveWaterIntakeSettings = async (newOneTime, newTarget) => {
+  const saveWaterIntakeSettings = async (data) => {
     try {
-      await saveWaterSettings('test-user', newOneTime, newTarget);
+      await saveWaterSettings('test-user', data.oneTimeIntake, data.targetIntake);
+
+      // 로컬 상태 업데이트
+      setOneTimeIntake(data.oneTimeIntake);
+      setTargetIntake(data.targetIntake);
+
+      // 캐시 무효화
+      queryClient.invalidateQueries(['dailyData', 'test-user']);
 
       toast.success('설정 저장 완료!');
       setOpenModal(false);
@@ -121,12 +126,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
       // 캐시 무효화
       queryClient.invalidateQueries(['dailyData', 'test-user', formattedSaveDate]);
 
-      // 목표 섭취량 같거나 이상이면
-      if (waterAmount >= targetIntake) {
-        toast.success('오늘 목표 달성 완료! 🎉');
-      } else {
-        toast.success('물 한 잔 추가! 💧');
-      }
+      toast.success('기록이 완료 되었어요!');
 
       navigate('/');
     } catch (error) {
@@ -202,11 +202,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
       <WaterIntakeModal
         isOpenModal={openModal}
         onCloseModal={() => setOpenModal(false)}
-        onBtnClick={(newOneTime, newTarget) => {
-          setOneTimeIntake(newOneTime);
-          setTargetIntake(newTarget);
-          saveWaterIntakeSettings(newOneTime, newTarget);
-        }}
+        onBtnClick={saveWaterIntakeSettings}
         oneTimeIntake={oneTimeIntake}
         targetIntake={targetIntake}
       />
