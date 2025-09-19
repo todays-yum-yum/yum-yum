@@ -3,6 +3,7 @@ import React from 'react';
 import clsx from 'clsx';
 
 export default function BasicButton({
+  type,
   size = 'md', // sm, md, lg, xl, full
   color = 'primary', // primary, secondary, gray
   variant = 'filled', // filled, line
@@ -12,6 +13,7 @@ export default function BasicButton({
 }) {
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       // h-12 px-5 bg-emerald-500 rounded-lg inline-flex justify-center items-center gap-2 overflow-hidden
@@ -21,6 +23,7 @@ export default function BasicButton({
         'px-5 h-12': size === 'md',
         'px-8 h-12': size === 'lg',
         'px-11 h-12': size === 'xl',
+        'w-[140px] h-12': size === '2xl',
         'w-full h-12': size === 'full',
         'bg-primary text-white': color === 'primary' && variant === 'filled' && !disabled,
         'bg-secondary text-white': color === 'secondary' && variant === 'filled' && !disabled,
