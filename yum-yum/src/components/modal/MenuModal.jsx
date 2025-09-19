@@ -17,18 +17,12 @@ export default function MenuModal({ isOpen, onClose }) {
 
   // 모달 호출 시 스크롤 막기
   useEffect(() => {
-    if (!isOpen) return;
-    document.body.style.overflow = 'hidden';
-    return () => (document.body.style.overflow = 'auto');
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  // 모달 호출 시 스크롤 막기
-  useEffect(() => {
-    if (!isOpen) return;
-    document.body.style.overflow = 'hidden';
-    return () => (document.body.style.overflow = 'auto');
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -42,9 +36,10 @@ export default function MenuModal({ isOpen, onClose }) {
     navigate(`/meal/${item.key}/total`, {
       state: { date: selectedDate, formMain: true },
     });
-    // 창 닫기
-    onClose;
+    // ✅ Fix: Actually call the onClose function
+    onClose();
   };
+
   return (
     // dark overlay 수정, 모달 하단 정렬
     <>

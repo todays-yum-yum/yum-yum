@@ -7,8 +7,10 @@ import IconMeal from '@/assets/icons/icon-restaurant.svg?react';
 import MenuModal from '@/components/modal/MenuModal';
 import { useNavigate } from 'react-router-dom';
 import RoundButton from './RoundButton';
+import { useHomeStore } from '../../stores/useHomeStore';
 
 export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
+  const { selectedDate } = useHomeStore();
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -19,7 +21,8 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
         <div className='space-y-2 flex flex-col z-50'>
           <RoundButton
             onClick={() => {
-              navigate('/water');
+              // navigate('/water');
+              navigate(`/water`, { state: { date: selectedDate } });
             }}
             color='gray'
             variant='filled'
