@@ -64,9 +64,11 @@ export default function SignupStep2({ onPrev }) {
           name='targetWeight'
           control={control}
           rules={{
-            required: '목표 체중을 입력해주세요',
-            min: { value: 20, message: '20kg 이상 입력해주세요.' },
-            max: { value: 300, message: '300kg 이하로 입력해주세요.' },
+            validate: (value) => {
+              if (!value) return true;
+              if (value < 20) return '20kg 이상 입력해주세요.';
+              if (value > 300) return '300kg 이하로 입력해주세요.';
+            },
           }}
           render={({ field, fieldState }) => (
             <div className='flex flex-col gap-[8px]'>
