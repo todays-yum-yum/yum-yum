@@ -8,19 +8,27 @@ export async function getDailyData(userId, selectedDate) {
     // 컬렉션 참조 생성
     const waterRef = collection(firestore, 'users', userId, 'water');
     const mealRef = collection(firestore, 'users', userId, 'meal');
+    const weightRef = collection(firestore, 'users', userId, 'weight');
     // 쿼리 생성
     const waterQuery = query(waterRef, where('date', '==', date));
     const mealQuery = query(mealRef, where('date', '==', date));
+    const weightQuery = query(weightRef, where('date', '==', date));
 
     // 호출 Promise all
-    const [waterSnap, mealSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery)]);
+    const [waterSnap, mealSnap, weightSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery), getDocs(weightQuery)]);
 
     //데이터 추출
     const waterData = waterSnap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+
     const mealData = mealSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const weightData = weightSnap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -30,6 +38,7 @@ export async function getDailyData(userId, selectedDate) {
       data: {
         waterData: waterData,
         mealData: mealData,
+        weightData: weightData,
       },
     };
   } catch (error) {

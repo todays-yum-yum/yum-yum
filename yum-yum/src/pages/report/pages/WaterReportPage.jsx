@@ -10,7 +10,7 @@ import {
 import { useUserData } from '@/hooks/useUser';
 
 import { normalizeDataRange, waterDataSummary } from '@/utils/reportDataParser';
-import { getWeeklyAverages } from '../../../utils/reportDataParser';
+import { getWaterMonthlyAverages } from '@/utils/reportDataParser';
 
 const userId = 'test-user';
 export default function WaterReportPage({
@@ -79,7 +79,7 @@ export default function WaterReportPage({
         activePeriod,
       );
 
-      const weeklyAverages = getWeeklyAverages(normalizedWaters, originDate);
+      const weeklyAverages = getWaterMonthlyAverages(normalizedWaters, originDate);
       setWaters(weeklyAverages);
       setCalcWater(waterDataSummary(normalizedWaters));
     }

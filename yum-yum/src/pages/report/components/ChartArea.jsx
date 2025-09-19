@@ -50,11 +50,11 @@ export default function ChartArea({
   const periodPrefix =
     activePeriod === '일간'
       ? periodPrefixConfig[activePeriod]
-      : periodPrefixConfig[activePeriod] + (unit === 'AI' ? '' : ' 평균');
+      : periodPrefixConfig[activePeriod] + (unit === 'AI' || unit === 'Kg' ? '' : ' 평균');
 
   const unitInfo = unitConfig[unit];
 
-  console.log("value", value)
+  // console.log("value", value)
 
   return (
     <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>

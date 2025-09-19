@@ -4,7 +4,6 @@ import { roundTo1, toNum } from '@/utils/NutrientNumber';
 import { convertMlToL } from '@/utils/reportDataParser';
 import { formatTime } from '@/utils/reportDataParser';
 
-
 function InfoData({ datas, unit, period }) {
   const textStyle = 'font-bold text-xl';
 
@@ -13,14 +12,30 @@ function InfoData({ datas, unit, period }) {
   const getLabelByPeriod = (datas, period) => {
     switch (period) {
       case '일간': {
-        return formatTime(toNum(datas.timestamp?.seconds || 0), period);
+        if (unit === 'L') {
+          return formatTime(toNum(datas.timestamp?.seconds || 0), period);
+        } else if (unit === 'Kg') {
+          return formatTime(datas.date, '주간');
+        }
+
+        return '';
       }
 
       case '주간': {
-        return formatTime(datas.date || '1970-01-01', period);
+        if(unit === "L") {
+          return formatTime(datas.date || '1970-01-01', period);
+        } else if(unit === "Kg") {
+          return datas.weekRange || '01/01~12/31';
+        }
+        return '';
       }
       case '월간': {
-        return datas?.weekRange ?? '';
+        if(unit === "L") {
+          return datas?.weekRange ?? '';
+        } else if(unit === "Kg") {
+          return datas.monthName || '01/01~12/31';
+        }
+        return 
       }
 
       default:
@@ -33,6 +48,8 @@ function InfoData({ datas, unit, period }) {
       case '일간': {
         if (unit === 'L') {
           return roundTo1(convertMlToL(toNum(datas.amount) || 0));
+        } else if (unit === 'Kg') {
+          return roundTo1(datas.weight || 0);
         }
         return datas.amount;
       }
@@ -40,13 +57,17 @@ function InfoData({ datas, unit, period }) {
       case '주간': {
         if (unit === 'L') {
           return roundTo1(convertMlToL(toNum(datas?.value?.dailyTotal ?? 0)));
+        } else if(unit === "Kg") {
+          return roundTo1(datas.weight || 0);
         }
         return '';
       }
       case '월간': {
-        if(unit === "L") {
+        if (unit === 'L') {
           const amout = datas?.value?.avgDailyTotal ?? 0;
           return roundTo1(convertMlToL(toNum(amout)));
+        } else if(unit === "Kg") {
+          return roundTo1(datas.weight || 0);
         }
         return '';
       }
@@ -87,7 +108,17 @@ function InfoSection({ rowData, unit, period }) {
 }
 
 export default function WaterWeightInfo({ period, date, unit, total, datas = [] }) {
-  const periodLabel = period !== '월간' ? date : date.slice(0, 5);
+
+const periodLabel = () => {
+  let label = period !== '월간' ? date : date.slice(0, 5);
+
+  if (unit === "Kg") {
+    label = period === '월간' ? label : "현재";
+  }
+
+  return label;
+};
+
 
   // console.log('datas', datas);
 
@@ -95,12 +126,17 @@ export default function WaterWeightInfo({ period, date, unit, total, datas = [] 
     if (!datas || datas.length === 0) return []; // datas가 없으면 []
 
     switch (period) {
-      case '일간': {
-        const dayData = datas[0]; // 일간은 하나만
-        if (!dayData || !dayData.value || dayData.value === 0) return []; // value가 없으면 빈 배열
-        return Array.isArray(dayData.value.intakes) ? dayData.value.intakes : [];
-      }
-
+      case '일간':
+        {
+          if (unit === 'L') {
+            const dayData = datas[0]; // 일간은 하나만
+            if (!dayData || !dayData.value || dayData.value === 0) return []; // value가 없으면 빈 배열
+            return Array.isArray(dayData.value.intakes) ? dayData.value.intakes : [];
+          } else if (unit === 'Kg') {
+            return datas;
+          }
+        }
+        return [];
       case '주간':
         return datas;
       case '월간':
@@ -120,7 +156,7 @@ export default function WaterWeightInfo({ period, date, unit, total, datas = [] 
       {/* 헤더 */}
       <article className='w-full flex flex-col p-2.5 gap-2.5 border-b-1 border-gray-300'>
         <div className='w-full flex flex-row items-center justify-around'>
-          <span className='w-55 font-bold text-xl'>{periodLabel}</span>
+          <span className='w-55 font-bold text-xl'>{periodLabel()}</span>
           <span className='w-5 font-bold text-2xl'>{''} </span>
           <span className={clsx('w-30 font-bold text-2xl', 'text-right')}>
             {roundTo1(toNum(total) || 0)} {unit}
