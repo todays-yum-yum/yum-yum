@@ -4,16 +4,45 @@ import { Controller, useFormContext } from 'react-hook-form';
 import BasicButton from '@/components/button/BasicButton';
 import Input from '@/components/common/Input';
 import AgreementsSection from '../components/AgreementsSection';
+import useAuth from '../../../../hooks/useAuth';
+import toast from 'react-hot-toast';
 
 export default function SignupStep1({ onNext }) {
-  const { control, handleSubmit, watch } = useFormContext();
+  const { control, handleSubmit, watch, setError, clearErrors } = useFormContext();
   const pw = watch('pw');
+  const { checkEmail } = useAuth();
 
   // 성별
   const genderOption = [
     { value: 'female', label: '여성' },
     { value: 'male', label: '남성' },
   ];
+
+  const isCheckEmail = async (email) => {
+    if (!email) {
+      toast.error('이메일을 입력해주세요.');
+      return;
+    }
+    // console.log('중복 확인:', email);
+    try {
+      const result = await checkEmail(email);
+
+      // checkResult
+      if (result.result) {
+        //중복된 이메일
+        setError('email', {
+          type: 'manual',
+          message: result.message,
+        });
+      } else {
+        // 사용가능한 이메일
+        clearErrors('email');
+        toast.success(result.message);
+      }
+    } catch (error) {
+      toast.error('이메일 확인 중 오류가 발생했습니다.');
+    }
+  };
 
   return (
     <>
@@ -71,11 +100,7 @@ export default function SignupStep1({ onNext }) {
                   errorMessage={fieldState.error?.message}
                   className='flex-1'
                 />
-                <BasicButton
-                  type='button'
-                  size='2xl'
-                  onClick={() => console.log('중복 확인:', field.value)}
-                >
+                <BasicButton type='button' size='2xl' onClick={() => isCheckEmail(field.value)}>
                   중복확인
                 </BasicButton>
               </div>

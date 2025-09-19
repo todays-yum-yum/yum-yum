@@ -45,10 +45,10 @@ export default function useAuth() {
     clearError();
     const result = await checkUserEmail({ userId });
     console.log(result);
-    checkResult({
+    return {
       result: result,
       message: result ? '중복된 이메일입니다.' : '사용가능한 이메일입니다.',
-    });
+    };
   });
 
   // 회원가입
@@ -58,8 +58,7 @@ export default function useAuth() {
 
     // Firebase Authentication 계정 생성
     const createUserId = await registerUser(user);
-    // TODO: createUserId 가 어떻게 리턴되는지 체크해야함
-    console.log(createUserId);
+
     // uid를 포함한 새로운 객체 생성
     const userWithUid = {
       ...user,
@@ -79,5 +78,6 @@ export default function useAuth() {
     isAuthenticated,
     login,
     checkEmail,
+    signUp,
   };
 }

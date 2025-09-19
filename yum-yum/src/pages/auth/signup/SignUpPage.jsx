@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import Header from '@/components/Header';
 import SignupStep1 from './pages/SignupStep1';
 import SignupStep2 from './pages/SignupStep2';
+import useAuth from '../../../hooks/useAuth';
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -29,11 +30,17 @@ export default function SignUpPage() {
     },
     mode: 'onBlur',
   });
+  const { signUp } = useAuth();
   const [signUpStep, setSignUpStep] = useState(1);
 
   const onSubmit = (data) => {
     console.log('회원가입 데이터:', data);
-    toast.success('회원가입 완료');
+    try {
+      signUp(data);
+      toast.success('회원가입 완료');
+    } catch (error) {
+      toast.error('회원가입 실패');
+    }
     navigate('/', {
       replace: true,
     });

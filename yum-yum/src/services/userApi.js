@@ -100,10 +100,16 @@ export async function checkUserEmail({ userId }) {
 }
 
 // Firebase Authentication 계정 생성
-export async function registerUser({ userid, password }) {
+export async function registerUser({ email, pw }) {
+  if (!email && !pw) {
+    return {
+      success: false,
+      error: '빈값임',
+    };
+  }
   try {
     // Firebase Auth에 이메일/비밀번호로 계정 생성
-    const userCredential = await createUserWithEmailAndPassword(auth, userid, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pw);
     const user = userCredential.user;
 
     return {
@@ -125,10 +131,14 @@ export async function registerUser({ userid, password }) {
  */
 const userDocData = (user) => {
   return {
-    userId: user.userId, // email
+    userId: user.email, // email
     age: user.age,
     gender: user.gender,
-    goals: { targetExercise: user.targetExercise, targetWeight: user.targetWeight },
+    goals: {
+      goal: user?.goals,
+      targetExercise: user.targetExercise,
+      targetWeight: user.targetWeight,
+    },
     height: user.height,
     name: user.name,
     oneTimeIntake: 500,
@@ -139,9 +149,8 @@ const userDocData = (user) => {
   };
 };
 export async function addUserFireStore(user) {
-  console.log(user);
   try {
-    const userRef = doc(firestore, 'users', user.Uid);
+    const userRef = doc(firestore, 'users', user.uid);
     const userData = userDocData(user);
     setDoc(userRef, userData);
 
@@ -150,6 +159,7 @@ export async function addUserFireStore(user) {
       data: user.Uid,
     };
   } catch (error) {
+    console.log('error 발생!', error);
     throw new Error('ERROR: ', error); // debug 용
     // return {
     //   success: false,
