@@ -1,7 +1,17 @@
 // services/userApi.js
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  where,
+  getCountFromServer,
+  query,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { auth, firestore } from './firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { calculateWaterIntake } from '../utils/calorieCalculator';
 
 // 사용자 데이터 가져오기(전체 데이터)
 export async function getUserData(userId) {
@@ -74,8 +84,23 @@ export async function loginUser({ userid, password }) {
   }
 }
 
+// 이메일 중복 체크
+export async function checkUserEmail({ userId }) {
+  try {
+    const coll = collection(firestore, 'users');
+    const checkQuery = query(coll, where('userId', '==', userId));
+    const snapshot = await getCountFromServer(checkQuery);
+
+    // 비용 효율을 위한 집계함수 사용(단순하게 있는지 없는지 구분)
+    return snapshot.data().count > 0;
+  } catch (error) {
+    console.error('이메일 중복 확인 오류:', error);
+    throw error;
+  }
+}
+
 // Firebase Authentication 계정 생성
-export async function registerUser({ username, userid, password }) {
+export async function registerUser({ userid, password }) {
   try {
     // Firebase Auth에 이메일/비밀번호로 계정 생성
     const userCredential = await createUserWithEmailAndPassword(auth, userid, password);
@@ -100,19 +125,20 @@ export async function registerUser({ username, userid, password }) {
  */
 const userDocData = (user) => {
   return {
-    Uid: user.Uid,
-    userId: user.userId,
+    userId: user.userId, // email
     age: user.age,
     gender: user.gender,
     goals: { targetExercise: user.targetExercise, targetWeight: user.targetWeight },
     height: user.height,
     name: user.name,
     oneTimeIntake: 500,
-    targetIntake: 1000,
+    targetIntake: calculateWaterIntake(user.age, user.gender),
     weight: user.weight,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   };
 };
-export async function addUserFireStroe(user) {
+export async function addUserFireStore(user) {
   console.log(user);
   try {
     const userRef = doc(firestore, 'users', user.Uid);
