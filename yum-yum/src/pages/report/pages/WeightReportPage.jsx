@@ -61,7 +61,7 @@ export default function WeightReportPage({
       setCurrentWeight(getPeriodLastData(normalizedWaters).weight)
       setWeights(getWeightWeeklyData(normalizedWaters, originDate))
 
-      console.log(getWeightWeeklyData(normalizedWaters, originDate))
+      // console.log(getWeightWeeklyData(normalizedWaters, originDate))
     }
   }, [dailyData, activePeriod, originDate]);
 

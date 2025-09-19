@@ -7,7 +7,6 @@ import { useNutritionAnalysis } from './../../../hooks/useNutritionAnalysis';
 import { getCurrentTimePeriod } from '../../../data/timePeriods';
 
 import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
-import TestPage from '../../home/test/TestPage';
 
 const searchConfig = {
   일간: 'daily',
@@ -26,19 +25,23 @@ export default function AiReportPage({
   canMove,
 }) {
   const parsedDate = parseDateString(originDate);
-  const newDate = new Date(parsedDate.year, parsedDate.month - 1, parsedDate.date);
+
+  const now = new Date();
+  const newDate = new Date(
+    parsedDate.year,
+    parsedDate.month - 1,
+    parsedDate.date,
+    19,0,0,0 
+    // now.getHours(),
+    // now.getMinutes(),
+    // now.getSeconds(),
+    // now.getMilliseconds(),
+  );
   const selectedDate = getTodayKey(newDate);
 
   const currentTimePeriod = getCurrentTimePeriod(newDate);
   const [searchType, setSearchType] = useState(searchConfig[activePeriod]);
-
-  const onPrevPeriod = () => {
-    prev();
-  };
-
-  const onNextPeriod = () => {
-    next();
-  };
+  const [nutritionResults, setNutritionResults] = useState({});
 
   // 1. Firestore 에서 식단 가져오기
   const {
@@ -51,14 +54,35 @@ export default function AiReportPage({
   } = useMeals(userId, selectedDate, searchType);
 
   // 2. meals가 준비되면 AI 분석
-  const {
-    data: aiResult,
-    isLoading: aiLoading,
-    isError: aiError,
-    error: aiErrorMsg,
-    status,
-    isCached,
-  } = useNutritionAnalysis(meals, selectedDate, currentTimePeriod);
+  const { data, refetch, isLoading } = useNutritionAnalysis(
+    userId,
+    meals,
+    newDate,
+    currentTimePeriod,
+  );
+
+  const onPrevPeriod = () => {
+    prev();
+  };
+
+  const onNextPeriod = () => {
+    next();
+  };
+
+  useEffect(() => {
+    setSearchType(searchConfig[activePeriod]);
+    setNutritionResults([])
+  }, [activePeriod]);
+
+
+
+  useEffect(() => {
+    setNutritionResults(data)
+  }, [data])
+
+  useEffect(() => {
+    console.log(nutritionResults)
+  },[nutritionResults])
 
   return (
     <main className='flex flex-col gap-7.5'>
@@ -81,13 +105,13 @@ export default function AiReportPage({
             <p className=''>
               {mealsLoading && <span>식단 불러오는 중…</span>}
               {mealsError && <span>식단 조회 실패: {mealsErrorMsg.message}</span>}
-              {aiLoading && <span>AI 결과 불러오는 중...</span>}
-              {aiError && <span>AI 조회 실패: {aiErrorMsg.message}</span>}
+              {isLoading && <span>AI 결과 불러오는 중...</span>}
 
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}
-              {!(mealsLoading || mealsError || aiLoading || aiError) &&
-                (aiResult?.text ? (
-                  aiResult.text
+
+              {!(mealsLoading || mealsError || isLoading) &&
+                (nutritionResults?.text ? (
+                  nutritionResults.text
                     .split('.')
                     .filter(Boolean)
                     .map((sentence, idx) => (

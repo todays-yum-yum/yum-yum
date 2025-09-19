@@ -29,6 +29,8 @@ export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTi
     retryDelay: (n) => Math.min(1000 * 2 ** n, 30_000),
   });
 
+  console.log(meals, dataHash, query.data)
+
   // 2) “한 시간대당 한 번만 AI 생성” useEffect
   useEffect(() => {
     if (!meals.date || !periodKey) return;
