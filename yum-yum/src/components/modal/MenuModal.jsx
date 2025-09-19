@@ -1,7 +1,7 @@
-// 식사 type 선택 후, 값 어떻게 넘겨야하는지?
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHomeStore } from '../../stores/useHomeStore';
+import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 
 const menuItems = [
   { id: '1', name: '아침', key: 'breakfast' },
@@ -13,12 +13,16 @@ const menuItems = [
 export default function MenuModal({ isOpen, onClose }) {
   if (!isOpen) return null;
   const navigate = useNavigate();
-  const { selectedDate } = useHomeStore();
+  const { selectedDate, originalMealData } = useHomeStore();
+  const { clearFoods, addFood } = useSelectedFoodsStore();
 
   const menuSelected = (item) => {
-    // 선택 값 => 식단 입력 이동
-    // console.log('item: ', item.name);
-    navigate(`/meal/${item.key}`, {
+    // mealdata에 데이터 필터링 => addFood에 입력
+    clearFoods();
+    const copy = originalMealData?.[item.key];
+    copy?.map((meal) => addFood(meal));
+    // 선택 값 => 식단 total 이동
+    navigate(`/meal/${item.key}/total`, {
       state: { date: selectedDate, formMain: true },
     });
     // 창 닫기
