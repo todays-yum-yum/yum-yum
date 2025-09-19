@@ -1,16 +1,15 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { formatTime, convertMlToL } from '@/utils/reportDataParser';
 import { toNum } from '@/utils/NutrientNumber';
-import { roundTo1 } from '../../../utils/NutrientNumber';
+import { roundTo1 } from '@/utils/NutrientNumber';
 
 export default function LineCharts({ datas, activePeriod, unit }) {
   const mapToChartData = (datas, period) => {
     if (!datas || datas.length === 0) return [];
 
     switch (period) {
-      case '일간':
-        // datas: [{ date, value }]
-        return datas.flatMap((day) => {
+      case '일간': {
+        const chartData = datas.flatMap((day) => {
           if (!day.value || !Array.isArray(day.value.intakes)) return [];
           return day.value.intakes.map((intake, idx) => ({
             name: formatTime(toNum(intake.timestamp?.seconds || 0), period),
@@ -18,8 +17,15 @@ export default function LineCharts({ datas, activePeriod, unit }) {
           }));
         });
 
+        // 데이터가 없을 때 처리
+        if (chartData.length === 0) {
+          return [{ name: '데이터 없음', pv: 0 }];
+        }
+
+        return chartData;
+      }
+
       case '주간':
-        // datas: [{ date, value }]
         return datas.map((item) => ({
           name: item?.date,
           pv: roundTo1(convertMlToL(item.value?.dailyTotal ?? 0)),
@@ -38,7 +44,7 @@ export default function LineCharts({ datas, activePeriod, unit }) {
 
   const chartData = mapToChartData(datas, activePeriod);
 
-  console.log(datas);
+  // console.log(datas);
 
   return (
     <LineChart

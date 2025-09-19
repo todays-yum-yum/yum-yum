@@ -54,7 +54,7 @@ export default function ChartArea({
 
   const unitInfo = unitConfig[unit];
 
-  console.log("value", value)
+  // console.log("value", value)
 
   return (
     <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>

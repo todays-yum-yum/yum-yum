@@ -32,15 +32,17 @@ export default function StackedCharts({ foodData }) {
   const valueType = nutritionType(foodData.name);
 
   // 총합
-  const total = roundTo1(foodData.food?.reduce((sum, food) => {
-    return sum + toNum(food.nutrient?.[valueType]);
-  }, 0));
+  const total = roundTo1(
+    foodData.food?.reduce((sum, food) => {
+      return sum + toNum(food.nutrient?.[valueType]);
+    }, 0),
+  );
 
   // 최고 순위 3개 및 기타 수치
   const top1 = roundTo1(toNum(foodData.food[0]?.nutrient?.[valueType])) ?? 0;
   const top2 = roundTo1(toNum(foodData.food[1]?.nutrient?.[valueType])) ?? 0;
   const top3 = roundTo1(toNum(foodData.food[2]?.nutrient?.[valueType])) ?? 0;
-  const etc = roundTo1(toNum(total - (top1 + top2 + top3)));  
+  const etc = roundTo1(toNum(total - (top1 + top2 + top3)));
 
   // 마지막 요소 판단 함수
   const getRadius = (isFirst, isLast) => {
@@ -60,14 +62,24 @@ export default function StackedCharts({ foodData }) {
   const lastElement = elements[elements.length - 1];
 
   // 차트 데이터 매핑
-  const chartData = {
-    name: foodData.name,
-    top1: top1,
-    top2: top2,
-    top3: top3,
-    etc: Math.max(0, etc), // 음수 방지
-    goal: foodData.goal
-  };
+  const chartData =
+    foodData.food && foodData.food.length > 0 && total > 0
+      ? {
+          name: foodData.name,
+          top1: top1,
+          top2: top2,
+          top3: top3,
+          etc: Math.max(0, etc), // 음수 방지
+          goal: foodData.goal,
+        }
+      : {
+          name: foodData.name,
+          top1: 1,
+          top2: 0,
+          top3: 0,
+          etc: 0,
+          goal: foodData.goal,
+        };
 
   // console.log('chartData:', chartData);
 
