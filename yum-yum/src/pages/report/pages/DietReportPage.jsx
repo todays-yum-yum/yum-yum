@@ -24,6 +24,7 @@ import { dataSummary, normalizeDataRange } from '@/utils/reportDataParser';
 import { getAllMealsSorted } from '@/utils/reportDataParser';
 import { toNum } from '@/utils/NutrientNumber';
 import { roundTo1 } from '@/utils/NutrientNumber';
+import { useUserData } from '@/hooks/useUser';
 
 const userId = 'test-user';
 export default function DietReportPage({
@@ -37,23 +38,22 @@ export default function DietReportPage({
 }) {
   // 데이터
   const {
-    userData: dailyUserData,
     dailyData,
     isLoading: daliyIsLoading,
     isError: daliyIsError,
   } = useDailyReportData(userId, originDate);
   const {
-    userData: weeklyUserData,
     weeklyData,
     isLoading: weeklyIsLoading,
     isError: weeklyIsError,
   } = useWeeklyReportData(userId, originDate);
   const {
-    userData: monthlyUserData,
     monthlyData,
     isLoading: monthlyIsLoading,
     isError: monthlyIsError,
   } = useMonthlyReportData(userId, originDate);
+    const { userData } = useUserData(userId, originDate);
+
   // 상세 정보 토글버튼
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];

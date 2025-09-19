@@ -15,8 +15,11 @@ export default function FoodSearch({
   const navigate = useNavigate();
   const location = useLocation();
   const handleBack = () => {
-    if (location.pathname.startsWith('/meal/custom')) {
-      // 등록폼에서 뒤로가기 클릭 시 무조건 meal/${type}로
+    if (
+      location.pathname.startsWith('/meal/custom') ||
+      location.pathname.startsWith('/meal/search')
+    ) {
+      // 등록폼, 검색창에서 뒤로가기 클릭 시 무조건 meal/${type}로
       navigate(`/meal/${location.state?.type}`, {
         state: { date: location.state?.date },
       });

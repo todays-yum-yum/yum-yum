@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function MealTabs({ activeTabId, onChange, tabItem }) {
   return (
-    <div className='flex'>
+    <div className='sticky top-[60px] z-30 flex bg-white'>
       {tabItem.map((tab) => (
         <button
           key={tab.id}

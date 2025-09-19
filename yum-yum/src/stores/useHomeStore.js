@@ -48,8 +48,13 @@ export const useHomeStore = create((set, get) => ({
   },
 
   // 데이터 정제
-  setDailyData: (data, age, gender) => {
-    const water = normalizerWater(data.waterData[0], age, gender);
+  setDailyData: (data, userData) => {
+    const water = normalizerWater({
+      water: data.waterData[0],
+      age: userData?.age,
+      gender: userData?.gender,
+      targetIntake: userData?.targetIntake,
+    });
     const meal = normalizerMeal(data.mealData[0]);
     set({ waterData: water, mealData: meal });
   },

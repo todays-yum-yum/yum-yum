@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getFrequentFoods } from '@/services/FrequentFoodsApi';
+import { getRecentFoods } from '@/services/FrequentFoodsApi';
 // 컴포넌트
 import EmptyState from '@/components/EmptyState';
 import FoodList from '../component/FoodList';
@@ -12,7 +12,7 @@ export default function FrequentlyEatenFood({ selectedIds, onToggleSelect }) {
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const data = await getFrequentFoods(mockUser.uid);
+        const data = await getRecentFoods(mockUser.uid);
         setFoodItems(data);
       } catch (error) {
         console.error('불러오기 실패:', error);

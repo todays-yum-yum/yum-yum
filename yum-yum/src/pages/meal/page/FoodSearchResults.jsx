@@ -59,7 +59,7 @@ export default function FoodSearchResultsPage() {
         handleSearchSubmit={handleSearchSubmit}
       />
       <div>
-        <div className='flex flex-col min-h-[calc(100vh-206px)]'>
+        <div className='flex flex-col min-h-[calc(100vh-148px)]'>
           <div className='flex-1 px-[20px]'>
             {foodItems?.length > 0 ? (
               <FoodList
@@ -69,7 +69,7 @@ export default function FoodSearchResultsPage() {
                 items={foodItems}
               />
             ) : (
-              <EmptyState className='min-h-[calc(100vh-266px)]'>
+              <EmptyState className='min-h-[calc(100vh-148px)]'>
                 검색한 음식 결과가 없어요.
               </EmptyState>
             )}
