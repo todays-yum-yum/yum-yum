@@ -8,7 +8,8 @@ import {
   query,
   getDocs,
 } from 'firebase/firestore';
-
+import { callUserUid } from '@/utils/localStorage';
+const userId = callUserUid(); // 로그인한 유저 uid 가져오기
 // 직접 입력 음식 등록
 export const addCustomFood = async (userId, newFoodData) => {
   try {
@@ -34,7 +35,7 @@ export const addCustomFood = async (userId, newFoodData) => {
 export const customFoodsList = async () => {
   try {
     // const customFoodsCol = collection(firestore, 'users', userId, 'customFoods');
-    const customFoodsCol = collection(firestore, 'users', 'test-user', 'customFoods');
+    const customFoodsCol = collection(firestore, 'users', userId, 'customFoods');
     const q = query(customFoodsCol, orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
 

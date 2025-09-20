@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { customFoodsList } from '@/services/customFoodsApi';
+import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import EmptyState from '@/components/EmptyState';
 import FoodList from '../component/FoodList';
@@ -8,6 +9,7 @@ import FoodList from '../component/FoodList';
 import SearchIcon from '@/assets/icons/icon-search.svg?react';
 
 export default function CustomEntry({ selectedIds, onToggleSelect }) {
+  const userId = callUserUid(); // 로그인한 유저 uid 가져오기
   const location = useLocation();
   const navigate = useNavigate();
   const { type } = useParams();
@@ -18,7 +20,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const data = await customFoodsList('test-user');
+        const data = await customFoodsList(userId);
         setFoodItems(data);
       } catch (error) {
         console.error('불러오기 실패:', error);

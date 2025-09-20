@@ -55,7 +55,7 @@ export default function Carousel({ images, autoPlayDelay = 3000 }) {
   }, [isAutoPlaying, autoPlayDelay]);
 
   return (
-    <div className='relative w-full max-w-sm mx-auto'>
+    <div className='relative w-full mx-auto'>
       {/* 이미지 컨테이너 */}
       <div className='overflow-hidden rounded-[20px]'>
         <div
@@ -67,14 +67,14 @@ export default function Carousel({ images, autoPlayDelay = 3000 }) {
               key={index}
               src={image}
               alt={`슬라이드 ${index + 1}`}
-              className='w-full h-45 object-fit flex-shrink-0'
+              className='w-full object-fit flex-shrink-0'
             />
           ))}
         </div>
       </div>
 
       {/* 인디케이터 */}
-      <div className='flex justify-center gap-2 mt-4'>
+      <div className='flex justify-center gap-5 mt-5'>
         {images.map((_, index) => (
           <button
             key={index}

@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { addCustomFood } from '@/services/customFoodsApi';
 import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
 import BasicButton from '@/components/button/BasicButton';
@@ -11,6 +12,7 @@ import Input from '@/components/common/Input';
 import NutritionSection from '../component/NutritionSection';
 
 export default function CustomEntryForm() {
+  const userId = callUserUid(); // 로그인한 유저 uid 가져오기
   const { setActiveTab } = useSelectedFoodsStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,11 +41,11 @@ export default function CustomEntryForm() {
 
     // const user = auth.currentUser;
 
-    const newFoodData = createCustomFood('test-user');
+    const newFoodData = createCustomFood(userId);
     // const newFoodData = createCustomFood(user.uid);
 
     try {
-      const newFoodId = await addCustomFood('test-user', newFoodData);
+      const newFoodId = await addCustomFood(userId, newFoodData);
       // const newFoodId = await addCustomFood(user.uid, newFoodData);
 
       reset();

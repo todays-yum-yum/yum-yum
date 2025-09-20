@@ -18,7 +18,7 @@ export default function NonUserHomePage() {
       {/* <div className='w-full max-w-md mx-auto overflow-hidden min-h-screen flex flex-col'> */}
       {/* 로고 섹션 */}
       <div className='flex justify-center items-center pt-35 pb-8'>
-        <img className='w-30 h-30' src={mainLogo} alt='오늘의 냠냠 로고' />
+        <img className='w-full' src={mainLogo} alt='오늘의 냠냠 로고' />
       </div>
 
       {/* 메인 컨텐츠 영역 - flex-grow로 남은 공간 채우기 */}
