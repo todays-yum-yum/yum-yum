@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { toNum } from '@/utils/WaterNumber';
+import { callUserUid } from '@/utils/localStorage';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWaterStore } from '@/stores/useWaterStore.js';
@@ -21,6 +22,7 @@ import MinusIcon from '@/assets/icons/icon-minus.svg?react';
 import SettingIcon from '@/assets/icons/icon-setting.svg?react';
 
 export default function WaterPage({ defaultDate = new Date() }) {
+  const userId = callUserUid(); // 로그인한 유저 uid 가져오기
   const {
     waterAmount,
     setWaterAmount,
@@ -42,7 +44,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
     const fetchData = async () => {
       try {
         const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
-        const data = await getWaterIntake('test-user', formattedSaveDate);
+        const data = await getWaterIntake(userId, formattedSaveDate);
         if (data) {
           setWaterAmount(data.dailyTotal);
         } else {
@@ -59,7 +61,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const settings = await getWaterSettings('test-user');
+        const settings = await getWaterSettings(userId);
         setOneTimeIntake(settings.oneTimeIntake);
         setTargetIntake(settings.targetIntake);
       } catch (error) {
@@ -68,7 +70,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
     };
 
     fetchSettings();
-  }, ['test-user', setOneTimeIntake, setTargetIntake]);
+  }, [userId, setOneTimeIntake, setTargetIntake]);
 
   // + 버튼
   const handleInc = () => {
@@ -99,14 +101,14 @@ export default function WaterPage({ defaultDate = new Date() }) {
   // 수분 섭취량 설정 버튼
   const saveWaterIntakeSettings = async (data) => {
     try {
-      await saveWaterSettings('test-user', data.oneTimeIntake, data.targetIntake);
+      await saveWaterSettings(userId, data.oneTimeIntake, data.targetIntake);
 
       // 로컬 상태 업데이트
       setOneTimeIntake(data.oneTimeIntake);
       setTargetIntake(data.targetIntake);
 
       // 캐시 무효화
-      queryClient.invalidateQueries(['dailyData', 'test-user']);
+      queryClient.invalidateQueries(['dailyData', userId]);
 
       toast.success('설정 저장 완료!');
       setOpenModal(false);
@@ -120,11 +122,11 @@ export default function WaterPage({ defaultDate = new Date() }) {
   const handleRecord = async () => {
     try {
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
-      await addWaterIntake('test-user', formattedSaveDate, waterAmount);
+      await addWaterIntake(userId, formattedSaveDate, waterAmount);
       // await addWaterIntake(user.uid, formattedSaveDate, waterAmount);
 
       // 캐시 무효화
-      queryClient.invalidateQueries(['dailyData', 'test-user', formattedSaveDate]);
+      queryClient.invalidateQueries(['dailyData', userId, formattedSaveDate]);
 
       toast.success('기록이 완료 되었어요!');
 

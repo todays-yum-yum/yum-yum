@@ -3,19 +3,20 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { Timestamp } from 'firebase/firestore';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 import { toNum } from '@/utils/NutrientNumber';
 import { saveMeal } from '@/services/mealApi';
+import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
 import FoodList from '../component/FoodList';
 import BasicButton from '@/components/button/BasicButton';
 import TotalBarChart from '../component/TotalBarChart';
 
-import { Timestamp } from 'firebase/firestore';
-import { useQueryClient } from '@tanstack/react-query';
-
 export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM월 dd일' }) {
+  const userId = callUserUid(); // 로그인한 유저 uid 가져오기
   const { selectedFoods, deleteFood, clearFoods } = useSelectedFoodsStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -83,7 +84,7 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
 
       // const user = auth.currentUser;
-      await saveMeal('test-user', formattedSaveDate, type, meals);
+      await saveMeal(userId, formattedSaveDate, type, meals);
       // await saveMeal(user.uid, formattedSaveDate, type, meals);
 
       toast.success('기록이 완료 되었어요!');
@@ -91,7 +92,7 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
       clearFoods();
 
       // 캐시 무효화
-      queryClient.invalidateQueries(['dailyData', 'test-user', formattedSaveDate]);
+      queryClient.invalidateQueries(['dailyData', userId, formattedSaveDate]);
       navigate('/', { replace: true });
     } catch (error) {
       toast.error('식단 기록 실패!');

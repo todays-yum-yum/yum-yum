@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { getRecentFoods } from '@/services/FrequentFoodsApi';
+import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import EmptyState from '@/components/EmptyState';
 import FoodList from '../component/FoodList';
 
-const mockUser = { uid: 'test-user' };
-
 export default function FrequentlyEatenFood({ selectedIds, onToggleSelect }) {
+  const userId = callUserUid(); // 로그인한 유저 uid 가져오기
   const [foodItems, setFoodItems] = useState([]);
 
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const data = await getRecentFoods(mockUser.uid);
+        const data = await getRecentFoods(userId);
         setFoodItems(data);
       } catch (error) {
         console.error('불러오기 실패:', error);
