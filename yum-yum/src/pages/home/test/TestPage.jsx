@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { getCurrentTimePeriod } from '../../../data/timePeriods';
 import { useMeals } from '../../../hooks/useMeals';
 import { useNutritionAnalysis } from '../../../hooks/useNutritionAnalysis';
+import { subDays } from 'date-fns';
 
 const userId = 'test-user'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
 export default function TestPage() {
   const [searchType, setSearchType] = useState('weekly');
-  const selectedDate = new Date();
+  const selectedDate = subDays(new Date(), 1);
   const currentTimePeriod = getCurrentTimePeriod(selectedDate);
 
   // 1. Firestore 에서 식단 가져오기

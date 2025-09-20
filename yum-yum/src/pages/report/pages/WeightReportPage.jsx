@@ -10,9 +10,9 @@ import {
 import { useUserData } from './../../../hooks/useUser';
 import { getPeriodLastData, getWeightYearlyData, normalizeDataRange } from '../../../utils/reportDataParser';
 import { getWeightWeeklyData, getWeightMonthlyData } from './../../../utils/reportDataParser';
-import { getTodayKey, parseDateString } from '../../../utils/dateUtils';
+import { callUserUid } from '@/utils/localStorage';
 
-const userId = 'test-user';
+const userId = callUserUid();
 export default function WeightReportPage({
   originDate,
   fullDate,
@@ -61,7 +61,7 @@ export default function WeightReportPage({
       setCurrentWeight(getPeriodLastData(normalizedWaters).weight)
       setWeights(getWeightWeeklyData(normalizedWaters, originDate))
 
-      console.log(getWeightWeeklyData(normalizedWaters, originDate))
+      // console.log(getWeightWeeklyData(normalizedWaters, originDate))
     }
   }, [dailyData, activePeriod, originDate]);
 
@@ -97,7 +97,7 @@ export default function WeightReportPage({
         date={fullDate}
         period='일간'
         unit='Kg'
-        value={currentWeight}
+        value={currentWeight ?? 0}
         activePeriod={activePeriod}
         prevDate={onPrevPeriod}
         nextDate={onNextPeriod}

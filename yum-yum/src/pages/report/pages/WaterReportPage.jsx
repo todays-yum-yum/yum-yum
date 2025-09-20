@@ -11,8 +11,9 @@ import { useUserData } from '@/hooks/useUser';
 
 import { normalizeDataRange, waterDataSummary } from '@/utils/reportDataParser';
 import { getWaterMonthlyAverages } from '@/utils/reportDataParser';
+import { callUserUid } from '@/utils/localStorage';
 
-const userId = 'test-user';
+const userId = callUserUid();
 export default function WaterReportPage({
   originDate,
   fullDate,
@@ -103,7 +104,7 @@ export default function WaterReportPage({
         date={fullDate}
         period='일간'
         unit='L'
-        value={calcWater?.totalWaters}
+        value={calcWater?.totalWaters ?? 0}
         activePeriod={activePeriod}
         prevDate={onPrevPeriod}
         nextDate={onNextPeriod}

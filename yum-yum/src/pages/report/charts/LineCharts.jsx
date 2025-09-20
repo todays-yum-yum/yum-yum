@@ -84,7 +84,7 @@ export default function LineCharts({ datas, activePeriod, unit }) {
   const chartData = mapToChartData(datas, activePeriod);
 
   // console.log(datas);
-  console.log(chartData);
+  // console.log(chartData);
 
   return (
     <LineChart
