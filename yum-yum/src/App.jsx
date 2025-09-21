@@ -8,7 +8,7 @@ import MealPage from '@/pages/meal/MealPage';
 import ReportPage from '@/pages/report/pages/ReportPage';
 import WaterPage from '@/pages/water/WaterPage';
 import LoginPage from '@/pages/auth/LoginPage';
-import SignUpPage from '@/pages/auth/SignUpPage';
+import SignUpPage from '@/pages/auth/signup/SignUpPage';
 import NonUserHomePage from '@/pages/home/NonUserHomePage';
 import SimpleLayout from '@/components/layout/SimpleLayout';
 import Layout from '@/components/layout/Layout';
@@ -17,7 +17,8 @@ import RequireAuth from '@/routes/RequireAuth';
 import CustomEntryForm from './pages/meal/page/CustomEntryForm';
 import TotalMeal from './pages/meal/page/TotalMeal';
 import TestPage from './pages/home/test/TestPage';
-// import SearchList from './pages/meal/page/SearchList';
+import FoodSearchResultsPage from './pages/meal/page/FoodSearchResults';
+import ScrollToTop from './components/ScrollToTop';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       {
         element: (
           <RequireAuth>
+            <ScrollToTop />
             <Layout />
           </RequireAuth>
         ),
@@ -34,7 +36,7 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage /> },
           { path: 'meal/:type', element: <MealPage /> }, // 아침, 점심, 저녁, 기타 타입
           { path: 'meal/custom', element: <CustomEntryForm /> },
-          // { path: 'meal/search', element: <SearchList /> },
+          { path: 'meal/search', element: <FoodSearchResultsPage /> }, // 음식 검색 시 결과 화면
           { path: 'meal/:type/total', element: <TotalMeal /> },
           { path: 'report', element: <ReportPage /> },
           { path: 'water', element: <WaterPage /> },
@@ -46,6 +48,7 @@ const router = createBrowserRouter([
       {
         element: (
           <RequireGuest>
+            <ScrollToTop />
             <SimpleLayout />
           </RequireGuest>
         ),

@@ -8,6 +8,7 @@ export const TIME_PERIODS = {
 // 현재 시간대 확인
 export function getCurrentTimePeriod(date = null) {
   const hour = date ? new Date(date)?.getHours() : new Date().getHours();
+
   for (const [key, period] of Object.entries(TIME_PERIODS)) {
     if (hour >= period.start && hour < period.end) {
       return { key, ...period };

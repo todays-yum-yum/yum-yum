@@ -25,32 +25,32 @@ const parseMealsByType = (meals) => {
     snack: { calories: 0, foods: null },
   };
   if (!meals || meals.length === 0) return mealTypes;
+  // console.log(meals);
+  // mealType별로 그룹화 -> Object.entries()로 키-값 쌍을 배열로 변환
+  Object.entries(meals).forEach(([mealType, mealArray]) => {
+    if (mealTypes[mealType] && Array.isArray(mealArray)) {
+      mealArray.forEach((meal) => {
+        // console.log(meal);
+        // 칼로리 누적
+        mealTypes[mealType].calories += meal.nutrient?.kcal || 0;
 
-  // mealType별로 그룹화
-  meals.forEach((meal) => {
-    const type = meal.mealType;
-
-    if (mealTypes[type]) {
-      // 칼로리 누적
-      mealTypes[type].calories += meal.kcal || 0;
-
-      // 음식 이름 누적 (쉼표로 구분)
-      if (meal.foodName) {
-        if (mealTypes[type].foods) {
-          mealTypes[type].foods += `, ${meal.foodName}`;
-        } else {
-          mealTypes[type].foods = meal.foodName;
+        // 음식 이름 누적
+        if (meal.foodName) {
+          if (mealTypes[mealType].foods) {
+            mealTypes[mealType].foods += `, ${meal.foodName}`;
+          } else {
+            mealTypes[mealType].foods = meal.foodName;
+          }
         }
-      }
+      });
     }
   });
-
   return mealTypes;
 };
 
 // mealType별 데이터 파싱 함수(누적 칼로리, 영양소별 누적값)
-const parseNutritionByType = (meals) => {
-  // 1) 기본 틀
+function parseNutritionByType(groupedMeals) {
+  // 1) 결과물 기본 틀
   const mealTypes = {
     breakfast: { calories: 0, nutrients: {} },
     lunch: { calories: 0, nutrients: {} },
@@ -58,30 +58,37 @@ const parseNutritionByType = (meals) => {
     snack: { calories: 0, nutrients: {} },
   };
 
-  if (!meals || meals.length === 0) return mealTypes;
+  // groupedMeals가 없거나 빈 객체면 기본값 리턴
+  if (!groupedMeals || Object.keys(groupedMeals).length === 0) {
+    return mealTypes;
+  }
 
-  meals.forEach((meal) => {
-    const bucket = mealTypes[meal.mealType];
+  // 2) 각 타입별 배열을 순회
+  Object.entries(groupedMeals).forEach(([mealType, mealsArr]) => {
+    // 혹시 mealType 키가 mealTypes에 없으면 skip
+    const bucket = mealTypes[mealType];
     if (!bucket) return;
 
-    // 2) 칼로리 누적
-    bucket.calories += meal.kcal || 0;
+    // 3) 그 타입의 식단 배열을 다시 순회
+    mealsArr.forEach((meal) => {
+      // 3-1) 칼로리 누적
+      bucket.calories += meal.kcal || 0;
 
-    // 3) 나머지 숫자 필드는 전부 nutrients 에 누적
-    Object.entries(meal).forEach(([key, value]) => {
-      // 제외할 필드 지정
-      if (key === 'mealType' || key === 'kcal' || key === 'foodName') {
-        return;
-      }
-      // 숫자 타입만 누적
-      if (typeof value === 'number' && !isNaN(value)) {
-        bucket.nutrients[key] = (bucket.nutrients[key] || 0) + value;
-      }
+      // 3-2) 그 외 숫자 필드를 nutrients에 누적
+      Object.entries(meal).forEach(([key, value]) => {
+        // 건너뛸 필드
+        if (key === 'mealType' || key === 'kcal' || key === 'foodName') {
+          return;
+        }
+        if (typeof value === 'number' && !isNaN(value)) {
+          bucket.nutrients[key] = (bucket.nutrients[key] || 0) + value;
+        }
+      });
     });
   });
 
   return mealTypes;
-};
+}
 
 // 칼로리,탄,단,지 total 값 파싱
 const mealSum = (dailySummary, meals) => {
@@ -97,12 +104,22 @@ const mealSum = (dailySummary, meals) => {
     totalCarbs = 0,
     totalProtein = 0,
     totalFat = 0;
-  meals.map((meal) => {
-    totalCalories += meal?.calorie ?? 0;
-    totalCarbs += meal?.carbs ?? 0;
-    totalProtein += meal?.protein ?? 0;
-    totalFat += meal?.fat ?? 0;
-  });
+  // console.log(meals);
+  if (!Array.isArray(meals)) {
+    Object.keys(meals)?.map((meal) => {
+      totalCalories += meal?.calorie ?? 0;
+      totalCarbs += meal?.carbs ?? 0;
+      totalProtein += meal?.protein ?? 0;
+      totalFat += meal?.fat ?? 0;
+    });
+  } else {
+    meals.map((meal) => {
+      totalCalories += meal?.calorie ?? 0;
+      totalCarbs += meal?.carbs ?? 0;
+      totalProtein += meal?.protein ?? 0;
+      totalFat += meal?.fat ?? 0;
+    });
+  }
   return { calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat };
 };
 
@@ -111,9 +128,9 @@ export function normalizerMeal(meal) {
   if (!meal) return null;
   // 칼로리,탄,단,지 통합 구하기
   const { calories, carbs, protein, fat } = mealSum(meal.dailySummary, meal.meals);
-
   //mealType별 데이터 파싱
   const mealsByType = parseMealsByType(meal.meals);
+  // console.log(mealsByType);
 
   // return null;
   return {
@@ -130,13 +147,13 @@ export function normalizerMeal(meal) {
 }
 
 // 수분 데이터 파싱 함수
-export function normalizerWater(water, age, gender) {
-  if (!water) return null;
+export function normalizerWater({ water, age, gender, targetIntake }) {
+  if (!water) water = 0;
   // dailyTotal 계산이 안되어있는 경우?
   const total = water?.dailyTotal || waterDailySum(water.intakes);
 
   // 목표 수분량 = 보건복지부 기준 권장량
-  const goal = calculateWaterIntake(age, gender);
+  const goal = targetIntake || calculateWaterIntake(age, gender);
   return {
     id: water.id,
     current: convertMlToL(total),
@@ -149,11 +166,32 @@ export function normalizerWater(water, age, gender) {
  * Firebase 에 저장된 로우 데이터를
  * UI/Api 호출에 적합한 형태로 변환
  */
-export function parseMeals(rawMeals) {
-  return rawMeals.data.map((raw) => ({
-    date: raw.date,
-    totalNutrition: raw.dailySummary,
-    mealBreakdown: parseNutritionByType(raw.meals),
+export function parseMeals(rawMeals, selectedDate) {
+  const { totalNutrition, mealBreakdown } = multiDataParse(rawMeals.data);
+  return {
+    date: selectedDate,
+    totalNutrition,
+    mealBreakdown,
     type: rawMeals.type,
-  }));
+  };
+}
+
+// 파싱 할 때 값이 여러개 일 때(type: weekly, monthly)
+function multiDataParse(data) {
+  const totalNutrition = {};
+  const mealBreakdown = [];
+
+  data.forEach((value) => {
+    // totalNutrition 값 합
+    Object.entries(value.dailySummary).forEach(([key, value]) => {
+      // 숫자 타입만 누적
+      if (typeof value === 'number' && !isNaN(value)) {
+        totalNutrition[key] = (totalNutrition[key] || 0) + value;
+      }
+    });
+    // mealBreakdown 값 합 data.meals
+    mealBreakdown.push({ date: value.date, nutrients: parseNutritionByType(value.meals) });
+  });
+
+  return { totalNutrition, mealBreakdown };
 }

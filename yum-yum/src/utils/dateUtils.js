@@ -19,7 +19,7 @@ import { ko } from 'date-fns/locale';
 const today = new Date();
 const dateFormat = 'yyyy년 MM월 dd일';
 
-function dateFormatting(date) {
+export function dateFormatting(date) {
   return format(date, dateFormat, { locale: ko });
 }
 
@@ -67,6 +67,20 @@ export function getEndDateOfWeek(date) {
   const newDate = parseDate(date);
 
   return dateFormatting(endOfWeek(newDate));
+}
+
+// 이번달 시작 날짜
+export function getStartDateOfMonth(date) {
+  const newDate = parseDate(date);
+
+  return dateFormatting(startOfMonth(newDate));
+}
+
+// 이번달 종료 날짜
+export function getEndDateOfMonth(date) {
+  const newDate = parseDate(date);
+
+  return dateFormatting(endOfMonth(newDate));
 }
 
 // ---
@@ -126,6 +140,7 @@ export function getNextMonth(date) {
 // 년 월 일 추출 - 정규식 이용
 export const parseDateString = (dateString) => {
   const regex = /(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/;
+
   const match = dateString.match(regex);
 
   const [full, year, month, date] = match;
@@ -137,6 +152,22 @@ export const parseDateString = (dateString) => {
     fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
   };
 };
+
+export const parseKeyDateString = (dateString) => {
+  const regex = /^(\d{4})-(\d{1,2})-(\d{2})$/
+  
+  const match = dateString.match(regex);
+
+  const [full, year, month, date] = match;
+
+  return {
+    year,
+    month: month.padStart(2, '0'),
+    date: date.padStart(2, '0'),
+    fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
+  };
+};
+
 
 // 오늘보다 미래로 갈수 없게, 이동 여부 가능 체크
 export const canMoveDate = (date, days) => {

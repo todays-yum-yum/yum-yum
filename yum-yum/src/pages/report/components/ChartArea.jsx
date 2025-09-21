@@ -2,6 +2,8 @@ import React from 'react';
 import RoundButton from '@/components/button/RoundButton';
 import PrevDateIcon from '@/assets/icons/icon-left.svg?react';
 import NextDateIcon from '@/assets/icons/icon-right.svg?react';
+import { roundTo1 } from '@/utils/NutrientNumber';
+import { toNum } from './../../../utils/NutrientNumber';
 
 // 단위 기간별 접두어
 const periodPrefixConfig = {
@@ -48,9 +50,25 @@ export default function ChartArea({
   const periodPrefix =
     activePeriod === '일간'
       ? periodPrefixConfig[activePeriod]
-      : periodPrefixConfig[activePeriod] + (unit === 'AI' ? '' : ' 평균');
+      : periodPrefixConfig[activePeriod] + (unit === 'AI' || unit === 'Kg' ? '' : ' 평균');
 
   const unitInfo = unitConfig[unit];
+
+  const valueNormaize = () => {
+    const num = toNum(value) || 0;
+
+    if (unit === 'Kg') {
+      return num === 0 ? '-' : roundTo1(num);
+    }
+
+    if (unit === 'Kcal') {
+      return Math.round(num);
+    }
+
+    return roundTo1(num);
+  };
+
+  // console.log("value", value)
 
   return (
     <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>
@@ -79,12 +97,14 @@ export default function ChartArea({
         </article>
       )}
 
-      {value && unit !== 'AI' && (
+      {value !== null && value !== undefined && unit !== 'AI' && (
         <article className='flex items-end gap-2'>
           <span className='text-2xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}
           </span>
-          <span className='text-4xl font-bold'>{value}</span>
+          <span className='text-4xl font-bold'>
+            {valueNormaize() ?? 0}
+          </span>
           <span className='text-2xl font-bold'> {unitInfo.postfix}</span>
         </article>
       )}

@@ -9,7 +9,7 @@ import { ko } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
+// 컴포넌트
 import DateHeader from '@/components/common/DateHeader';
 import OnBoarding from '@/components/common/OnBoarding';
 import Modal from '@/components/Modal';
@@ -22,14 +22,20 @@ import CalorieHeader from './card/calorie/CalorieHeader';
 import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
 import WeightInput from './modal/WeightInput';
+// 훅
 import { useWeight } from '../../hooks/useWeight';
 import { usePageData } from '../../hooks/useMainPageData';
+import { useUserData } from '../../hooks/useUser';
+// 스토어
 import { useHomeStore } from '../../stores/useHomeStore';
+import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+// 아이디 호출
+import { callUserUid } from '@/utils/localStorage';
 
 registerLocale('ko', ko);
-const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
 
 export default function HomePage() {
+  const userId = callUserUid(); // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
   const navigate = useNavigate();
   // zustand에서 UI 상태
   const {
@@ -47,10 +53,12 @@ export default function HomePage() {
     goalWeight,
     setDailyData,
     waterData,
-    mealData,
+    mealData, // 필요한 부분 파싱된 데이터
   } = useHomeStore();
   const { saveWeightMutation } = useWeight(userId, selectedDate);
-  const { userData, dailyData, isLoading, isError } = usePageData(userId, selectedDate);
+  const { dailyData, dailyLoading } = usePageData(userId, selectedDate);
+  const { userData } = useUserData(userId, selectedDate);
+  const { clearFoods, addFood } = useSelectedFoodsStore();
 
   const {
     register,
@@ -71,7 +79,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (dailyData) {
-      setDailyData(dailyData, userData.age, userData.gender);
+      setDailyData(dailyData, userData);
     }
   }, [dailyData]);
 
@@ -211,13 +219,18 @@ export default function HomePage() {
                 });
               }}
               onUpdateMeal={(id, mealType) => {
+                clearFoods(); // zustand에 이미 저장되어있는 선택값 clear()
+                // selected zustand에 값 추가
+                const copy = dailyData.mealData[id].meals[mealType];
+                copy.map((meal) => addFood(meal));
                 navigate(`/meal/${mealType}/total`, {
-                  state: { date: selectedDate, formMain: true },
+                  state: { date: selectedDate },
                 });
               }}
               onAddWater={() => {
                 navigate(`/water`, { state: { date: selectedDate } });
               }}
+              wholeData={dailyData}
             />
           </div>
         </BaseCard>

@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { getCurrentTimePeriod } from '../../../data/timePeriods';
 import { useMeals } from '../../../hooks/useMeals';
 import { useNutritionAnalysis } from '../../../hooks/useNutritionAnalysis';
+import { subDays } from 'date-fns';
 
-const userId = 'yZxviIBudsaf8KYYhCCUWFpy3Ug1'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
+const userId = 'test-user'; // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
 export default function TestPage() {
-  const [searchType, setSearchType] = useState('daily');
-  const selectedDate = new Date('2025-09-10');
+  const [searchType, setSearchType] = useState('weekly');
+  const selectedDate = subDays(new Date(), 1);
   const currentTimePeriod = getCurrentTimePeriod(selectedDate);
 
   // 1. Firestore 에서 식단 가져오기
@@ -40,7 +41,7 @@ export default function TestPage() {
     <div className='p-[20px] flex flex-col justify-center item-center text-center'>
       <h1 className='font-bold text-2xl p-3'>🍎 스마트 식단 분석 Test</h1>
       <select
-        value={searchType || 'daily'}
+        value={searchType || 'weekly'}
         onChange={(e) => {
           setSearchType(e.target.value);
           // useMeals의 훅을 부르는것을 만들어야함

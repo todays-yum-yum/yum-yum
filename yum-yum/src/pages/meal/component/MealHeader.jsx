@@ -15,8 +15,16 @@ export default function FoodSearch({
   const navigate = useNavigate();
   const location = useLocation();
   const handleBack = () => {
-    // meal/${type} 페이지에서는 뒤로가기 클릭 시 무조건 메인으로
-    if (/^\/meal\/[^/]+$/.test(location.pathname)) {
+    if (
+      location.pathname.startsWith('/meal/custom') ||
+      location.pathname.startsWith('/meal/search')
+    ) {
+      // 등록폼, 검색창에서 뒤로가기 클릭 시 무조건 meal/${type}로
+      navigate(`/meal/${location.state?.type}`, {
+        state: { date: location.state?.date },
+      });
+    } else if (/^\/meal\/[^/]+$/.test(location.pathname)) {
+      // meal/${type} 에서 뒤로가기 클릭 시 무조건 메인으로
       navigate('/', { replace: true });
     } else {
       navigate(-1);

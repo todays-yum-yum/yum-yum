@@ -1,38 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getRecentFoods } from '@/services/FrequentFoodsApi';
+import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import EmptyState from '@/components/EmptyState';
 import FoodList from '../component/FoodList';
 
-const foodItems = [
-  {
-    id: '1',
-    foodName: '두유',
-    makerName: '',
-    foodWeight: '200',
-    foodCal: '110',
-  },
-  {
-    id: '2',
-    foodName: '약콩두유',
-    makerName: '대학두유',
-    foodWeight: '190',
-    foodCal: '100',
-  },
-  {
-    id: '3',
-    foodName: '약콩두유',
-    makerName: '대학두유',
-    foodWeight: '190',
-    foodCal: '100',
-  },
-];
+export default function FrequentlyEatenFood({ selectedIds, onToggleSelect }) {
+  const userId = callUserUid(); // 로그인한 유저 uid 가져오기
+  const [foodItems, setFoodItems] = useState([]);
 
-export default function FrequentlyEatenFood() {
-  const [selectedIds, setSelectedIds] = useState([]);
-  const handleToggleSelect = (id) => {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-    console.log(id);
-  };
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        const data = await getRecentFoods(userId);
+        setFoodItems(data);
+      } catch (error) {
+        console.error('불러오기 실패:', error);
+        throw error;
+      }
+    };
+    fetchFoods();
+  }, []);
 
   return (
     <div>
@@ -42,7 +30,7 @@ export default function FrequentlyEatenFood() {
             <FoodList
               variant='select'
               selectedIds={selectedIds}
-              onToggleSelect={handleToggleSelect}
+              onToggleSelect={onToggleSelect}
               items={foodItems}
             />
           ) : (

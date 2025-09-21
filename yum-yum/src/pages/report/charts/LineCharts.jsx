@@ -1,49 +1,96 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { formatTime, convertMlToL } from '@/utils/reportDataParser';
+import { toNum } from '@/utils/NutrientNumber';
+import { roundTo1 } from '@/utils/NutrientNumber';
 
-export default function LineCharts({ datas = [] }) {
-  const data = [
-    {
-      name: '일',
-      pv: 2400,
-    },
-    {
-      name: '월',
-      pv: 1398,
-    },
-    {
-      name: '화',
-      pv: 7800,
-    },
-    {
-      name: '수',
-      pv: 3908,
-    },
-    {
-      name: '목',
-      pv: 4800,
-    },
-    {
-      name: '금',
-      pv: 3800,
-    },
-    {
-      name: '토',
-      pv: 4300,
-    },
-  ];
+export default function LineCharts({ datas, activePeriod, unit }) {
+  const mapToChartData = (datas, period) => {
+    if (!datas || datas.length === 0) return [];
+
+    switch (period) {
+      case '일간': {
+        if (unit === 'L') {
+          const chartData = datas.flatMap((day) => {
+            if (!day.value || !Array.isArray(day.value.intakes)) return [];
+
+            return day.value.intakes.map((intake, idx) => ({
+              name: formatTime(toNum(intake.timestamp?.seconds || 0), period),
+              pv: roundTo1(convertMlToL(intake.amount ?? 0)),
+            }));
+          });
+
+          // 데이터가 없을 때 처리
+          if (chartData.length === 0) {
+            return [{ name: '데이터 없음', pv: 0 }];
+          }
+
+          return chartData;
+        } else if (unit === 'Kg') {
+          const chartData = datas.flatMap((days) => {
+            if (days.weight === null || days.weight === undefined) return [];
+
+            return {
+              name: days.date,
+              pv: roundTo1(days.weight ?? 0),
+            };
+          });
+
+          // 데이터가 없을 때 처리
+          if (chartData.length === 0) {
+            return [{ name: '데이터 없음', pv: 0 }];
+          }
+
+          return chartData;
+        }
+        return [];
+      }
+
+      case '주간': {
+        if (unit === 'L') {
+          return datas.map((item) => ({
+            name: item?.date,
+            pv: roundTo1(convertMlToL(item.value?.dailyTotal ?? 0)),
+          }));
+        } else if (unit === 'Kg') {
+          return datas.map((item) => ({
+            name: item?.weekRange,
+            pv: roundTo1(item?.weight ?? 0),
+          }));
+        }
+        return [];
+      }
+      case '월간': {
+        if (unit === 'L') {
+          return datas.map((item) => ({
+            name: item?.weekRange, // ex: '9/1 ~ 9/7'
+            pv: roundTo1(convertMlToL(item.value?.avgDailyTotal ?? 0)),
+          }));
+        } else if (unit === 'Kg') {
+          return datas.map((item) => ({
+            name: item?.monthName,
+            pv: item?.weight,
+          }));
+        }
+
+        return [];
+      }
+      default:
+        return [];
+    }
+  };
+
+  const chartLabel = unit === 'L' ? '섭취량' : '체중';
+
+  const chartData = mapToChartData(datas, activePeriod);
+
+  // console.log(datas);
+  // console.log(chartData);
 
   return (
     <LineChart
       width={500}
       height={300}
-      data={data}
+      data={chartData}
       margin={{
         top: 5,
         right: 30,
@@ -54,8 +101,12 @@ export default function LineCharts({ datas = [] }) {
       <CartesianGrid strokeDasharray='3 3' />
       <XAxis dataKey='name' />
       <YAxis />
-      <Tooltip />
-      <Line type='monotone' dataKey='pv' stroke='#8884d8' activeDot={{ r: 8 }} />
+      <Tooltip
+        formatter={(value, name) => {
+          return [`${value} ${unit}`, name];
+        }}
+      />
+      <Line type='monotone' name={chartLabel} dataKey='pv' stroke='#F407A8' activeDot={{ r: 8 }} />
     </LineChart>
   );
 }

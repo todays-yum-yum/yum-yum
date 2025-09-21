@@ -1,15 +1,19 @@
 import clsx from 'clsx';
 import React from 'react';
+import { calculateNutrientRatio } from '../../../utils/calorieCalculator';
+import { toNum } from '../../../utils/NutrientNumber';
+import { roundTo1 } from '@/utils/NutrientNumber';
+
 
 function InfoData({ label, percent, value, isSub }) {
-  const textStyle = clsx('w-30 font-bold text-2xl', isSub && 'text-gray-500 text-xl font-normal');
-
+  const textStyle = clsx('font-bold text-2xl', isSub && 'text-gray-500 text-xl font-normal');
   // 음식 정보 상세
+
   return (
     <div className='w-full flex flex-row items-center justify-around'>
-      <span className={textStyle}>{label}</span>
-      <span className={clsx(textStyle, 'text-center')}>{percent === '' ? percent : ''} </span>
-      <span className={clsx(textStyle, 'text-right')}>{value}</span>
+      <span className={clsx(textStyle, 'w-35')}>{label}</span>
+      <span className={clsx(textStyle, 'text-center', 'w-20')}>{percent ? percent + "%" : ''} </span>
+      <span className={clsx(textStyle, 'text-right', 'w-35')}>{value}</span>
     </div>
   );
 }
@@ -30,52 +34,56 @@ function InfoSection({ rowData }) {
 }
 
 export default function NutritionInfo({ nutritionData }) {
-  // 매핑 필드
+  // console.log(nutritionData)
+
+  const {carbsRatio, proteinsRatio, fatsRatio} = calculateNutrientRatio(nutritionData.totalCarbs, nutritionData.totalProtein, nutritionData.totalFat)
+
+    // 매핑 필드
   const nutritionMapping = [
     {
       label: '총 열량',
       percent: '',
-      value: `${nutritionData.kcal} Kcal`,
+      value: `${Math.round(nutritionData.totalCalories ?? 0)} Kcal`,
     },
     {
       label: '탄수화물',
-      percent: '40%',
-      value: `${nutritionData.carbs} g`,
+      percent: toNum(carbsRatio),
+      value: `${roundTo1(nutritionData.totalCarbs ?? 0)} g`,
       subs: [
-        { label: '당류', value: `${nutritionData.sugar} g`, isSub: true },
-        { label: '대체감미료', value: `${nutritionData.sweetener} g`, isSub: true },
-        { label: '식이섬유', value: `${nutritionData.fiber} g`, isSub: true },
+        { label: '당류', value: `${roundTo1(nutritionData.totalSugar ?? 0)} g`, isSub: true },
+        { label: '대체감미료', value: `${roundTo1(nutritionData.totalSweetener ?? 0)} g`, isSub: true },
+        { label: '식이섬유', value: `${roundTo1(nutritionData.totalFiber ?? 0)} g`, isSub: true },
       ],
     },
     {
       label: '단백질',
-      percent: '30%',
-      value: `${nutritionData.protein} g`,
+      percent: toNum(proteinsRatio),
+      value: `${roundTo1(nutritionData.totalProtein?? 0)} g`,
     },
     {
       label: '지방',
-      percent: '30%',
-      value: `${nutritionData.fat} g`,
+      percent:  toNum(fatsRatio),
+      value: `${roundTo1(nutritionData.totalFat ?? 0)} g`,
       subs: [
-        { label: '포화지방산', value: `${nutritionData.satFat} g`, isSub: true },
-        { label: '트랜스지방', value: `${nutritionData.transFat} g`, isSub: true },
-        { label: '불포화지방', value: `${nutritionData.unsatFat} g`, isSub: true },
+        { label: '포화지방산', value: `${roundTo1(nutritionData.totalSaturatedFat ?? 0)} g`, isSub: true },
+        { label: '트랜스지방', value: `${roundTo1(nutritionData.totalTransFat ?? 0)} g`, isSub: true },
+        { label: '불포화지방', value: `${roundTo1(nutritionData.totalUnsaturatedFat?? 0)} g`, isSub: true },
       ],
     },
     {
       label: '콜레스테롤',
       percent: '',
-      value: `${nutritionData.cholesterol} mg`,
+      value: `${roundTo1(nutritionData.totalCholesterol ?? 0)} mg`,
     },
     {
       label: '나트륨',
       percent: '',
-      value: `${nutritionData.sodium} mg`,
+      value: `${roundTo1(nutritionData.totalSodium ?? 0)} mg`,
     },
     {
       label: '카페인',
       percent: '',
-      value: `${nutritionData.caffeine} mg`,
+      value: `${roundTo1(nutritionData.totalCaffeine ?? 0)} mg`,
     },
   ];
 

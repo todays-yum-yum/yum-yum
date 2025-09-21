@@ -1,24 +1,21 @@
 import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
 import { addCustomFood } from '@/services/customFoodsApi';
-import { useSelectedFoodsStore } from '../../../stores/useSelectedFoodsStore';
+import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
+import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
 import BasicButton from '@/components/button/BasicButton';
 import Input from '@/components/common/Input';
 import NutritionSection from '../component/NutritionSection';
 
-// 임시 유저 (나중에 useAuth로 대체)
-const mockUser = { uid: 'test-user' };
-
 export default function CustomEntryForm() {
+  const userId = callUserUid(); // 로그인한 유저 uid 가져오기
   const { setActiveTab } = useSelectedFoodsStore();
   const location = useLocation();
   const navigate = useNavigate();
-  const { mealType } = useParams();
-
   const selectedDate = location.state?.date || new Date();
 
   const {
@@ -44,26 +41,23 @@ export default function CustomEntryForm() {
 
     // const user = auth.currentUser;
 
-    const newFoodData = createCustomFood(mockUser.uid);
+    const newFoodData = createCustomFood(userId);
     // const newFoodData = createCustomFood(user.uid);
 
     try {
-      const newFoodId = await addCustomFood(mockUser.uid, newFoodData);
+      const newFoodId = await addCustomFood(userId, newFoodData);
       // const newFoodId = await addCustomFood(user.uid, newFoodData);
 
       reset();
       toast.success('등록 되었습니다!');
       setActiveTab('custom');
-      navigate(`/meal/${mealType}`, {
+      navigate(-1, {
         state: { date: selectedDate },
       });
-
-      console.log(newFoodId);
     } catch (error) {
       alert('등록 실패');
       console.error(error);
     }
-    console.log(newFoodData);
   };
   return (
     <div>
