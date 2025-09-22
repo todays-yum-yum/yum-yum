@@ -9,8 +9,6 @@ import {
 } from '@/hooks/useReportData';
 import { useUserData } from '@/hooks/useUser';
 
-import { normalizeDataRange, waterDataSummary } from '@/utils/reportDataParser';
-import { getWaterMonthlyAverages } from '@/utils/reportDataParser';
 import { callUserUid } from '@/utils/localStorage';
 import { useReportStore } from '@/stores/useReportStore';
 

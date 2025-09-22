@@ -8,9 +8,8 @@ import {
   useMonthlyReportData,
 } from '@/hooks/useReportData';
 import { useUserData } from './../../../hooks/useUser';
-import { getPeriodLastData, getWeightYearlyData, normalizeDataRange } from '../../../utils/reportDataParser';
-import { getWeightWeeklyData, getWeightMonthlyData } from './../../../utils/reportDataParser';
 import { callUserUid } from '@/utils/localStorage';
+import { useReportStore } from '../../../stores/useReportStore';
 
 const userId = callUserUid();
 export default function WeightReportPage({
@@ -22,6 +21,9 @@ export default function WeightReportPage({
   next,
   canMove,
 }) {
+    const { currentWeight, weightData, setCurrentWeight, setDailyWeightData, setWeeklyWeightData, setMonthlyWeightData } =
+      useReportStore();
+
   const {
     dailyData,
     isLoading: daliyIsLoading,
@@ -39,9 +41,6 @@ export default function WeightReportPage({
   } = useMonthlyReportData(userId, originDate);
   const { userData } = useUserData(userId, originDate);
 
-  const [currentWeight, setCurrentWeight] = useState(0);
-  const [weights, setWeights] = useState([])
-
   const onPrevPeriod = () => {
     prev();
   };
@@ -52,42 +51,25 @@ export default function WeightReportPage({
 
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
-      const normalizedWaters = normalizeDataRange(
-        dailyData?.weightData ?? [],
-        originDate,
-        activePeriod,
-      );
 
-      setCurrentWeight(getPeriodLastData(normalizedWaters).weight)
-      setWeights(getWeightWeeklyData(normalizedWaters, originDate))
-
-      // console.log(getWeightWeeklyData(normalizedWaters, originDate))
+      setCurrentWeight(dailyData, originDate, activePeriod)
+      setDailyWeightData(dailyData, originDate, activePeriod)
     }
   }, [dailyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '주간' && weeklyData) {
-      const normalizedWaters = normalizeDataRange(
-        weeklyData?.weightData ?? [],
-        originDate,
-        activePeriod,
-      );
 
-      setCurrentWeight(getPeriodLastData(normalizedWaters)?.weight);
-      setWeights(getWeightMonthlyData(normalizedWaters, originDate))
+      setCurrentWeight(weeklyData, originDate, activePeriod)
+      setWeeklyWeightData(weeklyData, originDate, activePeriod)
     }
   }, [weeklyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '월간' && monthlyData) {
-      const normalizedWaters = normalizeDataRange(
-        monthlyData?.weightData ?? [],
-        originDate,
-        activePeriod,
-      );
 
-      setCurrentWeight(getPeriodLastData(normalizedWaters).weight);
-      setWeights(getWeightYearlyData(normalizedWaters, originDate))
+      setCurrentWeight(monthlyData, originDate, activePeriod)
+      setMonthlyWeightData(monthlyData, originDate, activePeriod)
     }
   }, [monthlyData, activePeriod, originDate]);
 
@@ -104,10 +86,10 @@ export default function WeightReportPage({
         canMove={canMove}
         onPeriodChange={setActivePeriod}
       >
-        <LineCharts datas={weights} activePeriod={activePeriod} unit='Kg' />
+        <LineCharts datas={weightData} activePeriod={activePeriod} unit='Kg' />
       </ChartArea>
       <section>
-        <WaterWeightInfo period={activePeriod} date={fullDate} total={currentWeight} datas={weights} unit='Kg' />
+        <WaterWeightInfo period={activePeriod} date={fullDate} total={currentWeight} datas={weightData} unit='Kg' />
       </section>
     </main>
   );

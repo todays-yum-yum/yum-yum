@@ -1,5 +1,17 @@
 import { create } from 'zustand';
-import { normalizeDataRange, dataSummary, getAllMealsSorted, waterDataSummary, getWaterMonthlyAverages } from '@/utils/reportDataParser';
+import {
+  normalizeDataRange,
+  dataSummary,
+  getAllMealsSorted,
+  waterDataSummary,
+  getWaterMonthlyAverages,
+} from '@/utils/reportDataParser';
+import {
+  getPeriodLastData,
+  getWeightMonthlyData,
+  getWeightWeeklyData,
+  getWeightYearlyData,
+} from '../utils/reportDataParser';
 
 export const useReportStore = create((set, get) => ({
   // UI
@@ -19,6 +31,13 @@ export const useReportStore = create((set, get) => ({
   watersData: [],
   calculatedWater: {},
   totalWaters: 0,
+
+  // 체중 데이터
+
+  originWeightData: null,
+
+  currentWeight: 0,
+  weightData: [],
 
   // 식단
   setNutrients: (data, originDate, activePeriod) => {
@@ -49,22 +68,65 @@ export const useReportStore = create((set, get) => ({
   // 수분량
   setWatersData: (data, originDate, activePeriod) => {
     const water = normalizeDataRange(data?.waterData ?? [], originDate, activePeriod);
-    console.log(water)
+    console.log(water);
     set({ watersData: water, originalMealData: data?.waterData });
   },
 
   setMonthlyWatersData: (data, originDate, activePeriod) => {
-    const normalizedWaters = normalizeDataRange(data?.waterData ?? [], originDate, activePeriod)
+    const normalizedWaters = normalizeDataRange(data?.waterData ?? [], originDate, activePeriod);
     const weeklyAverages = getWaterMonthlyAverages(normalizedWaters, originDate);
 
     set({ watersData: weeklyAverages, originalMealData: data?.waterData });
   },
 
   setCalcuatWatersData: (data, originDate, activePeriod) => {
-    const water = waterDataSummary(normalizeDataRange(data?.waterData ?? [], originDate, activePeriod), originDate);
-    set({ calculatedWater: water, totalWaters:water?.totalWaters, originalMealData: data?.waterData });
+    const water = waterDataSummary(
+      normalizeDataRange(data?.waterData ?? [], originDate, activePeriod),
+      originDate,
+    );
+    set({
+      calculatedWater: water,
+      totalWaters: water?.totalWaters,
+      originalMealData: data?.waterData,
+    });
   },
 
   resetWaters: () => set({ watersData: [], calculatedWater: null }),
 
+  // 체중
+  setCurrentWeight: (data, originDate, activePeriod) => {
+    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weightData = getPeriodLastData(weight).weight;
+
+    set({
+      currentWeight: weightData,
+    });
+  },
+
+  setDailyWeightData: (data, originDate, activePeriod) => {
+    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weightData = getWeightWeeklyData(weight, originDate);
+
+    set({
+      weightData: weightData,
+    });
+  },
+
+  setWeeklyWeightData: (data, originDate, activePeriod) => {
+    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weightData = getWeightMonthlyData(weight, originDate);
+
+    set({
+      weightData: weightData,
+    });
+  },
+
+  setMonthlyWeightData: (data, originDate, activePeriod) => {
+    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weightData = getWeightYearlyData(weight, originDate);
+
+    set({
+      weightData: weightData,
+    });
+  },
 }));
