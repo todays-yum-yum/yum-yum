@@ -38,7 +38,7 @@ function createPrompt(meals) {
 }
 
 // AI API 호출 함수
-export async function generateNutritionAnalysis(userId, meals) {
+export async function generateNutritionAnalysis(userId, meals, dataHash) {
   if (!meals) {
     // meals에 아무것도 없을 때
     return {
@@ -63,7 +63,7 @@ export async function generateNutritionAnalysis(userId, meals) {
       timePeriod: getCurrentTimePeriod()?.name || 'Unknown',
     };
     // DB 저장
-    saveNutritionAnalysis(userId, data, meals.type);
+    saveNutritionAnalysis(userId, data, meals.type, dataHash);
 
     return data;
   } catch (error) {
@@ -99,13 +99,14 @@ export async function generateNutritionAnalysisWithBackoff(meals) {
 }
 
 // 1번 호출한 AI Api는 DB에서 호출
-export async function fetchAIResultWithCache(userId, meals) {
+export async function fetchAIResultWithCache(userId, meals, dataHash) {
   try {
     const aiRef = collection(firestore, 'users', userId, 'aimessage');
     const aiQuery = query(
       aiRef,
       where('date', '==', getTodayKey(meals.date)),
       where('messageType', '==', meals.type),
+      where('dataHash', '==', dataHash),
       orderBy('createdAt', 'desc'),
       limit(1),
     );
@@ -178,7 +179,7 @@ export async function getSelectedData(userId, selectedDate, type) {
 }
 
 // AI 메시지 로그 저장
-export async function saveNutritionAnalysis(userId, analysis, type) {
+export async function saveNutritionAnalysis(userId, analysis, type, dataHash) {
   const colRef = collection(firestore, 'users', userId, 'aimessage');
   try {
     const docRef = await addDoc(colRef, {
@@ -187,6 +188,7 @@ export async function saveNutritionAnalysis(userId, analysis, type) {
       message: analysis.text,
       createdAt: new Date(),
       updatedAt: new Date(),
+      dataHash,
     });
     return {
       success: true,
