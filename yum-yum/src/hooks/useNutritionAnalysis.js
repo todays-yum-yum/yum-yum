@@ -42,7 +42,7 @@ export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTi
         .catch(console.error);
     }
     // meals.date, meals.type 만 deps 에 넣어야 객체 참조 변경으로 재실행되는 걸 방지
-  }, [meals.date, meals.type, periodKey, today, dataHash, query]);
+  }, [meals.date, meals.type, periodKey, today, dataHash, query, queryClient, queryKey]);
 
   // 3) “이미 캐시가 있으면 fetchAIResultWithCache” useEffect
   //    → 한번만 실행할 수 있게 플래그로 또 막아주자
