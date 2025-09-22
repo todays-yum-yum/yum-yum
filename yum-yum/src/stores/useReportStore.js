@@ -13,6 +13,13 @@ import {
   getWeightYearlyData,
 } from '../utils/reportDataParser';
 
+const searchConfig = {
+  일간: 'daily',
+  주간: 'weekly',
+  월간: 'monthly',
+};
+
+
 export const useReportStore = create((set, get) => ({
   // UI
 
@@ -38,6 +45,12 @@ export const useReportStore = create((set, get) => ({
 
   currentWeight: 0,
   weightData: [],
+
+  // ai
+  searchType: '',
+
+  nutrientionReport: {},
+
 
   // 식단
   setNutrients: (data, originDate, activePeriod) => {
@@ -129,4 +142,18 @@ export const useReportStore = create((set, get) => ({
       weightData: weightData,
     });
   },
+
+  // ai
+  setSearchType: (activePeriod) => {
+    set({
+      searchType: searchConfig[activePeriod],
+    });
+  },
+
+  setNutrientionReport: (data) => {
+    set({
+      nutrientionReport: data
+    });
+  }
+
 }));

@@ -8,6 +8,7 @@ import { getCurrentTimePeriod } from '../../../data/timePeriods';
 
 import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
 import { callUserUid } from '@/utils/localStorage';
+import { useReportStore } from '../../../stores/useReportStore';
 
 const searchConfig = {
   일간: 'daily',
@@ -25,6 +26,8 @@ export default function AiReportPage({
   next,
   canMove,
 }) {
+  const { searchType, nutrientionReport, setSearchType, setNutrientionReport } = useReportStore();
+
   const parsedDate = parseDateString(originDate);
 
   const now = new Date();
@@ -32,7 +35,7 @@ export default function AiReportPage({
     parsedDate.year,
     parsedDate.month - 1,
     parsedDate.date,
-    // 19,0,0,0, 
+    // 19,0,0,0,
     now.getHours(),
     now.getMinutes(),
     now.getSeconds(),
@@ -41,8 +44,6 @@ export default function AiReportPage({
   const selectedDate = getTodayKey(newDate);
 
   const currentTimePeriod = getCurrentTimePeriod(newDate);
-  const [searchType, setSearchType] = useState(searchConfig[activePeriod]);
-  const [nutritionResults, setNutritionResults] = useState({});
 
   // 1. Firestore 에서 식단 가져오기
   const {
@@ -71,13 +72,13 @@ export default function AiReportPage({
   };
 
   useEffect(() => {
-    setSearchType(searchConfig[activePeriod]);
-    setNutritionResults([])
+    setSearchType(activePeriod);
+    setNutrientionReport([]);
   }, [activePeriod]);
 
   useEffect(() => {
-    setNutritionResults(data)
-  }, [data])
+    setNutrientionReport(data);
+  }, [data]);
 
   // useEffect(() => {
   //   console.log(nutritionResults)
@@ -109,8 +110,8 @@ export default function AiReportPage({
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}
 
               {!(mealsLoading || mealsError || isLoading) &&
-                (nutritionResults?.text ? (
-                  nutritionResults.text
+                (nutrientionReport?.text ? (
+                  nutrientionReport.text
                     .split('.')
                     .filter(Boolean)
                     .map((sentence, idx) => (
