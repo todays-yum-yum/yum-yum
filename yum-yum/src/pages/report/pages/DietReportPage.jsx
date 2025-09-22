@@ -114,13 +114,13 @@ export default function DietReportPage({
       setSortedByNutrients(dailyData, originDate, activePeriod, 'protein');
       setSortedByNutrients(dailyData, originDate, activePeriod, 'fat');
     } else if (activePeriod === '주간') {
-      setSortedByNutrients(dailyData, originDate, activePeriod, 'carbs');
-      setSortedByNutrients(dailyData, originDate, activePeriod, 'protein');
-      setSortedByNutrients(dailyData, originDate, activePeriod, 'fat');
+      setSortedByNutrients(weeklyData, originDate, activePeriod, 'carbs');
+      setSortedByNutrients(weeklyData, originDate, activePeriod, 'protein');
+      setSortedByNutrients(weeklyData, originDate, activePeriod, 'fat');
     } else if (activePeriod === '월간') {
-      setSortedByNutrients(dailyData, originDate, activePeriod, 'carbs');
-      setSortedByNutrients(dailyData, originDate, activePeriod, 'protein');
-      setSortedByNutrients(dailyData, originDate, activePeriod, 'fat');
+      setSortedByNutrients(monthlyData, originDate, activePeriod, 'carbs');
+      setSortedByNutrients(monthlyData, originDate, activePeriod, 'protein');
+      setSortedByNutrients(monthlyData, originDate, activePeriod, 'fat');
     }
   }, [nutrients]);
 

@@ -19,7 +19,6 @@ const searchConfig = {
   월간: 'monthly',
 };
 
-
 export const useReportStore = create((set, get) => ({
   // UI
 
