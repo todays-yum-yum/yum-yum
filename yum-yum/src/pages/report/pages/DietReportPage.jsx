@@ -22,8 +22,6 @@ import {
 } from '@/hooks/useReportData';
 
 // 유틸
-import { dataSummary, normalizeDataRange } from '@/utils/reportDataParser';
-import { getAllMealsSorted } from '@/utils/reportDataParser';
 import { toNum } from '@/utils/NutrientNumber';
 import { roundTo1 } from '@/utils/NutrientNumber';
 import { useUserData } from '@/hooks/useUser';
@@ -40,7 +38,14 @@ export default function DietReportPage({
   canMove,
 }) {
   // 데이터
-  const { nutrients, setNutrients } = useReportStore();
+  const {
+    nutrients,
+    mealSortedByCarbs,
+    mealSortedByFat,
+    mealSortedByProtein,
+    setNutrients,
+    setSortedByNutrients,
+  } = useReportStore();
 
   const {
     dailyData,
@@ -63,11 +68,7 @@ export default function DietReportPage({
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
 
-  // 영양정보, 탄단지 내림차순 정보
-  const [carbsSortedFoods, setCarbsSortedFoods] = useState([]);
-  const [proteinSortedFoods, setProteinSortedFoods] = useState([]);
-  const [fatSortedFoods, setFatSortedFoods] = useState([]);
-
+  // 이전, 다음 기간 함수
   const onPrevPeriod = () => {
     prev();
   };
@@ -83,14 +84,13 @@ export default function DietReportPage({
     지방: <Fat />,
   };
 
+  // 단위 기간 별 영양소 정렬
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
       setNutrients(dailyData, originDate, activePeriod);
-
       setActiveDetailTab('영양 정보');
     }
 
-    console.log(dailyData);
   }, [dailyData, activePeriod, originDate]);
 
   useEffect(() => {
@@ -102,75 +102,25 @@ export default function DietReportPage({
 
   useEffect(() => {
     if (activePeriod === '월간' && monthlyData) {
-      setNutrients(monthlyData?.mealData, originDate, activePeriod);
+      setNutrients(monthlyData, originDate, activePeriod);
       setActiveDetailTab('영양 정보');
     }
   }, [monthlyData, activePeriod, originDate]);
 
+  // 단위 기간 별, 영양소 내림차순 정렬
   useEffect(() => {
     if (activePeriod === '일간') {
-      setCarbsSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
-          'carbs',
-        ),
-      );
-
-      setProteinSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
-          'protein',
-        ),
-      );
-
-      setFatSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod),
-          'fat',
-        ),
-      );
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'carbs');
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'protein');
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'fat');
     } else if (activePeriod === '주간') {
-      setCarbsSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
-          'carbs',
-        ),
-      );
-
-      setProteinSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
-          'protein',
-        ),
-      );
-
-      setFatSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod),
-          'fat',
-        ),
-      );
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'carbs');
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'protein');
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'fat');
     } else if (activePeriod === '월간') {
-      setCarbsSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod),
-          'carbs',
-        ),
-      );
-
-      setProteinSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod),
-          'protein',
-        ),
-      );
-
-      setFatSortedFoods(
-        getAllMealsSorted(
-          normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod),
-          'fat',
-        ),
-      );
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'carbs');
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'protein');
+      setSortedByNutrients(dailyData, originDate, activePeriod, 'fat');
     }
   }, [nutrients]);
 
@@ -178,19 +128,19 @@ export default function DietReportPage({
   const topChart = [
     {
       name: '탄수화물',
-      food: carbsSortedFoods ?? [],
+      food: mealSortedByCarbs ?? [],
       goal: 120,
       total: roundTo1(toNum(nutrients.totalCarbs)),
     },
     {
       name: '단백질',
-      food: proteinSortedFoods ?? [],
+      food: mealSortedByProtein ?? [],
       goal: 120,
       total: roundTo1(toNum(nutrients.totalProtein)),
     },
     {
       name: '지방',
-      food: fatSortedFoods ?? [],
+      food: mealSortedByFat ?? [],
       goal: 50,
       total: roundTo1(toNum(nutrients.totalFat)),
     },
