@@ -35,7 +35,7 @@ export default function MealPage() {
 
   // 돋보기 아이콘 클릭, 엔터
   const handleSearchSubmit = () => {
-    console.log(searchInputValue);
+    // console.log(searchInputValue);
     // FoodSearchResult.jsx 페이지로 이동
     navigate(`/meal/search`, {
       state: { searchInputValue, type, date },

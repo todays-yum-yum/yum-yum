@@ -23,7 +23,7 @@ export default function FoodSearchResultsPage() {
   // 음식 검색
   useEffect(() => {
     if (searchData) {
-      console.log('검색결과:', searchData);
+      // console.log('검색결과:', searchData);
       setSearchFoodResults(searchData);
     }
   }, [searchData]);
