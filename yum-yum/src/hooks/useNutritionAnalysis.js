@@ -27,12 +27,11 @@ export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTi
       // 로컬스토리지 플래그만 보고 fetchAIResultWithCache 로 조회
       const alreadyRun = hasExecutedInTimePeriod(today, periodKey, dataHash);
       // 2. 가능하면 우선 DB cache 조회
-      if (!isCached || alreadyRun) {
+      if (alreadyRun) {
         const cached = await fetchAIResultWithCache(userId, {
           date: selectedDate,
           type: meals.type,
         });
-        console.log('cached', cached);
         // DB에 성공적으로 들어있는 데이터가 있으면 리턴
         if (cached?.success) {
           return cached;
