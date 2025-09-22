@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ChartArea from '../components/ChartArea';
+import { useReportStore } from '@/stores/useReportStore';
+
 // 차트
 import PieCharts from '../charts/PieCharts';
 import StackedCharts from '../charts/stackedCharts';
@@ -38,6 +40,8 @@ export default function DietReportPage({
   canMove,
 }) {
   // 데이터
+  const { nutrients, setNutrients } = useReportStore();
+
   const {
     dailyData,
     isLoading: daliyIsLoading,
@@ -53,14 +57,13 @@ export default function DietReportPage({
     isLoading: monthlyIsLoading,
     isError: monthlyIsError,
   } = useMonthlyReportData(userId, originDate);
-    const { userData } = useUserData(userId, originDate);
+  const { userData } = useUserData(userId, originDate);
 
   // 상세 정보 토글버튼
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
 
   // 영양정보, 탄단지 내림차순 정보
-  const [nutrient, setNutrient] = useState({});
   const [carbsSortedFoods, setCarbsSortedFoods] = useState([]);
   const [proteinSortedFoods, setProteinSortedFoods] = useState([]);
   const [fatSortedFoods, setFatSortedFoods] = useState([]);
@@ -82,27 +85,24 @@ export default function DietReportPage({
 
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
-      setNutrient(
-        dataSummary(normalizeDataRange(dailyData?.mealData ?? [], originDate, activePeriod)),
-      );
+      setNutrients(dailyData, originDate, activePeriod);
+
       setActiveDetailTab('영양 정보');
     }
+
+    console.log(dailyData);
   }, [dailyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '주간' && weeklyData) {
-      setNutrient(
-        dataSummary(normalizeDataRange(weeklyData?.mealData ?? [], originDate, activePeriod)),
-      );
+      setNutrients(weeklyData, originDate, activePeriod);
       setActiveDetailTab('영양 정보');
     }
   }, [weeklyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '월간' && monthlyData) {
-      setNutrient(
-        dataSummary(normalizeDataRange(monthlyData?.mealData ?? [], originDate, activePeriod)),
-      );
+      setNutrients(monthlyData?.mealData, originDate, activePeriod);
       setActiveDetailTab('영양 정보');
     }
   }, [monthlyData, activePeriod, originDate]);
@@ -172,7 +172,7 @@ export default function DietReportPage({
         ),
       );
     }
-  }, [nutrient]);
+  }, [nutrients]);
 
   // 스택 차트, 영양정보, 영양소별 음식 정보 매핑
   const topChart = [
@@ -180,19 +180,19 @@ export default function DietReportPage({
       name: '탄수화물',
       food: carbsSortedFoods ?? [],
       goal: 120,
-      total: roundTo1(toNum(nutrient.totalCarbs)),
+      total: roundTo1(toNum(nutrients.totalCarbs)),
     },
     {
       name: '단백질',
       food: proteinSortedFoods ?? [],
       goal: 120,
-      total: roundTo1(toNum(nutrient.totalProtein)),
+      total: roundTo1(toNum(nutrients.totalProtein)),
     },
     {
       name: '지방',
       food: fatSortedFoods ?? [],
       goal: 50,
-      total: roundTo1(toNum(nutrient.totalFat)),
+      total: roundTo1(toNum(nutrients.totalFat)),
     },
   ];
 
@@ -204,7 +204,7 @@ export default function DietReportPage({
         date={fullDate}
         period='일간'
         unit='Kcal'
-        value={nutrient?.totalCalories ?? 0}
+        value={nutrients?.totalCalories ?? 0}
         activePeriod={activePeriod}
         prevDate={onPrevPeriod}
         nextDate={onNextPeriod}
@@ -212,7 +212,7 @@ export default function DietReportPage({
         onPeriodChange={setActivePeriod}
       >
         {/* 탄단지 비율 차트 */}
-        <PieCharts data={nutrient} />
+        <PieCharts data={nutrients} />
       </ChartArea>
 
       {/* 영양 정보 & 영양소별 음식 토글 버튼*/}
@@ -233,7 +233,7 @@ export default function DietReportPage({
       {/*  영양 정보 & 영양소별 음식 영역  */}
       <section className='flex flex-col items-center justify-center'>
         {/* 영양 정보 */}
-        {activeDetailTab === '영양 정보' && <NutritionInfo nutritionData={nutrient} />}
+        {activeDetailTab === '영양 정보' && <NutritionInfo nutritionData={nutrients} />}
 
         {/* 영양소 별 음식 */}
         {activeDetailTab === '영양소 별 음식' && (
