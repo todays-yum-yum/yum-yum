@@ -25,7 +25,8 @@ export default function WaterReportPage({
   canMove,
 }) {
   // 데이터
-  const { watersData, totalWaters, setWatersData, setCalcuatWatersData } = useReportStore();
+  const { watersData, totalWaters, setWatersData, setMonthlyWatersData, setCalcuatWatersData, resetWaters } =
+    useReportStore();
 
   const {
     dailyData,
@@ -44,31 +45,28 @@ export default function WaterReportPage({
   } = useMonthlyReportData(userId, originDate);
   const { userData } = useUserData(userId, originDate);
 
-  const [calcWater, setCalcWater] = useState({});
-
-  // useEffect(() => {
-  //   setWatersData([]);
-  //   setCalcuatWatersData(null);
-  // }, [activePeriod]);
+  useEffect(() => {
+    resetWaters();
+  }, [activePeriod]);
 
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
       setWatersData(dailyData, originDate, activePeriod);
-      setCalcWater(dailyData, originDate, activePeriod);
+      setCalcuatWatersData(dailyData, originDate, activePeriod);
     }
   }, [dailyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '주간' && weeklyData) {
       setWatersData(weeklyData, originDate, activePeriod);
-      setCalcWater(weeklyData, originDate, activePeriod);
+      setCalcuatWatersData(weeklyData, originDate, activePeriod);
     }
   }, [weeklyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '월간' && monthlyData) {
-      setWatersData(monthlyData, originDate, activePeriod);
-      setCalcWater(monthlyData, originDate, activePeriod);
+      setMonthlyWatersData(monthlyData, originDate, activePeriod);
+      setCalcuatWatersData(monthlyData, originDate, activePeriod);
     }
   }, [monthlyData, activePeriod, originDate]);
 

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { normalizeDataRange, dataSummary, getAllMealsSorted, waterDataSummary } from '@/utils/reportDataParser';
+import { normalizeDataRange, dataSummary, getAllMealsSorted, waterDataSummary, getWaterMonthlyAverages } from '@/utils/reportDataParser';
 
 export const useReportStore = create((set, get) => ({
   // UI
@@ -39,7 +39,7 @@ export const useReportStore = create((set, get) => ({
     };
 
     const mappedType = typeMapping[types];
-    console.log(data);
+
     set({
       originalMealData: data?.mealData,
       [`mealSortedBy${mappedType}`]: meal,
@@ -49,12 +49,22 @@ export const useReportStore = create((set, get) => ({
   // 수분량
   setWatersData: (data, originDate, activePeriod) => {
     const water = normalizeDataRange(data?.waterData ?? [], originDate, activePeriod);
+    console.log(water)
     set({ watersData: water, originalMealData: data?.waterData });
   },
 
+  setMonthlyWatersData: (data, originDate, activePeriod) => {
+    const normalizedWaters = normalizeDataRange(data?.waterData ?? [], originDate, activePeriod)
+    const weeklyAverages = getWaterMonthlyAverages(normalizedWaters, originDate);
+
+    set({ watersData: weeklyAverages, originalMealData: data?.waterData });
+  },
+
   setCalcuatWatersData: (data, originDate, activePeriod) => {
-    const water = waterDataSummary(normalizeDataRange(data?.waterData ?? [], originDate, activePeriod));
+    const water = waterDataSummary(normalizeDataRange(data?.waterData ?? [], originDate, activePeriod), originDate);
     set({ calculatedWater: water, totalWaters:water?.totalWaters, originalMealData: data?.waterData });
   },
+
+  resetWaters: () => set({ watersData: [], calculatedWater: null }),
 
 }));
