@@ -26,10 +26,14 @@ export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTi
       const alreadyRun = hasExecutedInTimePeriod(today, periodKey, dataHash);
       // 2. 가능하면 우선 DB cache 조회
       if (alreadyRun) {
-        const cached = await fetchAIResultWithCache(userId, {
-          date: selectedDate,
-          type: meals.type,
-        });
+        const cached = await fetchAIResultWithCache(
+          userId,
+          {
+            date: selectedDate,
+            type: meals.type,
+          },
+          dataHash,
+        );
         // DB에 성공적으로 들어있는 데이터가 있으면 리턴
         if (cached?.success) {
           return cached;
@@ -37,7 +41,7 @@ export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTi
       }
 
       // 3. DB에 없거나 아직 한번도 안 실행한 경우 AI 생성
-      const fresh = await generateNutritionAnalysis(userId, meals);
+      const fresh = await generateNutritionAnalysis(userId, meals, dataHash);
       // 로컬스토리지에 이 시간대 생성완료 표시
       // markExecutedInTimePeriod(today, periodKey, dataHash);
       return fresh;
