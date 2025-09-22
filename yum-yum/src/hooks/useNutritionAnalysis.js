@@ -4,8 +4,6 @@ import { generateNutritionAnalysis, fetchAIResultWithCache } from '../services/n
 import { generateDataHash } from '../utils/hashUtils';
 import { getTodayKey } from '../utils/dateUtils';
 import { hasExecutedInTimePeriod, markExecutedInTimePeriod } from '@/utils/localStorage';
-import { useEffect, useState } from 'react';
-import { is } from 'date-fns/locale';
 
 export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTimePeriod) => {
   const queryClient = useQueryClient();
