@@ -11,7 +11,6 @@ import { useUserData } from './../../../hooks/useUser';
 import { callUserUid } from '@/utils/localStorage';
 import { useReportStore } from '../../../stores/useReportStore';
 
-const userId = callUserUid();
 export default function WeightReportPage({
   originDate,
   fullDate,
@@ -21,7 +20,9 @@ export default function WeightReportPage({
   next,
   canMove,
 }) {
-    const { currentWeight, weightData, setCurrentWeight, setDailyWeightData, setWeeklyWeightData, setMonthlyWeightData } =
+  const userId = callUserUid();
+
+  const { currentWeight, weightData, setCurrentWeight, setDailyWeightData, setWeeklyWeightData, setMonthlyWeightData } =
       useReportStore();
 
   const {

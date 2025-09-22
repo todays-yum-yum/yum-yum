@@ -12,7 +12,6 @@ import { useUserData } from '@/hooks/useUser';
 import { callUserUid } from '@/utils/localStorage';
 import { useReportStore } from '@/stores/useReportStore';
 
-const userId = callUserUid();
 export default function WaterReportPage({
   originDate,
   fullDate,
@@ -23,6 +22,8 @@ export default function WaterReportPage({
   canMove,
 }) {
   // 데이터
+  const userId = callUserUid();
+  
   const { watersData, totalWaters, setWatersData, setMonthlyWatersData, setCalcuatWatersData, resetWaters } =
     useReportStore();
 

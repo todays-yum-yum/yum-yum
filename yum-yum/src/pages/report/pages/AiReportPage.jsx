@@ -16,7 +16,6 @@ const searchConfig = {
   월간: 'monthly',
 };
 
-const userId = callUserUid();
 export default function AiReportPage({
   originDate,
   fullDate,
@@ -26,6 +25,8 @@ export default function AiReportPage({
   next,
   canMove,
 }) {
+  const userId = callUserUid();
+  
   const { searchType, nutrientionReport, setSearchType, setNutrientionReport } = useReportStore();
 
   const parsedDate = parseDateString(originDate);
