@@ -3,16 +3,17 @@ import { formatTime, convertMlToL } from '@/utils/reportDataParser';
 import { toNum, roundTo1 } from '@/utils/NutrientNumber';
 
 export default function LineCharts({ datas, activePeriod, unit }) {
+
   const mapToChartData = (datas, period) => {
     if (!datas || datas.length === 0) return [];
 
     switch (period) {
       case '일간': {
         if (unit === 'L') {
-          const chartData = datas.flatMap((day) => {
-            if (!day.value || !Array.isArray(day.value.intakes)) return [];
+          const chartData = datas.flatMap((days) => {
+            if (!days.value || !Array.isArray(days.value.intakes)) return [];
 
-            return day.value.intakes.map((intake, idx) => ({
+            return days.value.intakes.map((intake, idx) => ({
               name: formatTime(toNum(intake.timestamp?.seconds || 0), period),
               pv: roundTo1(convertMlToL(intake.amount ?? 0)),
             }));
@@ -60,7 +61,8 @@ export default function LineCharts({ datas, activePeriod, unit }) {
       }
       case '월간': {
         if (unit === 'L') {
-          return datas.map((item) => ({
+          return datas.map((item) => (
+            {
             name: item?.weekRange, // ex: '9/1 ~ 9/7'
             pv: roundTo1(convertMlToL(item.value?.avgDailyTotal ?? 0)),
           }));
