@@ -39,8 +39,8 @@ function createPrompt(meals) {
 
 // AI API 호출 함수
 export async function generateNutritionAnalysis(userId, meals, dataHash) {
-  if (!meals) {
-    // meals에 아무것도 없을 때
+  // meals에 아무것도 없을 때
+  if (meals.mealBreakdown.length === 0 || !meals.totalNutrition) {
     return {
       text: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요!',
       timestamp: new Date().toISOString(),

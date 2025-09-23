@@ -1,6 +1,4 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
-import { useWeight } from '@/hooks/useWeight';
 
 export default function WeightInput({ register, errors }) {
   return (

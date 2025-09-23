@@ -1,5 +1,5 @@
 // 유저 로그인 & 회원가입 상태 확인 훅
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { checkUserEmail, loginUser, registerUser, addUserFireStore } from '../services/userApi';
 import { useUserStore } from '../stores/useUserStore';
@@ -44,7 +44,7 @@ export default function useAuth() {
     setLoading(true);
     clearError();
     const result = await checkUserEmail({ userId });
-    console.log(result);
+    // console.log(result);
     return {
       result: result,
       message: result ? '중복된 이메일입니다.' : '사용가능한 이메일입니다.',

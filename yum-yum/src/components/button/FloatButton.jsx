@@ -22,6 +22,7 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
           <RoundButton
             onClick={() => {
               // navigate('/water');
+              isClose();
               navigate(`/water`, { state: { date: selectedDate } });
             }}
             color='gray'
@@ -32,6 +33,7 @@ export default function FloatButton({ onClick, isOpen, isClose, disabled }) {
           </RoundButton>
           <RoundButton
             onClick={() => {
+              isClose();
               setModalOpen(true);
             }}
             color='gray'
