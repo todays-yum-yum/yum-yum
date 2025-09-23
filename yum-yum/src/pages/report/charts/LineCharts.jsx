@@ -1,9 +1,8 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { formatTime, convertMlToL } from '@/utils/reportDataParser';
-import { toNum, roundTo1 } from '@/utils/NutrientNumber';
+import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 
 export default function LineCharts({ datas, activePeriod, unit }) {
-
   const mapToChartData = (datas, period) => {
     if (!datas || datas.length === 0) return [];
 
@@ -61,8 +60,7 @@ export default function LineCharts({ datas, activePeriod, unit }) {
       }
       case '월간': {
         if (unit === 'L') {
-          return datas.map((item) => (
-            {
+          return datas.map((item) => ({
             name: item?.weekRange, // ex: '9/1 ~ 9/7'
             pv: roundTo1(convertMlToL(item.value?.avgDailyTotal ?? 0)),
           }));

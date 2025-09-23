@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { roundTo1, strToNum } from '@/utils/NutrientNumber';
+import { roundTo1, strToNum } from '@/utils/nutrientNumber';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 // 컴포넌트
 import Modal from '@/components/Modal';

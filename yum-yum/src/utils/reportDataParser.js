@@ -10,7 +10,7 @@ import {
   parseDateString,
   parseKeyDateString,
 } from './dateUtils';
-import { toNum } from './NutrientNumber';
+import { toNum } from './nutrientNumber';
 import { ko } from 'date-fns/locale';
 
 export function normalizeDataRange(rawData, selectedDate, period) {
@@ -207,17 +207,12 @@ export const getWaterMonthlyAverages = (monthlyData, selectedDate) => {
   });
 };
 
-
-
 // ----
 
 export const getPeriodLastData = (datas) => {
   // console.log("data", datas)
-  
-  const validData = datas.filter(
-    (data) =>
-      data.value !== 0
-  );
+
+  const validData = datas.filter((data) => data.value !== 0);
 
   if (validData.length === 0) {
     return {
@@ -226,15 +221,13 @@ export const getPeriodLastData = (datas) => {
     };
   }
   const dataLength = validData.length;
-  const lastData = validData[dataLength - 1]
+  const lastData = validData[dataLength - 1];
 
-  const changesLength = lastData?.value?.changes.length
-  const lastDataWeight = lastData?.value?.changes[changesLength - 1]
+  const changesLength = lastData?.value?.changes.length;
+  const lastDataWeight = lastData?.value?.changes[changesLength - 1];
 
   return lastDataWeight;
-}
-
-
+};
 
 export const getWeightWeeklyData = (weeklyData, selectedDate) => {
   const { year, month, date } = parseDateString(selectedDate);
@@ -267,60 +260,57 @@ export const getWeightMonthlyData = (weightData, selectedDate) => {
   const { year, month } = parseDateString(selectedDate);
   const monthStart = new Date(year, month - 1, 1);
   const monthEnd = new Date(year, month, 0);
-  
-  const weeks = eachWeekOfInterval(
-    { start: monthStart, end: monthEnd },
-    { weekStartsOn: 0 }
-  );
-  
+
+  const weeks = eachWeekOfInterval({ start: monthStart, end: monthEnd }, { weekStartsOn: 0 });
+
   return weeks.map((weekStart, index) => {
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
-    
-    const weekWeightData = weightData.filter(item => {
+
+    const weekWeightData = weightData.filter((item) => {
       const itemDate = new Date(item.date);
 
       if (item.value === 0) return false;
 
       return itemDate >= weekStart && itemDate <= weekEnd && item.value !== 0;
     });
-    
-    const lastData = weekWeightData[weekWeightData.length - 1]?.value?.changes;
-    const lastWeight = weekWeightData[weekWeightData.length - 1]?.value?.changes[lastData.length - 1].weight
 
-    
+    const lastData = weekWeightData[weekWeightData.length - 1]?.value?.changes;
+    const lastWeight =
+      weekWeightData[weekWeightData.length - 1]?.value?.changes[lastData.length - 1].weight;
+
     return {
       week: index + 1,
       weekRange: `${format(weekStart, 'M/d')} ~ ${format(weekEnd, 'M/d')}`,
       weight: lastWeight || 0,
-      measurementDays: weekWeightData.length
+      measurementDays: weekWeightData.length,
     };
   });
 };
 
-
 export const getWeightYearlyData = (weightData, selectedDate) => {
   const { year } = parseDateString(selectedDate);
-  
+
   return Array.from({ length: 12 }, (_, monthIndex) => {
     const monthStart = new Date(year, monthIndex, 1);
     const monthEnd = new Date(year, monthIndex + 1, 0);
     // const monthString = format(monthStart, 'yyyy-MM');
-    
+
     // 해당 월의 체중 데이터들
-    const monthWeightData = weightData.filter(item => {
+    const monthWeightData = weightData.filter((item) => {
       const itemDate = new Date(item.date);
-      return itemDate >= monthStart && itemDate <= monthEnd  && item.value !== 0;
+      return itemDate >= monthStart && itemDate <= monthEnd && item.value !== 0;
     });
 
     const lastData = monthWeightData[monthWeightData.length - 1]?.value?.changes;
-    const lastWeight = monthWeightData[monthWeightData.length - 1]?.value?.changes[lastData.length - 1].weight;
+    const lastWeight =
+      monthWeightData[monthWeightData.length - 1]?.value?.changes[lastData.length - 1].weight;
     return {
       month: monthIndex + 1,
-      monthName: format(monthStart, 'MMM', { locale: ko }), 
+      monthName: format(monthStart, 'MMM', { locale: ko }),
       weight: lastWeight || 0,
-      measurementDays: monthWeightData.length
+      measurementDays: monthWeightData.length,
     };
-  })
+  });
   // .filter(month => month.measurementDays > 0);
 };
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { calculateNutrientRatio } from '@/utils/calorieCalculator';
-import { toNum, roundTo1 } from '@/utils/NutrientNumber';
-
+import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 
 function InfoData({ label, percent, value, isSub }) {
   const textStyle = clsx('font-bold text-2xl', isSub && 'text-gray-500 text-xl font-normal');
@@ -11,7 +10,9 @@ function InfoData({ label, percent, value, isSub }) {
   return (
     <div className='w-full flex flex-row items-center justify-around'>
       <span className={clsx(textStyle, 'w-35')}>{label}</span>
-      <span className={clsx(textStyle, 'text-center', 'w-20')}>{percent ? percent + "%" : ''} </span>
+      <span className={clsx(textStyle, 'text-center', 'w-20')}>
+        {percent ? percent + '%' : ''}{' '}
+      </span>
       <span className={clsx(textStyle, 'text-right', 'w-35')}>{value}</span>
     </div>
   );
@@ -35,9 +36,13 @@ function InfoSection({ rowData }) {
 export default function NutritionInfo({ nutritionData }) {
   // console.log(nutritionData)
 
-  const {carbsRatio, proteinsRatio, fatsRatio} = calculateNutrientRatio(nutritionData.totalCarbs, nutritionData.totalProtein, nutritionData.totalFat)
+  const { carbsRatio, proteinsRatio, fatsRatio } = calculateNutrientRatio(
+    nutritionData.totalCarbs,
+    nutritionData.totalProtein,
+    nutritionData.totalFat,
+  );
 
-    // 매핑 필드
+  // 매핑 필드
   const nutritionMapping = [
     {
       label: '총 열량',
@@ -50,23 +55,39 @@ export default function NutritionInfo({ nutritionData }) {
       value: `${roundTo1(nutritionData.totalCarbs ?? 0)} g`,
       subs: [
         { label: '당류', value: `${roundTo1(nutritionData.totalSugar ?? 0)} g`, isSub: true },
-        { label: '대체감미료', value: `${roundTo1(nutritionData.totalSweetener ?? 0)} g`, isSub: true },
+        {
+          label: '대체감미료',
+          value: `${roundTo1(nutritionData.totalSweetener ?? 0)} g`,
+          isSub: true,
+        },
         { label: '식이섬유', value: `${roundTo1(nutritionData.totalFiber ?? 0)} g`, isSub: true },
       ],
     },
     {
       label: '단백질',
       percent: toNum(proteinsRatio),
-      value: `${roundTo1(nutritionData.totalProtein?? 0)} g`,
+      value: `${roundTo1(nutritionData.totalProtein ?? 0)} g`,
     },
     {
       label: '지방',
-      percent:  toNum(fatsRatio),
+      percent: toNum(fatsRatio),
       value: `${roundTo1(nutritionData.totalFat ?? 0)} g`,
       subs: [
-        { label: '포화지방산', value: `${roundTo1(nutritionData.totalSaturatedFat ?? 0)} g`, isSub: true },
-        { label: '트랜스지방', value: `${roundTo1(nutritionData.totalTransFat ?? 0)} g`, isSub: true },
-        { label: '불포화지방', value: `${roundTo1(nutritionData.totalUnsaturatedFat?? 0)} g`, isSub: true },
+        {
+          label: '포화지방산',
+          value: `${roundTo1(nutritionData.totalSaturatedFat ?? 0)} g`,
+          isSub: true,
+        },
+        {
+          label: '트랜스지방',
+          value: `${roundTo1(nutritionData.totalTransFat ?? 0)} g`,
+          isSub: true,
+        },
+        {
+          label: '불포화지방',
+          value: `${roundTo1(nutritionData.totalUnsaturatedFat ?? 0)} g`,
+          isSub: true,
+        },
       ],
     },
     {

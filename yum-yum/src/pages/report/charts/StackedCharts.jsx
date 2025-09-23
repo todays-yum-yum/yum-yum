@@ -1,7 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, CartesianGrid } from 'recharts';
-import { toNum } from '@/utils/NutrientNumber';
-import { roundTo1 } from '@/utils/NutrientNumber';
+import { roundTo1, toNum } from '@/utils/nutrientNumber';
 
 export default function StackedCharts({ foodData }) {
   // 상위 3개와 기타 색상 팔레트

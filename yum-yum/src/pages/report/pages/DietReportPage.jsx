@@ -22,8 +22,7 @@ import {
 } from '@/hooks/useReportData';
 
 // 유틸
-import { toNum } from '@/utils/NutrientNumber';
-import { roundTo1 } from '@/utils/NutrientNumber';
+import { roundTo1, toNum } from '@/utils/nutrientNumber';
 import { useUserData } from '@/hooks/useUser';
 import { callUserUid } from '@/utils/localStorage';
 
