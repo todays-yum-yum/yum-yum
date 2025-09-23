@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { toNum } from '@/utils/WaterNumber';
+import { toNum } from '@/utils/waterNumber';
 import { callUserUid } from '@/utils/localStorage';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
