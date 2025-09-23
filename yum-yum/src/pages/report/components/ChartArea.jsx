@@ -3,7 +3,7 @@ import RoundButton from '@/components/button/RoundButton';
 import PrevDateIcon from '@/assets/icons/icon-left.svg?react';
 import NextDateIcon from '@/assets/icons/icon-right.svg?react';
 import { roundTo1 } from '@/utils/NutrientNumber';
-import { toNum } from './../../../utils/NutrientNumber';
+import { toNum } from '@/utils/NutrientNumber';
 
 // 단위 기간별 접두어
 const periodPrefixConfig = {

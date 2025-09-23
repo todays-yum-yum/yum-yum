@@ -1,7 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { formatTime, convertMlToL } from '@/utils/reportDataParser';
-import { toNum } from '@/utils/NutrientNumber';
-import { roundTo1 } from '@/utils/NutrientNumber';
+import { toNum, roundTo1 } from '@/utils/NutrientNumber';
 
 export default function LineCharts({ datas, activePeriod, unit }) {
   const mapToChartData = (datas, period) => {

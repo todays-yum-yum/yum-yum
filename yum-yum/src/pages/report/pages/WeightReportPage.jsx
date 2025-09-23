@@ -7,9 +7,9 @@ import {
   useWeeklyReportData,
   useMonthlyReportData,
 } from '@/hooks/useReportData';
-import { useUserData } from './../../../hooks/useUser';
-import { getPeriodLastData, getWeightYearlyData, normalizeDataRange } from '../../../utils/reportDataParser';
-import { getWeightWeeklyData, getWeightMonthlyData } from './../../../utils/reportDataParser';
+import { useUserData } from '@/hooks/useUser';
+import { getPeriodLastData, getWeightYearlyData, normalizeDataRange } from '@/utils/reportDataParser';
+import { getWeightWeeklyData, getWeightMonthlyData } from '@/utils/reportDataParser';
 import { callUserUid } from '@/utils/localStorage';
 
 const userId = callUserUid();
