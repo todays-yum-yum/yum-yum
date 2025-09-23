@@ -1,5 +1,5 @@
 // 유저 로그인 & 회원가입 상태 확인 훅
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { checkUserEmail, loginUser, registerUser, addUserFireStore } from '../services/userApi';
 import { useUserStore } from '../stores/useUserStore';

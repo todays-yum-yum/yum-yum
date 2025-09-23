@@ -1,8 +1,7 @@
 // main페이지 데이터 상태, 호출 훅
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getUserData } from '../services/userApi';
-import { getDailyData } from '../services/dailyDataApi';
-import { getTodayKey } from '../utils/dateUtils';
+import { useQuery } from '@tanstack/react-query';
+import { getDailyData } from '@/services/dailyDataApi';
+import { getTodayKey } from '@/utils/dateUtils';
 
 export const usePageData = (userId, selectedDate) => {
   // 선택된 날짜의 물, 식사 데이터

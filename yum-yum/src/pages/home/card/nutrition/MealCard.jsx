@@ -1,6 +1,5 @@
 // 메인 식단(아침,점심,저녁) 기록 카드
 import React from 'react';
-import clsx from 'clsx';
 import CheckButton from './CheckButton';
 
 const MealCard = ({

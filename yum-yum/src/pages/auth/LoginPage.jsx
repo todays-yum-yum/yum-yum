@@ -1,11 +1,12 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+// 이미지
 import logoImage from '@/assets/images/Group99.png';
 // 컴포넌트
 import Input from '@/components/common/Input';
-import BasicButton from '../../components/button/BasicButton';
-import { useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';
+import BasicButton from '@/components/button/BasicButton';
+import useAuth from '@/hooks/useAuth';
 
 export default function LoginPage() {
   const { login: setLogin } = useAuth();
