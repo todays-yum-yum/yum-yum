@@ -1,8 +1,7 @@
-import clsx from 'clsx';
 import React from 'react';
-import { calculateNutrientRatio } from '../../../utils/calorieCalculator';
-import { toNum } from '../../../utils/NutrientNumber';
-import { roundTo1 } from '@/utils/NutrientNumber';
+import clsx from 'clsx';
+import { calculateNutrientRatio } from '@/utils/calorieCalculator';
+import { toNum, roundTo1 } from '@/utils/NutrientNumber';
 
 
 function InfoData({ label, percent, value, isSub }) {
