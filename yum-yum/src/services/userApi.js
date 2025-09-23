@@ -74,13 +74,11 @@ export async function loginUser({ userid, password }) {
       user,
     };
   } catch (error) {
-    throw new Error(error); // debug용
-    /*
-      return {
-        success: false,
-        error: error.message
-      }
-    */
+    //throw new Error(error); // debug용
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 }
 
@@ -117,11 +115,11 @@ export async function registerUser({ email, pw }) {
       user,
     };
   } catch (error) {
-    throw new Error('ERROR: ', error); // debug 용
-    // return {
-    //   success: false,
-    //   error: error.message
-    // }
+    //throw new Error('ERROR: ', error); // debug 용
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 }
 
@@ -160,10 +158,10 @@ export async function addUserFireStore(user) {
     };
   } catch (error) {
     console.log('error 발생!', error);
-    throw new Error('ERROR: ', error); // debug 용
-    // return {
-    //   success: false,
-    //   error: error.message
-    // }
+    //throw new Error('ERROR: ', error); // debug 용
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 }
