@@ -6,7 +6,7 @@ import { ko } from 'date-fns/locale';
 import { Timestamp } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
-import { toNum } from '@/utils/NutrientNumber';
+import { toNum } from '@/utils/nutrientNumber';
 import { saveMeal } from '@/services/mealApi';
 import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트

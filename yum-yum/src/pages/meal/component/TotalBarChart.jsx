@@ -1,7 +1,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, LabelList, Legend, ResponsiveContainer } from 'recharts';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
-import { toNum, roundTo1 } from '@/utils/NutrientNumber';
+import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 
 export default function TotalBarChart() {
   const { selectedFoods } = useSelectedFoodsStore();

@@ -1,6 +1,6 @@
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { firestore } from './firebase';
-import { toNum } from '@/utils/NutrientNumber';
+import { toNum } from '@/utils/nutrientNumber';
 import { format, subDays } from 'date-fns';
 import { callUserUid } from '@/utils/localStorage';
 const userId = callUserUid(); // 로그인한 유저 uid 가져오기
