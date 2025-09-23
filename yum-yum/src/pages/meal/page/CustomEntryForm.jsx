@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { addCustomFood } from '@/services/customFoodsApi';
-import { useCustomFoodStore } from '@/stores/useCustomFoodStore';
-import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+import { useForm } from 'react-hook-form';
 import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
@@ -13,57 +12,56 @@ import NutritionSection from '../component/NutritionSection';
 
 export default function CustomEntryForm() {
   const userId = callUserUid(); // 로그인한 유저 uid 가져오기
-  const { setActiveTab } = useSelectedFoodsStore();
   const location = useLocation();
   const navigate = useNavigate();
   const selectedDate = location.state?.date || new Date();
-
   const {
-    foodName,
-    foodSize,
-    foodUnit,
-    nutrient,
-    setField,
-    setNutrient,
+    register,
+    handleSubmit,
     reset,
-    validate,
-    createCustomFood,
-  } = useCustomFoodStore();
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      foodName: '',
+      servingSize: '',
+      servingUnit: 'g',
+      nutrient: {
+        kcal: null,
+        carbs: null,
+        sugar: null,
+        sweetener: null,
+        fiber: null,
+        protein: null,
+        fat: null,
+        satFat: null,
+        transFat: null,
+        unsatFat: null,
+        cholesterol: null,
+        sodium: null,
+        potassium: null,
+        caffeine: null,
+      },
+    },
+    mode: 'all',
+  });
 
-  // 페이지 들어올때 리셋
-  useEffect(() => {
-    reset();
-  }, [reset]);
-
-  // 등록 완료 버튼
-  const handleSubmitRegister = async () => {
-    if (!validate().ok) return;
-
-    // const user = auth.currentUser;
-
-    const newFoodData = createCustomFood(userId);
-    // const newFoodData = createCustomFood(user.uid);
-
+  const onSubmit = async (data) => {
     try {
-      const newFoodId = await addCustomFood(userId, newFoodData);
-      // const newFoodId = await addCustomFood(user.uid, newFoodData);
-
-      reset();
+      await addCustomFood(userId, data);
       toast.success('등록 되었습니다!');
-      setActiveTab('custom');
-      navigate(-1, {
-        state: { date: selectedDate },
-      });
+      reset();
+      navigate(-1, { state: { date: selectedDate } });
     } catch (error) {
       alert('등록 실패');
       console.error(error);
     }
   };
+
   return (
     <div>
       <MealHeader isRight={true}>직접 등록</MealHeader>
 
-      <div className='flex flex-col min-h-[calc(100vh-60px)]'>
+      <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col min-h-[calc(100vh-60px)]'>
         <div className='flex-1 flex flex-col gap-[24px] px-[20px]'>
           {/* 음식명 */}
           <div className='flex flex-col gap-[8px]'>
@@ -74,14 +72,20 @@ export default function CustomEntryForm() {
               id='foodName'
               placeholder='음식명 (최대 20자)'
               maxLength={20}
-              value={foodName}
-              onChange={(e) => setField('foodName', e.target.value)}
+              status={errors.foodName ? 'error' : 'default'}
+              {...register('foodName', {
+                required: '음식명을 입력해주세요.',
+                maxLength: { value: 20, message: '최대 20자까지 입력 가능합니다.' },
+              })}
             />
+            {errors.foodName && (
+              <p className='text-[var(--color-error)] text-sm'>{errors.foodName.message}</p>
+            )}
           </div>
 
           {/* 내용량 */}
           <div className='flex flex-col gap-[8px]'>
-            <label className='font-bold' htmlFor='foodSize'>
+            <label className='font-bold' htmlFor='servingSize'>
               내용량<span className='text-xs text-gray-500'>(1회 제공량 기준)</span>{' '}
               <strong className='font-extrabold text-secondary'>*</strong>
             </label>
@@ -90,33 +94,39 @@ export default function CustomEntryForm() {
               <Input
                 type='number'
                 noSpinner
-                id='foodSize'
+                id='servingSize'
                 maxLength={8}
-                value={foodSize}
-                onChange={(e) => setField('foodSize', e.target.value)}
+                status={errors.servingSize ? 'error' : 'default'}
+                {...register('servingSize', {
+                  required: '내용량을 입력해주세요.',
+                  min: { value: 0, message: '0 이상 입력해주세요' },
+                  max: { value: 10000, message: '10000 이하로 입력해주세요' },
+                })}
               />
 
               <select
-                value={foodUnit}
-                onChange={(e) => setField('foodUnit', e.target.value)}
+                {...register('servingUnit')}
                 className='w-full max-w-[226px] h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'
               >
                 <option value='g'>g</option>
                 <option value='ml'>ml</option>
               </select>
             </div>
+            {errors.servingSize && (
+              <p className='text-[var(--color-error)] text-sm'>{errors.servingSize.message}</p>
+            )}
           </div>
 
           {/* 영양정보 */}
-          <NutritionSection value={nutrient} onChange={(key, v) => setNutrient(key, v)} />
+          <NutritionSection register={register} errors={errors} />
         </div>
 
         <div className='sticky bottom-0 z-30 w-full max-w-[500px] p-[20px] bg-white'>
-          <BasicButton size='full' onClick={handleSubmitRegister} disabled={!validate().ok}>
+          <BasicButton size='full' type='submit'>
             등록 완료
           </BasicButton>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
