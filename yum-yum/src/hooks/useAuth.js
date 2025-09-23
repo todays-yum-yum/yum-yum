@@ -44,7 +44,7 @@ export default function useAuth() {
     setLoading(true);
     clearError();
     const result = await checkUserEmail({ userId });
-    console.log(result);
+    // console.log(result);
     return {
       result: result,
       message: result ? '중복된 이메일입니다.' : '사용가능한 이메일입니다.',
