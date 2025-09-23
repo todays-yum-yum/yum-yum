@@ -4,7 +4,7 @@ import { useReportStore } from '@/stores/useReportStore';
 
 // 차트
 import PieCharts from '../charts/PieCharts';
-import StackedCharts from '../charts/stackedCharts';
+import StackedCharts from '../charts/StackedCharts';
 import RoundButton from '@/components/button/RoundButton';
 import NutritionFood from '../components/NutritionFood';
 import NutritionInfo from '../components/NutritionInfo';

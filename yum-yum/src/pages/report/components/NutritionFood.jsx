@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import BasicButton from '@/components/button/BasicButton';
-import { toNum } from '../../../utils/NutrientNumber';
+import { toNum, roundTo1 } from '@/utils/NutrientNumber';
 import clsx from 'clsx';
-import { roundTo1 } from '@/utils/NutrientNumber';
+
 
 function FoodData({ foodName, percent, value, count }) {
   const textStyle = 'font-bold text-xl text-center';
