@@ -12,7 +12,7 @@ import { firestore } from './firebase'; //firestore 초기화
 import { getTodayKey } from '../utils/dateUtils';
 
 // 몸무게 저장
-export async function saveWeight({ userId, weight }) {
+export async function saveWeight({ userId, weight, date }) {
   try {
     if (!userId || typeof userId !== 'string') {
       throw new Error(`userId: ${userId}. 유저아이디는 string 값이어야 합니다.`);
@@ -23,12 +23,15 @@ export async function saveWeight({ userId, weight }) {
     // batch 사용
     const batch = writeBatch(firestore);
 
-    // users의 현재 체중 업데이트
-    const userRef = doc(firestore, 'users', userId);
-    batch.update(userRef, { weight: weight, updatedAt: serverTimestamp() });
-
-    // 현재 날짜
+    // 선택 날짜
+    const inputDate = getTodayKey(new Date(date));
+    // 오늘 날짜
     const today = getTodayKey(new Date());
+    // users의 현재 체중 업데이트
+    if (inputDate == today) {
+      const userRef = doc(firestore, 'users', userId);
+      batch.update(userRef, { weight: weight, updatedAt: serverTimestamp() });
+    }
 
     // 입력할 데이터
     const newChange = {
@@ -37,7 +40,7 @@ export async function saveWeight({ userId, weight }) {
     };
 
     // weight 문서 업데이트 혹은 추가
-    const weightDocRef = doc(firestore, 'users', userId, 'weight', today);
+    const weightDocRef = doc(firestore, 'users', userId, 'weight', inputDate);
 
     // 문서 존재 여부 확인
     const docSnapshot = await getDoc(weightDocRef);
@@ -48,7 +51,7 @@ export async function saveWeight({ userId, weight }) {
     } else {
       // 존재하지 않는 경우 새로 만듦
       batch.set(weightDocRef, {
-        date: today,
+        date: inputDate,
         changes: [newChange],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),

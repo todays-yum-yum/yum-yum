@@ -9,11 +9,11 @@ export default function WeightInput({ register, errors }) {
           className='w-28 text-gray-800 text-5xl font-extrabold text-center border-none outline-none no-spinner'
           placeholder='0'
           step='0.1'
-          min='0.0'
+          min='20'
           max='300'
           {...register('weight', {
             required: '체중을 입력해주세요',
-            min: { value: 0.1, message: '올바른 체중을 입력해주세요' },
+            min: { value: 20, message: '올바른 체중을 입력해주세요' },
             max: { value: 300, message: '300kg 이하로 입력해주세요' },
             pattern: {
               value: /^\d+\.?\d*$/,
