@@ -80,7 +80,6 @@ export const useReportStore = create((set, get) => ({
   // 수분량
   setWatersData: (data, originDate, activePeriod) => {
     const water = normalizeDataRange(data?.waterData ?? [], originDate, activePeriod);
-    console.log(water);
     set({ watersData: water, originalMealData: data?.waterData });
   },
 

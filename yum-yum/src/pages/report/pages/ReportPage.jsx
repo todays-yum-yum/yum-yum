@@ -145,7 +145,7 @@ export default function ReportPage() {
   };
 
   return (
-    <div className='bg-white'>
+    <div className='bg-white flex flex-col' >
       <nav className='flex flex-row gap-4 py-2.5 justify-center'>
         {reportTypes.map((type) => (
           <BasicButton
@@ -157,7 +157,7 @@ export default function ReportPage() {
           </BasicButton>
         ))}
       </nav>
-      <main>
+      <main >
         {CurrentComponent && (
           <CurrentComponent
             originDate={date}

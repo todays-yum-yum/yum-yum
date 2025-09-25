@@ -86,7 +86,7 @@ export default function AiReportPage({
   // },[nutritionResults])
 
   return (
-    <main className='flex flex-col gap-7.5'>
+    <main className='h-full flex flex-col gap-7.5'>
       <ChartArea
         date={fullDate}
         period='일간'
@@ -98,11 +98,11 @@ export default function AiReportPage({
         canMove={canMove}
         onPeriodChange={setActivePeriod}
       >
-        <section className='flex flex-col gap-2.5 w-90 pt-5 pb-5 pr-5 pl-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
+        <section className='flex flex-col flex-1 align-items justify-center gap-2.5 w-90 pt-5 pb-5 pr-5 pl-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
           <article className='flex flex-row items-center justify-center text-lg'>
             <LightBulbIcon /> AI 코치의 조언
           </article>
-          <article className='text-xl'>
+          <article className='text-xl '>
             <p className=''>
               {mealsLoading && <span>식단 불러오는 중…</span>}
               {mealsError && <span>식단 조회 실패: 다시 시도해주세요</span>}
