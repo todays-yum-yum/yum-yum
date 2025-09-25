@@ -2,16 +2,21 @@ import React, { useEffect, useState } from 'react';
 import ChartArea from '../components/ChartArea';
 import LineCharts from '../charts/LineCharts';
 import WaterWeightInfo from '../components/WaterWeightInfo';
+
+// 훅
 import {
   useDailyReportData,
   useWeeklyReportData,
   useMonthlyReportData,
 } from '@/hooks/useReportData';
 import { useUserData } from '@/hooks/useUser';
-import { getPeriodLastData, getWeightYearlyData, normalizeDataRange } from '@/utils/reportDataParser';
-import { getWeightWeeklyData, getWeightMonthlyData } from '@/utils/reportDataParser';
+
+// 유틸
 import { callUserUid } from '@/utils/localStorage';
+
+// 스토어
 import { useReportStore } from '@/stores/useReportStore';
+import { useHomeStore } from '@/stores/useHomeStore';
 
 export default function WeightReportPage({
   originDate,
@@ -26,6 +31,9 @@ export default function WeightReportPage({
 
   const { currentWeight, weightData, setCurrentWeight, setDailyWeightData, setWeeklyWeightData, setMonthlyWeightData } =
       useReportStore();
+
+  const {currentWeight : dailyCurrentWeight,
+    } = useHomeStore();
 
   const {
     dailyData,
@@ -44,6 +52,7 @@ export default function WeightReportPage({
   } = useMonthlyReportData(userId, originDate);
   const { userData } = useUserData(userId, originDate);
 
+  // 기간 변경
   const onPrevPeriod = () => {
     prev();
   };
@@ -52,10 +61,11 @@ export default function WeightReportPage({
     next();
   };
 
+  // 기간별 체중과 체중 비교 데이터 설정
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
-
-      setCurrentWeight(dailyData, originDate, activePeriod)
+      // 일간의 경우 사용자 정보의 현재 체중을 사용
+      setCurrentWeight(dailyCurrentWeight)
       setDailyWeightData(dailyData, originDate, activePeriod)
     }
   }, [dailyData, activePeriod, originDate]);

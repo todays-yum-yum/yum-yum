@@ -75,7 +75,7 @@ export default function ReportPage() {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
     
-    const urlParam = tabToParam[tabName]; // '수분' → 'water'
+    const urlParam = tabToParam[tabName]; 
     if (urlParam) {
       const url = new URL(window.location);
       url.searchParams.set('tab', urlParam);
