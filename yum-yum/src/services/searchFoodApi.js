@@ -37,23 +37,26 @@ const parseNutritionData = (jsonData) => {
     return [items]; // 단일 객체인 경우 배열로 변환
   }
   // 필요하면 더 추가
+  // console.log(items);
   return items.map((item) => {
     const { amount: size, unit } = parsedFoodSize(item.foodSize);
+    const { amount: serving, unit: servingUnit } = parsedFoodSize(item.nutConSrtrQua);
+    // console.log(size, unit, serving, servingUnit);
     return {
       id: item.foodCd,
       foodCode: item.foodCd, // 음식코드
       foodName: item.foodNm, // 음식명
       nutrient: {
-        kcal: parseFloat(item.enerc) || 0, // 칼로리
-        carbs: parseFloat(item.chocdf) || 0, // 탄수화물
-        fat: parseFloat(item.fatce) || 0, // 지방
-        sugar: parseFloat(item.sugar) || 0, // 당분
-        fiber: parseFloat(item.fibtg) || 0, // 식이섬유
-        satFat: parseFloat(item.fasat) || 0, // 포화 지방
-        transFat: parseFloat(item.fatrn) || 0, // 트랜스지방
-        cholesterol: parseFloat(item.chole) || 0, // 콜레스테롤
-        sodium: parseFloat(item.nat) || 0, // 나트륨
-        protein: parseFloat(item.prot) || 0, // 단백질
+        kcal: Math.round(parsedKcalAndNutrients(parseFloat(item.enerc), serving, size)) || 0, // 칼로리
+        carbs: parsedKcalAndNutrients(parseFloat(item.chocdf), serving, size) || 0, // 탄수화물
+        fat: parsedKcalAndNutrients(parseFloat(item.fatce), serving, size) || 0, // 지방
+        sugar: parsedKcalAndNutrients(parseFloat(item.sugar), serving, size) || 0, // 당분
+        fiber: parsedKcalAndNutrients(parseFloat(item.fibtg), serving, size) || 0, // 식이섬유
+        satFat: parsedKcalAndNutrients(parseFloat(item.fasat), serving, size) || 0, // 포화 지방
+        transFat: parsedKcalAndNutrients(parseFloat(item.fatrn), serving, size) || 0, // 트랜스지방
+        cholesterol: parsedKcalAndNutrients(parseFloat(item.chole), serving, size) || 0, // 콜레스테롤
+        sodium: parsedKcalAndNutrients(parseFloat(item.nat), serving, size) || 0, // 나트륨
+        protein: parsedKcalAndNutrients(parseFloat(item.prot), serving, size) || 0, // 단백질
       },
       foodSize: size, // 기준량
       foodUnit: unit, // 식품 양 단위
@@ -80,4 +83,9 @@ const parsedFoodSize = (foodSize) => {
     };
   }
   return { amount: null, unit: foodSize };
+};
+
+// 칼로리 및 영양정보 파싱 함수
+const parsedKcalAndNutrients = (food, serving, size) => {
+  return Number((food * (size / serving)).toFixed(2));
 };
