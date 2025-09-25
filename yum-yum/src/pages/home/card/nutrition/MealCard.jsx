@@ -35,7 +35,7 @@ const MealCard = ({
             <div className='flex-1'>
               <div className='flex items-center gap-2 mb-2'>
                 <h3 className='text-gray-800 text-xl font-extrabold'>{section.title}</h3>
-                {section.data.calories > 0 && (
+                {section.data.foods && section.data.foods.length > 0 && (
                   <div className='flex items-baseline gap-2'>
                     <span className='text-gray-800 text-2xl font-extrabold'>
                       {Math.round(section.data?.calories)}
@@ -49,9 +49,8 @@ const MealCard = ({
                 {section.data.foods || '아직 기록이 없습니다'}
               </p>
             </div>
-
             <CheckButton
-              hasData={section.data.calories > 0}
+              hasData={section.data.foods && section.data.foods.length > 0}
               onClick={() => {
                 if (section.data.calories > 0) {
                   onUpdateMeal(meals._id, section.key);
