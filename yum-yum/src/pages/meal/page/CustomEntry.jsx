@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 //훅
@@ -8,9 +8,9 @@ import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import EmptyState from '@/components/EmptyState';
 import FoodList from '../component/FoodList';
-// 아이콘
-import SearchIcon from '@/assets/icons/icon-search.svg?react';
-import ConfirmModal from '../../../components/modal/ConfirmModal';
+import ConfirmModal from '@/components/modal/ConfirmModal';
+import SearchBar from '../component/SearchBar';
+import RoundButton from '@/components/button/RoundButton';
 
 export default function CustomEntry({ selectedIds, onToggleSelect }) {
   const userId = callUserUid(); // 로그인한 유저 uid 가져오기
@@ -22,6 +22,20 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
   const [isEditing, setIsEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetFoodId, setTargetFoodId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // 실시간 필터링 - 검색어에 따른 음식 목록 필터링
+  const filteredFoodItems = useMemo(() => {
+    if (!searchQuery.trim()) return foodItems;
+
+    const regex = new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    return foodItems.filter((food) => regex.test(food.foodName));
+  }, [foodItems, searchQuery]);
+
+  // 검색어 변경 핸들러
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   // 직접 등록 폼으로 이동
   const handleCustomEntry = () => {
@@ -63,23 +77,26 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
     <div className='flex flex-col h-full'>
       <div className='sticky top-[118px] z-30'>
         {/* 직접 등록 버튼 */}
-        <div className='flex justify-between items-center px-5 py-3 bg-gray-50'>
-          <div className='flex gap-2 items-center'>
-            <div className='flex items-center justify-center'>
-              <SearchIcon />
-            </div>
-            <p className='text-gray-700'>찾는 음식이 없나요?</p>
-          </div>
+        <div className='flex justify-between items-center gap-[20px] px-5 py-3 bg-gray-50'>
+          {foodItems.length > 0 ? (
+            <SearchBar
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder='등록한 음식을 검색해보세요.'
+              className='flex-1'
+            />
+          ) : (
+            <p className='text-sm text-gray-500 font-bold'>
+              찾는 음식이 없나요? 직접 등록해보세요.
+            </p>
+          )}
 
-          <button
-            onClick={handleCustomEntry}
-            className='bg-secondary rounded-full text-white font-bold text-sm px-4 py-2'
-          >
+          <RoundButton color='secondary' onClick={handleCustomEntry}>
             직접 등록
-          </button>
+          </RoundButton>
         </div>
 
-        {foodItems.length > 0 && (
+        {foodItems.length > 0 && filteredFoodItems.length > 0 && (
           <div className='sticky top-[118px] flex items-center justify-between pt-4 px-5 bg-white'>
             <h4 className='font-extrabold'>{isEditing ? '직접 등록 편집' : '직접 등록'}</h4>
             <button onClick={handleToggleEdit} className='text-gray-500'>
@@ -89,18 +106,20 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
         )}
       </div>
 
-      <div className='flex flex-col min-h-[calc(100vh-266px)]'>
+      <div className='flex flex-col min-h-[calc(100vh-278px)]'>
         <div className='flex-1 px-[20px]'>
-          {foodItems.length > 0 ? (
+          {foodItems.length === 0 ? (
+            <EmptyState className='min-h-[calc(100vh-278px)]'>등록한 음식이 없어요</EmptyState>
+          ) : filteredFoodItems.length === 0 ? (
+            <EmptyState className='min-h-[calc(100vh-278px)]'>검색 결과가 없어요</EmptyState>
+          ) : (
             <FoodList
               variant={isEditing ? 'delete' : 'select'}
               selectedIds={selectedIds}
               onToggleSelect={onToggleSelect}
               onRemove={isEditing ? handleDeleteCustom : undefined}
-              items={foodItems}
+              items={filteredFoodItems}
             />
-          ) : (
-            <EmptyState className='min-h-[calc(100vh-266px)]'>등록한 음식이 없어요</EmptyState>
           )}
         </div>
       </div>
