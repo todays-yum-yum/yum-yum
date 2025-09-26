@@ -1,4 +1,5 @@
 import { firestore } from '@/services/firebase';
+import { callUserUid } from '@/utils/localStorage';
 import {
   collection,
   doc,
@@ -7,9 +8,11 @@ import {
   orderBy,
   query,
   getDocs,
+  deleteDoc,
 } from 'firebase/firestore';
-import { callUserUid } from '@/utils/localStorage';
+
 const userId = callUserUid(); // 로그인한 유저 uid 가져오기
+
 // 직접 입력 음식 등록
 export const addCustomFood = async (userId, newFoodData) => {
   try {
@@ -32,9 +35,8 @@ export const addCustomFood = async (userId, newFoodData) => {
 };
 
 // 집접 입력 음식 조회
-export const customFoodsList = async () => {
+export const getCustomFoods = async () => {
   try {
-    // const customFoodsCol = collection(firestore, 'users', userId, 'customFoods');
     const customFoodsCol = collection(firestore, 'users', userId, 'customFoods');
     const q = query(customFoodsCol, orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
@@ -47,7 +49,6 @@ export const customFoodsList = async () => {
         makerName: data?.makerName ?? '',
         foodSize: data?.servingSize ?? 0,
         foodUnit: data?.servingUnit ?? 'g',
-        // kcal: data.nutrient.kcal,
 
         nutrient: {
           kcal: data?.nutrient?.kcal ?? null,
@@ -73,4 +74,11 @@ export const customFoodsList = async () => {
     console.error('불러오기 중 오류 발생:', error);
     throw error;
   }
+};
+
+// 직접 입력 음식 삭제
+export const deleteCustomFood = async (userId, foodId) => {
+  const customFoodDoc = doc(firestore, 'users', userId, 'customFoods', foodId);
+  await deleteDoc(customFoodDoc);
+  return foodId;
 };
