@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 // 훅
 import { useCustomFoods } from '@/hooks/useCustomFoods';
 // 유틸
-import { toNum } from '@/utils/NutrientNumber';
+import { toNum } from '@/utils/nutrientNumber';
 import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
