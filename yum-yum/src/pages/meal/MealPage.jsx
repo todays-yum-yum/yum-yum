@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+// 스토어
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
-import FrequentlyEatenFood from './page/FrequentlyEatenFood';
-import CustomEntry from './page/CustomEntry';
 // 컴포넌트
 import MealHeader from './component/MealHeader';
 import MealTabs from './component/MealTabs';
 import BasicButton from '@/components/button/BasicButton';
+import FrequentlyEatenFood from './page/FrequentlyEatenFood';
+import CustomEntry from './page/CustomEntry';
 
 const tabItem = [
   { id: 'frequent', label: '최근 먹은 음식' },
@@ -60,7 +61,12 @@ export default function MealPage() {
       />
 
       <MealTabs activeTabId={activeTab} onChange={setActiveTab} tabItem={tabItem} />
-      {activeTab === 'frequent' ? <FrequentlyEatenFood /> : <CustomEntry />}
+      <div className={activeTab === 'frequent' ? 'block' : 'hidden'}>
+        <FrequentlyEatenFood />
+      </div>
+      <div className={activeTab === 'custom' ? 'block' : 'hidden'}>
+        <CustomEntry />
+      </div>
 
       <div className='sticky bottom-0 z-30 block w-full max-w-[500px] p-[20px] bg-white'>
         <BasicButton
