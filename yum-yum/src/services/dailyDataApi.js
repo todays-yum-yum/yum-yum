@@ -1,9 +1,10 @@
-import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from './firebase';
+import { getStartDateAndEndDate } from '../utils/dateUtils';
 
 export async function getDailyData(userId, selectedDate) {
   const date = new Date(selectedDate).toISOString().split('T')[0];
-  
+  const { start, end } = getStartDateAndEndDate(selectedDate, 'week');
   try {
     // 컬렉션 참조 생성
     const waterRef = collection(firestore, 'users', userId, 'water');
@@ -12,10 +13,15 @@ export async function getDailyData(userId, selectedDate) {
     // 쿼리 생성
     const waterQuery = query(waterRef, where('date', '==', date));
     const mealQuery = query(mealRef, where('date', '==', date));
-    const weightQuery = query(weightRef, where('date', '==', date));
+    // const weightQuery = query(weightRef, where('date', '==', date));
+    const weightQuery = query(weightRef, where('date', '>=', start), where('date', '<=', end));
 
     // 호출 Promise all
-    const [waterSnap, mealSnap, weightSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery), getDocs(weightQuery)]);
+    const [waterSnap, mealSnap, weightSnap] = await Promise.all([
+      getDocs(waterQuery),
+      getDocs(mealQuery),
+      getDocs(weightQuery),
+    ]);
 
     //데이터 추출
     const waterData = waterSnap.docs.map((doc) => ({
@@ -32,7 +38,7 @@ export async function getDailyData(userId, selectedDate) {
       id: doc.id,
       ...doc.data(),
     }));
-
+    // console.log('weightData: ', weightData);
     return {
       success: true,
       data: {
