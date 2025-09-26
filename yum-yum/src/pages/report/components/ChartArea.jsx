@@ -3,6 +3,7 @@ import RoundButton from '@/components/button/RoundButton';
 import PrevDateIcon from '@/assets/icons/icon-left.svg?react';
 import NextDateIcon from '@/assets/icons/icon-right.svg?react';
 import { roundTo1, toNum } from '@/utils/nutrientNumber';
+import clsx from 'clsx';
 
 // 단위 기간별 접두어
 const periodPrefixConfig = {
@@ -53,6 +54,8 @@ export default function ChartArea({
 
   const unitInfo = unitConfig[unit];
 
+  const areaStyle = clsx(unit === "AI" && 'h-[calc(100vh-190px)]');
+
   const valueNormaize = () => {
     const num = toNum(value) || 0;
 
@@ -70,7 +73,8 @@ export default function ChartArea({
   // console.log("value", value)
 
   return (
-    <section className='flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]'>
+    <section className={clsx(areaStyle,'flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)]' )}>
+      
       {/* 날짜 및 날짜 변경 버튼 */}
       {date && (
         <div className='flex flex-row gap-5 items-center'>
