@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 // 아이콘
 import PrevIcon from '@/assets/icons/icon-left.svg?react';
 import SearchIcon from '@/assets/icons/icon-search.svg?react';
+import CloseIcon from '@/assets/icons/icon-close.svg?react';
 
 export default function FoodSearch({
   variant = 'title',
@@ -55,6 +56,16 @@ export default function FoodSearch({
               if (e.key === 'Enter') handleSearchSubmit();
             }}
           />
+
+          {value && (
+            <button
+              type='button'
+              onClick={() => onChange({ target: { value: '' } })}
+              className='flex items-center justify-center bg-gray-300 rounded-full'
+            >
+              <CloseIcon className='p-1' />
+            </button>
+          )}
         </div>
       )}
 
