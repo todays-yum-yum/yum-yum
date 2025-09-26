@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import ChartArea from '../components/ChartArea';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
-import { getTodayKey, parseDateString } from '../../../utils/dateUtils';
-import { useMeals } from './../../../hooks/useMeals';
-import { useNutritionAnalysis } from './../../../hooks/useNutritionAnalysis';
-import { getCurrentTimePeriod } from '../../../data/timePeriods';
-
-import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
+import { getTodayKey, parseDateString } from '@/utils/dateUtils';
 import { callUserUid } from '@/utils/localStorage';
-import { useReportStore } from '../../../stores/useReportStore';
+
+import { useMeals } from '@/hooks/useMeals';
+import { useNutritionAnalysis } from '@/hooks/useNutritionAnalysis';
+
+import { getCurrentTimePeriod } from '@/data/timePeriods';
+import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
+import { useReportStore } from '@/stores/useReportStore';
+
+
 
 const searchConfig = {
   일간: 'daily',
@@ -104,9 +108,9 @@ export default function AiReportPage({
           </article>
           <article className='text-xl '>
             <p className=''>
-              {mealsLoading && <span>식단 불러오는 중…</span>}
+              {mealsLoading && <LoadingSpinner />}
               {mealsError && <span>식단 조회 실패: 다시 시도해주세요</span>}
-              {isLoading && <span>AI 결과 불러오는 중...</span>}
+              {isLoading && <LoadingSpinner />}
 
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}
 
