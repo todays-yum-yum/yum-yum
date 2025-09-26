@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatTime, convertMlToL } from '@/utils/reportDataParser';
 import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 
@@ -86,26 +86,37 @@ export default function LineCharts({ datas, activePeriod, unit }) {
   // console.log(chartData);
 
   return (
-    <LineChart
-      width={500}
-      height={300}
-      data={chartData}
-      margin={{
-        top: 5,
-        right: 30,
-        left: 20,
-        bottom: 5,
-      }}
-    >
-      <CartesianGrid strokeDasharray='3 3' />
-      <XAxis dataKey='name' />
-      <YAxis />
-      <Tooltip
-        formatter={(value, name) => {
-          return [`${value} ${unit}`, name];
-        }}
-      />
-      <Line type='monotone' name={chartLabel} dataKey='pv' stroke='#F407A8' activeDot={{ r: 8 }} />
-    </LineChart>
+    <div className='w-full h-80 px-3'>
+      {/* 반응형 리사이징 */}
+      <ResponsiveContainer width='100%' height='100%'>
+        <LineChart
+          width={500}
+          height={300}
+          data={chartData}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray='3 3' />
+          <XAxis dataKey='name' />
+          <YAxis />
+          <Tooltip
+            formatter={(value, name) => {
+              return [`${value} ${unit}`, name];
+            }}
+          />
+          <Line
+            type='monotone'
+            name={chartLabel}
+            dataKey='pv'
+            stroke='#F407A8'
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
