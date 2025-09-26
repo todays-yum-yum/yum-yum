@@ -32,7 +32,11 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
       orderBy('date'),
     );
 
-    const [waterSnap, mealSnap, weightSnap] = await Promise.all([getDocs(waterQuery), getDocs(mealQuery), getDocs(weightQuery)]);
+    const [waterSnap, mealSnap, weightSnap] = await Promise.all([
+      getDocs(waterQuery),
+      getDocs(mealQuery),
+      getDocs(weightQuery),
+    ]);
 
     const waterData = waterSnap.docs.map((doc) => ({
       id: doc.id,
@@ -44,7 +48,6 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
       ...doc.data(),
     }));
 
-    
     const weightData = weightSnap.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),

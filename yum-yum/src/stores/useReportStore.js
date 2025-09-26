@@ -50,7 +50,6 @@ export const useReportStore = create((set, get) => ({
 
   nutrientionReport: {},
 
-
   // 식단
   setNutrients: (data, originDate, activePeriod) => {
     const meal = dataSummary(normalizeDataRange(data?.mealData ?? [], originDate, activePeriod));
@@ -115,7 +114,7 @@ export const useReportStore = create((set, get) => ({
   },
 
   setDailyWeightData: (data, originDate, activePeriod) => {
-    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weight = normalizeDataRange(data?.weightData ?? [], originDate, '주간');
     const weightData = getWeightWeeklyData(weight, originDate);
 
     set({
@@ -150,8 +149,7 @@ export const useReportStore = create((set, get) => ({
 
   setNutrientionReport: (data) => {
     set({
-      nutrientionReport: data
+      nutrientionReport: data,
     });
-  }
-
+  },
 }));

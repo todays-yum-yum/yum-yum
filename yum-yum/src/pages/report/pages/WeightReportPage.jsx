@@ -17,6 +17,7 @@ import { callUserUid } from '@/utils/localStorage';
 // 스토어
 import { useReportStore } from '@/stores/useReportStore';
 import { useHomeStore } from '@/stores/useHomeStore';
+import { hasCurrentWeight } from '../../../utils/localStorage';
 
 export default function WeightReportPage({
   originDate,
@@ -29,11 +30,16 @@ export default function WeightReportPage({
 }) {
   const userId = callUserUid();
 
-  const { currentWeight, weightData, setCurrentWeight, setDailyWeightData, setWeeklyWeightData, setMonthlyWeightData } =
-      useReportStore();
-
-  const {currentWeight : dailyCurrentWeight,
-    } = useHomeStore();
+  const {
+    currentWeight,
+    weightData,
+    setCurrentWeight,
+    setDailyWeightData,
+    setWeeklyWeightData,
+    setMonthlyWeightData,
+  } = useReportStore();
+  // const { currentWeight: dailyCurrentWeight } = useHomeStore();
+  const dailyCurrentWeight = hasCurrentWeight();
 
   const {
     dailyData,
@@ -65,24 +71,22 @@ export default function WeightReportPage({
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
       // 일간의 경우 사용자 정보의 현재 체중을 사용
-      setCurrentWeight(dailyCurrentWeight, originDate, activePeriod)
-      setDailyWeightData(dailyData, originDate, activePeriod)
+      setCurrentWeight(dailyCurrentWeight, originDate, activePeriod);
+      setDailyWeightData(dailyData, originDate, activePeriod);
     }
   }, [dailyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '주간' && weeklyData) {
-
-      setCurrentWeight(weeklyData, originDate, activePeriod)
-      setWeeklyWeightData(weeklyData, originDate, activePeriod)
+      setCurrentWeight(weeklyData, originDate, activePeriod);
+      setWeeklyWeightData(weeklyData, originDate, activePeriod);
     }
   }, [weeklyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '월간' && monthlyData) {
-
-      setCurrentWeight(monthlyData, originDate, activePeriod)
-      setMonthlyWeightData(monthlyData, originDate, activePeriod)
+      setCurrentWeight(monthlyData, originDate, activePeriod);
+      setMonthlyWeightData(monthlyData, originDate, activePeriod);
     }
   }, [monthlyData, activePeriod, originDate]);
 
@@ -92,7 +96,7 @@ export default function WeightReportPage({
         date={fullDate}
         period='일간'
         unit='Kg'
-        value={currentWeight ?? 0}
+        value={dailyCurrentWeight ?? 0}
         activePeriod={activePeriod}
         prevDate={onPrevPeriod}
         nextDate={onNextPeriod}
@@ -102,7 +106,13 @@ export default function WeightReportPage({
         <LineCharts datas={weightData} activePeriod={activePeriod} unit='Kg' />
       </ChartArea>
       <section>
-        <WaterWeightInfo period={activePeriod} date={fullDate} total={currentWeight} datas={weightData} unit='Kg' />
+        <WaterWeightInfo
+          period={activePeriod}
+          date={fullDate}
+          total={dailyCurrentWeight}
+          datas={weightData}
+          unit='Kg'
+        />
       </section>
     </main>
   );
