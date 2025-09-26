@@ -135,7 +135,7 @@ const userDocData = (user) => {
     goals: {
       goal: user?.goals,
       targetExercise: user.targetExercise,
-      targetWeight: Number(user.targetWeight),
+      targetWeight: Number(user.targetWeight) || Number(user.weight), // 목표 체중이 없을 때 기존 체중과 동일하게 설정
     },
     height: Number(user.height),
     name: user.name,
