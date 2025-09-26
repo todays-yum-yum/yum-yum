@@ -1,4 +1,5 @@
 import React from 'react';
+// 유틸
 import { toNum } from '@/utils/NutrientNumber';
 // 컴포넌트
 import Input from '@/components/common/Input';
@@ -29,41 +30,38 @@ export default function NutritionSection({ register, errors }) {
 
       <div>
         {nutritionFields.map((f) => (
-          <div className='py-[12px]'>
+          <div key={f.id} className='py-[12px]'>
             <div
-              key={f.id}
               className={`flex gap-2 items-center  text-sm ${f.subtle ? 'border-none' : 'first:border-t-0 border-t border-gray-200'}`}
             >
               <label
                 className={`w-full max-w-[226px] ${f.subtle ? 'pl-[20px] text-gray-500' : ''}`}
                 htmlFor={f.id}
               >
-                {f.label}{' '}
+                {f.label}
                 {f.required && <strong className='font-extrabold text-secondary'>*</strong>}
               </label>
 
               <Input
+                id={f.id}
                 type='number'
                 step='any'
                 noSpinner
-                id={f.id}
                 endAdornment={f.unit}
                 placeholder='0'
-                min={0}
-                max={20000}
+                max={10000}
                 status={errors?.nutrient?.[f.id] ? 'error' : 'default'}
                 {...register(`nutrient.${f.id}`, {
                   setValueAs: toNum,
                   ...(f.required && {
                     required: `${f.label}를 입력해주세요.`,
                   }),
-                  min: { value: 0, message: '0 이상 입력하세요' },
-                  max: { value: 20000, message: '20000 이하로 입력하세요' },
+                  max: { value: 10000, message: '10,000 이하로 입력하세요' },
                 })}
               />
             </div>
 
-            {f.required && errors?.nutrient?.[f.id] && (
+            {errors?.nutrient?.[f.id] && (
               <p className='text-[var(--color-error)] text-sm mt-1 text-right'>
                 {errors.nutrient[f.id].message}
               </p>
