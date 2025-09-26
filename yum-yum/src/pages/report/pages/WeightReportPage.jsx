@@ -65,7 +65,7 @@ export default function WeightReportPage({
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
       // 일간의 경우 사용자 정보의 현재 체중을 사용
-      setCurrentWeight(dailyCurrentWeight)
+      setCurrentWeight(dailyCurrentWeight, originDate, activePeriod)
       setDailyWeightData(dailyData, originDate, activePeriod)
     }
   }, [dailyData, activePeriod, originDate]);
