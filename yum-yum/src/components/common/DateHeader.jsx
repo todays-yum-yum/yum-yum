@@ -2,6 +2,7 @@ import React from 'react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import IconNoresult from '@/assets/icons/icon-noresult.svg?react';
+import DateSelector from './DateSelector';
 
 export default function DateHeader({
   date = new Date(),
@@ -14,7 +15,7 @@ export default function DateHeader({
   const formattedDate = format(date, dateFormat, { locale: ko });
 
   return (
-    <div className={`w-full h-16 bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] ${className}`}>
+    <div className={`w-full h-16 bg-white  ${className}`}>
       {/* Flexbox 컨테이너 */}
       <div className='h-full flex items-center justify-between px-4'>
         {/* 왼쪽 빈 공간 (균형 맞추기 위해) */}
@@ -22,20 +23,7 @@ export default function DateHeader({
 
         {/* 중앙: 날짜 + 캘린더 버튼 */}
         <div className='flex items-center gap-2'>
-          <h1 className='text-black text-xl font-bold whitespace-nowrap'>{formattedDate}</h1>
-
-          {/* 날짜 옆 캘린더 버튼 */}
-          <button
-            className='w-7 h-7 flex items-center justify-center
-                       hover:bg-gray-100 rounded-md transition-colors duration-200
-                       focus:outline-none focus:ring-2 focus:ring-blue-300'
-            onClick={onCalendarClick}
-            aria-label='날짜 선택'
-          >
-            <svg className='w-4 h-4' viewBox='0 0 12 10' fill='currentColor'>
-              <path d='M6 10L0 0h12L6 10z' className='text-emerald-500' />
-            </svg>
-          </button>
+          <DateSelector onCalendarClick={onCalendarClick} formattedDate={formattedDate} />
         </div>
 
         {/* 오른쪽: 온보딩 버튼 */}
