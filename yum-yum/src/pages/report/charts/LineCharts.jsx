@@ -1,7 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { formatTime, convertMlToL } from '@/utils/reportDataParser';
-import { toNum } from '@/utils/NutrientNumber';
-import { roundTo1 } from '@/utils/NutrientNumber';
+import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 
 export default function LineCharts({ datas, activePeriod, unit }) {
   const mapToChartData = (datas, period) => {
@@ -10,10 +9,10 @@ export default function LineCharts({ datas, activePeriod, unit }) {
     switch (period) {
       case '일간': {
         if (unit === 'L') {
-          const chartData = datas.flatMap((day) => {
-            if (!day.value || !Array.isArray(day.value.intakes)) return [];
+          const chartData = datas.flatMap((days) => {
+            if (!days.value || !Array.isArray(days.value.intakes)) return [];
 
-            return day.value.intakes.map((intake, idx) => ({
+            return days.value.intakes.map((intake, idx) => ({
               name: formatTime(toNum(intake.timestamp?.seconds || 0), period),
               pv: roundTo1(convertMlToL(intake.amount ?? 0)),
             }));

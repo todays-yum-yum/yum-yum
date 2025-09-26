@@ -13,7 +13,8 @@ export default function useAuth() {
     loginSuccess, // 로그인 성공 시 (set)
     loginFailure, // 로그인 실패 시 (set)
     logout: logoutStore, // 로그아웃 시(set)
-    checkEmail: checkResult, // 이메일 체크한 결과 값(set)
+    checkEmail,
+    checkResult, // 이메일 체크한 결과 값(set)
     signupSuccess,
     signupFailure,
   } = useUserStore();
@@ -40,11 +41,11 @@ export default function useAuth() {
   );
 
   // 이메일 중복확인
-  const checkEmail = useCallback(async (userId) => {
+  const useCheckEmail = useCallback(async (userId) => {
     setLoading(true);
     clearError();
     const result = await checkUserEmail({ userId });
-    console.log(result);
+    // console.log(result);
     return {
       result: result,
       message: result ? '중복된 이메일입니다.' : '사용가능한 이메일입니다.',
@@ -77,7 +78,9 @@ export default function useAuth() {
   return {
     isAuthenticated,
     login,
-    checkEmail,
+    useCheckEmail,
     signUp,
+    checkResult,
+    checkEmail,
   };
 }

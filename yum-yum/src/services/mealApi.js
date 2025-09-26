@@ -1,6 +1,6 @@
 import { firestore } from '@/services/firebase';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { toNum } from '@/utils/NutrientNumber';
+import { toNum } from '@/utils/nutrientNumber';
 
 const totalDailySummary = (allFoods) => {
   return {

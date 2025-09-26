@@ -8,6 +8,7 @@ import { getCurrentTimePeriod } from '../../../data/timePeriods';
 
 import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
 import { callUserUid } from '@/utils/localStorage';
+import { useReportStore } from '../../../stores/useReportStore';
 
 const searchConfig = {
   일간: 'daily',
@@ -15,7 +16,6 @@ const searchConfig = {
   월간: 'monthly',
 };
 
-const userId = callUserUid();
 export default function AiReportPage({
   originDate,
   fullDate,
@@ -25,6 +25,10 @@ export default function AiReportPage({
   next,
   canMove,
 }) {
+  const userId = callUserUid();
+  
+  const { searchType, nutrientionReport, setSearchType, setNutrientionReport } = useReportStore();
+
   const parsedDate = parseDateString(originDate);
 
   const now = new Date();
@@ -32,7 +36,7 @@ export default function AiReportPage({
     parsedDate.year,
     parsedDate.month - 1,
     parsedDate.date,
-    // 19,0,0,0, 
+    // 19,0,0,0,
     now.getHours(),
     now.getMinutes(),
     now.getSeconds(),
@@ -41,8 +45,6 @@ export default function AiReportPage({
   const selectedDate = getTodayKey(newDate);
 
   const currentTimePeriod = getCurrentTimePeriod(newDate);
-  const [searchType, setSearchType] = useState(searchConfig[activePeriod]);
-  const [nutritionResults, setNutritionResults] = useState({});
 
   // 1. Firestore 에서 식단 가져오기
   const {
@@ -71,20 +73,20 @@ export default function AiReportPage({
   };
 
   useEffect(() => {
-    setSearchType(searchConfig[activePeriod]);
-    setNutritionResults([])
+    setSearchType(activePeriod);
+    setNutrientionReport([]);
   }, [activePeriod]);
 
   useEffect(() => {
-    setNutritionResults(data)
-  }, [data])
+    setNutrientionReport(data);
+  }, [data]);
 
   // useEffect(() => {
   //   console.log(nutritionResults)
   // },[nutritionResults])
 
   return (
-    <main className='flex flex-col gap-7.5'>
+    <main className='h-full flex flex-col gap-7.5'>
       <ChartArea
         date={fullDate}
         period='일간'
@@ -96,11 +98,11 @@ export default function AiReportPage({
         canMove={canMove}
         onPeriodChange={setActivePeriod}
       >
-        <section className='flex flex-col gap-2.5 w-90 pt-5 pb-5 pr-5 pl-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
+        <section className='flex flex-col flex-1 align-items justify-center gap-2.5 w-90 pt-5 pb-5 pr-5 pl-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
           <article className='flex flex-row items-center justify-center text-lg'>
             <LightBulbIcon /> AI 코치의 조언
           </article>
-          <article className='text-xl'>
+          <article className='text-xl '>
             <p className=''>
               {mealsLoading && <span>식단 불러오는 중…</span>}
               {mealsError && <span>식단 조회 실패: 다시 시도해주세요</span>}
@@ -109,8 +111,8 @@ export default function AiReportPage({
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}
 
               {!(mealsLoading || mealsError || isLoading) &&
-                (nutritionResults?.text ? (
-                  nutritionResults.text
+                (nutrientionReport?.text ? (
+                  nutrientionReport.text
                     .split('.')
                     .filter(Boolean)
                     .map((sentence, idx) => (

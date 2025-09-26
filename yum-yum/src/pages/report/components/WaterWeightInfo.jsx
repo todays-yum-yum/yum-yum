@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { roundTo1, toNum } from '@/utils/NutrientNumber';
+import { roundTo1, toNum } from '@/utils/nutrientNumber';
 import { convertMlToL } from '@/utils/reportDataParser';
 import { formatTime } from '@/utils/reportDataParser';
 
@@ -152,14 +152,14 @@ export default function WaterWeightInfo({ period, date, unit, total, datas = [] 
   };
 
   const dataHeader = (total) => {
-    if(unit === "Kg") {
-      const normalize = total === 0 ? "-" : roundTo1(total || 0)
+    if (unit === 'Kg') {
+      const normalize = total === 0 ? '-' : roundTo1(total || 0);
 
       return normalize;
     }
 
-    return roundTo1(total || 0)
-  }
+    return roundTo1(total || 0);
+  };
 
   const dataByPeriod = datas ? getRowDataByPeriod(datas, period) : [];
 

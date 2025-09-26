@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import BasicButton from '@/components/button/BasicButton';
-import { toNum } from '../../../utils/NutrientNumber';
+import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 import clsx from 'clsx';
-import { roundTo1 } from '@/utils/NutrientNumber';
 
 function FoodData({ foodName, percent, value, count }) {
   const textStyle = 'font-bold text-xl text-center';
@@ -36,18 +35,18 @@ export default function NutritionFood({ foodData }) {
   const [foodLength, setFoodLength] = useState(foodData.food?.length ?? 0);
 
   const nutritionType = (name) => {
-    let types = "";
+    let types = '';
 
-    if(name === "탄수화물" ) {
-      types = "carbs"
-    } else if(name === "단백질" ) {
-      types = "protein"
-    } else if(name === "지방" ) {
-      types = "fat"
+    if (name === '탄수화물') {
+      types = 'carbs';
+    } else if (name === '단백질') {
+      types = 'protein';
+    } else if (name === '지방') {
+      types = 'fat';
     }
 
-    return types
-  }
+    return types;
+  };
 
   const valueType = nutritionType(foodData.name);
 

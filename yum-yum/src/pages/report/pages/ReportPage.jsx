@@ -20,7 +20,6 @@ import {
   canMoveDate,
 } from '@/utils/dateUtils';
 
-
 const reportPath = {
   식단: DietReportPage,
   수분: WaterReportPage,
@@ -28,8 +27,23 @@ const reportPath = {
   'AI 리포트': AiReportPage,
 };
 
+// 쿼리 스트링
+const reportParam = {
+  diet: '식단',
+  water: '수분',
+  weight: '체중',
+  ai: 'AI 리포트',
+};
+
+const tabToParam = {
+  '식단': 'diet',
+  '수분': 'water',
+  '체중': 'weight',
+  'AI 리포트': 'ai'
+};
+
 export default function ReportPage() {
-  const [activeTab, setActiveTab] = useState('식단');
+  const [activeTab, setActiveTab] = useState(null);
   const reportTypes = [{ name: '식단' }, { name: '수분' }, { name: '체중' }, { name: 'AI 리포트' }];
   const CurrentComponent = reportPath[activeTab];
 
@@ -39,6 +53,35 @@ export default function ReportPage() {
   const [date, setDate] = useState(todayDate());
   // 날짜의 요일
   const day = getDayOfWeek(date);
+
+  // 최초 탭 설정
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    
+    let initialTab = '식단'; // 기본값
+    
+    if (tabParam && reportParam[tabParam]) {
+      initialTab = reportParam[tabParam]; 
+    } else {
+      const url = new URL(window.location);
+      url.searchParams.set('tab', tabToParam[initialTab]); 
+      window.history.replaceState({}, '', url);
+    }
+    setActiveTab(initialTab);
+  }, []);
+
+  // 탭 변경시 주소 변경
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+    
+    const urlParam = tabToParam[tabName]; 
+    if (urlParam) {
+      const url = new URL(window.location);
+      url.searchParams.set('tab', urlParam);
+      window.history.pushState({}, '', url);
+    }
+  };
 
   // 표기 날짜 : 일간/주간/월간에 따라 다름
   const getDisplayDate = (period, date, day) => {
@@ -101,22 +144,32 @@ export default function ReportPage() {
     }
   };
 
-
   return (
-    <div className='bg-white'>
+    <div className='bg-white flex flex-col' >
       <nav className='flex flex-row gap-4 py-2.5 justify-center'>
         {reportTypes.map((type) => (
           <BasicButton
             key={type.name}
-            onClick={() => setActiveTab(type.name)}
+            onClick={() => handleTabChange(type.name)}
             variant={activeTab === type.name ? 'filled' : 'line'}
           >
             {type.name}
           </BasicButton>
         ))}
       </nav>
-      <main>{CurrentComponent && <CurrentComponent originDate={date} fullDate={fullDate} activePeriod={activePeriod} setActivePeriod={setActivePeriod} 
-      prev={handlePrevDate} next={handleNextDate} canMove={canMove}/>}</main>
+      <main >
+        {CurrentComponent && (
+          <CurrentComponent
+            originDate={date}
+            fullDate={fullDate}
+            activePeriod={activePeriod}
+            setActivePeriod={setActivePeriod}
+            prev={handlePrevDate}
+            next={handleNextDate}
+            canMove={canMove}
+          />
+        )}
+      </main>
     </div>
   );
 }

@@ -11,9 +11,9 @@ export default function Carousel({ images, autoPlayDelay = 3000 }) {
   };
 
   // 이전 슬라이드 이동
-  const goToPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  // const goToPrev = () => {
+  //   setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  // };
 
   // 특정 슬라이드 이동
   const goToSlide = (index) => {

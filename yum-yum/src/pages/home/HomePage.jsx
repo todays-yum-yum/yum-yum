@@ -4,7 +4,7 @@
 import React, { useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { registerLocale, setDefaultLocale } from 'react-datepicker';
+import { registerLocale } from 'react-datepicker';
 import { ko } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -23,19 +23,20 @@ import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
 import WeightInput from './modal/WeightInput';
 // 훅
-import { useWeight } from '../../hooks/useWeight';
-import { usePageData } from '../../hooks/useMainPageData';
-import { useUserData } from '../../hooks/useUser';
+import { useWeight } from '@/hooks/useWeight';
+import { usePageData } from '@/hooks/useMainPageData';
+import { useUserData } from '@/hooks/useUser';
 // 스토어
-import { useHomeStore } from '../../stores/useHomeStore';
+import { useHomeStore } from '@/stores/useHomeStore';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 // 아이디 호출
 import { callUserUid } from '@/utils/localStorage';
+import MyDateField from './modal/MyDateField';
 
 registerLocale('ko', ko);
 
 export default function HomePage() {
-  const userId = callUserUid(); // test용 ID 추후 쿠키에서 불러오는 방향으로 수정
+  const userId = callUserUid();
   const navigate = useNavigate();
   // zustand에서 UI 상태
   const {
@@ -55,7 +56,13 @@ export default function HomePage() {
     waterData,
     mealData, // 필요한 부분 파싱된 데이터
   } = useHomeStore();
-  const { saveWeightMutation } = useWeight(userId, selectedDate);
+  const {
+    saveWeightMutation,
+    selectedDateModal,
+    setSelectedDateModal,
+    selectedDateModalOpen,
+    setSelectedDateModalOpen,
+  } = useWeight(userId, selectedDate);
   const { dailyData, dailyLoading } = usePageData(userId, selectedDate);
   const { userData } = useUserData(userId, selectedDate);
   const { clearFoods, addFood } = useSelectedFoodsStore();
@@ -86,7 +93,10 @@ export default function HomePage() {
   // 체중 저장
   const onSubmit = async (data) => {
     try {
-      const saveWeight = saveWeightMutation.mutateAsync({ weight: parseFloat(data.weight) });
+      const saveWeight = saveWeightMutation.mutateAsync({
+        weight: parseFloat(data.weight),
+        date: selectedDateModal,
+      });
 
       await toast.promise(saveWeight, {
         loading: '저장하는 중...',
@@ -116,6 +126,7 @@ export default function HomePage() {
           onOnBoardClick={() => {
             setOnboardOpen(true);
           }}
+          className='shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]'
         />
         {calendarOpen && (
           <div className='absolute z-10 mt-2 left-[120px]'>
@@ -185,6 +196,16 @@ export default function HomePage() {
             btnLabel='확인'
             onBtnClick={handleSubmit(onSubmit)}
           >
+            {/* 날짜 선택 부분 */}
+            <MyDateField
+              register={register}
+              errors={errors}
+              selectedDateModal={selectedDateModal}
+              setSelectedDateModal={setSelectedDateModal}
+              selectedDateModalOpen={selectedDateModalOpen}
+              setSelectedDateModalOpen={setSelectedDateModalOpen}
+            />
+            {/* 몸무게 입력 부분 */}
             <WeightInput register={register} errors={errors} />
           </Modal>
         )}

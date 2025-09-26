@@ -1,11 +1,15 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, LabelList, Legend, ResponsiveContainer } from 'recharts';
+// 스토어
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
-import { toNum, roundTo1 } from '@/utils/NutrientNumber';
+// 유틸
+import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 
 export default function TotalBarChart() {
+  const NUTRIENT_COLORS = { carbs: '#FF5094', protein: '#FFD653', fat: '#2F73E5' };
+  const MIN_BAR_WIDTH = 10;
+
   const { selectedFoods } = useSelectedFoodsStore();
-  const nutrientColors = { carbs: '#FF5094', protein: '#FFD653', fat: '#2F73E5' };
   const foods = Object.values(selectedFoods); // 선택된 음식
 
   // 총 탄수화물, 총 단백질, 총 지방, 총 합
@@ -20,24 +24,26 @@ export default function TotalBarChart() {
   const fatPercent = totalNutrient ? (totalFat / totalNutrient) * 100 : 0;
 
   // 차트 최소 너비
-  const minWidth = 10;
-  const carbsWidth = carbsPercent > 0 ? Math.max(carbsPercent, minWidth) : 0;
-  const proteinWidth = proteinPercent > 0 ? Math.max(proteinPercent, minWidth) : 0;
-  const fatWidth = fatPercent > 0 ? Math.max(fatPercent, minWidth) : 0;
+  const carbsWidth = carbsPercent > 0 ? Math.max(carbsPercent, MIN_BAR_WIDTH) : 0;
+  const proteinWidth = proteinPercent > 0 ? Math.max(proteinPercent, MIN_BAR_WIDTH) : 0;
+  const fatWidth = fatPercent > 0 ? Math.max(fatPercent, MIN_BAR_WIDTH) : 0;
 
   // 100% 유지
   const sumWidth = carbsWidth + proteinWidth + fatWidth;
   const scale = sumWidth > 0 ? 100 / sumWidth : 1;
 
+  // 값이 하나도 없을 때 기본값 주기
+  const isEmpty = totalNutrient === 0;
+
   const nutrientData = [
     {
       name: '영양소',
-      carbs: carbsWidth * scale,
-      protein: proteinWidth * scale,
-      fat: fatWidth * scale,
-      carbsPercent,
-      proteinPercent,
-      fatPercent,
+      carbs: isEmpty ? 100 : carbsWidth * scale,
+      protein: isEmpty ? 100 : proteinWidth * scale,
+      fat: isEmpty ? 100 : fatWidth * scale,
+      carbsPercent: isEmpty ? 0 : carbsPercent,
+      proteinPercent: isEmpty ? 0 : proteinPercent,
+      fatPercent: isEmpty ? 0 : fatPercent,
     },
   ];
 
@@ -59,9 +65,9 @@ export default function TotalBarChart() {
 
   const renderLegend = () => (
     <div className='flex items-center justify-center gap-4 mt-[20px] text-sm'>
-      <LegendItem color={nutrientColors.carbs} text={`탄 ${totalCarbs}g`} />
-      <LegendItem color={nutrientColors.protein} text={`단 ${totalProtein}g`} />
-      <LegendItem color={nutrientColors.fat} text={`지 ${totalFat}g`} />
+      <LegendItem color={NUTRIENT_COLORS.carbs} text={`탄 ${totalCarbs}g`} />
+      <LegendItem color={NUTRIENT_COLORS.protein} text={`단 ${totalProtein}g`} />
+      <LegendItem color={NUTRIENT_COLORS.fat} text={`지 ${totalFat}g`} />
     </div>
   );
 
@@ -73,7 +79,7 @@ export default function TotalBarChart() {
         <Legend content={renderLegend} />
 
         {/* 탄수화물 */}
-        <Bar dataKey='carbs' stackId='a' fill={nutrientColors.carbs} radius={[99, 99, 99, 99]}>
+        <Bar dataKey='carbs' stackId='a' fill={NUTRIENT_COLORS.carbs} radius={[99, 99, 99, 99]}>
           <LabelList
             dataKey='carbsPercent'
             position='center'
@@ -85,7 +91,7 @@ export default function TotalBarChart() {
         </Bar>
 
         {/* 단백질 */}
-        <Bar dataKey='protein' stackId='a' fill={nutrientColors.protein} radius={[99, 99, 99, 99]}>
+        <Bar dataKey='protein' stackId='a' fill={NUTRIENT_COLORS.protein} radius={[99, 99, 99, 99]}>
           <LabelList
             dataKey='proteinPercent'
             position='center'
@@ -97,7 +103,7 @@ export default function TotalBarChart() {
         </Bar>
 
         {/* 지방 */}
-        <Bar dataKey='fat' stackId='a' fill={nutrientColors.fat} radius={[99, 99, 99, 99]}>
+        <Bar dataKey='fat' stackId='a' fill={NUTRIENT_COLORS.fat} radius={[99, 99, 99, 99]}>
           <LabelList
             dataKey='fatPercent'
             position='center'

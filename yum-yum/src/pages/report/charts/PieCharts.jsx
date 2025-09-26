@@ -1,26 +1,29 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import { calculateNutrientRatio } from '@/utils/calorieCalculator';
-import { roundTo1, toNum } from '@/utils/NutrientNumber';
+import { roundTo1, toNum } from '@/utils/nutrientNumber';
 
 export default function PieCharts({ data }) {
   const PALETTES = ['#FF5094', '#2F73E5', '#FFD653'];
 
-  const {carbsRatio, proteinsRatio, fatsRatio} = calculateNutrientRatio(data.totalCarbs, data.totalProtein, data.totalFat)
+  const { carbsRatio, proteinsRatio, fatsRatio } = calculateNutrientRatio(
+    data.totalCarbs,
+    data.totalProtein,
+    data.totalFat,
+  );
 
   // 데이터 가공. 입력된 데이터가 없을 땐 0으로 처리
   const chartData =
-    data && Object.keys(data).length > 0 
+    data && Object.keys(data).length > 0
       ? [
           {
             name: '탄수화물',
             value: carbsRatio,
-            gram: roundTo1(toNum(data.totalCarbs))
-            
+            gram: roundTo1(toNum(data.totalCarbs)),
           },
           {
             name: '단백질',
-            value: proteinsRatio, 
+            value: proteinsRatio,
             gram: roundTo1(toNum(data.totalProtein)),
           },
           {

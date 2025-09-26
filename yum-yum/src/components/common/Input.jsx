@@ -1,28 +1,34 @@
 import clsx from 'clsx';
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-export default function Input({
-  id,
-  type = 'text',
-  value,
-  onChange,
-  placeholder,
-  disabled = false,
-  status = 'default', // 'default' | 'error'
-  endAdornment = null,
-  onAdornmentClick = null,
-  errorMessage = '',
-  noSpinner = false,
-  ...rest
-}) {
+const Input = forwardRef(function Input(
+  {
+    id,
+    type = 'text',
+    value,
+    onChange,
+    defaultValue, // Uncontrolled
+    placeholder,
+    disabled = false,
+    status = 'default', // 'default' | 'error'
+    endAdornment = null,
+    onAdornmentClick = null,
+    errorMessage = '',
+    noSpinner = false,
+    ...rest
+  },
+  ref,
+) {
   return (
     <div className='flex flex-col gap-1 w-full'>
       <div className='relative'>
         <input
           id={id}
+          ref={ref}
           type={type}
           value={value}
           onChange={onChange}
+          defaultValue={defaultValue}
           placeholder={placeholder}
           disabled={disabled}
           {...rest}
@@ -51,4 +57,6 @@ export default function Input({
       )}
     </div>
   );
-}
+});
+
+export default Input;

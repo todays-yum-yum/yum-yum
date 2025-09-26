@@ -2,17 +2,22 @@ import React, { useEffect, useState } from 'react';
 import ChartArea from '../components/ChartArea';
 import LineCharts from '../charts/LineCharts';
 import WaterWeightInfo from '../components/WaterWeightInfo';
+
+// 훅
 import {
   useDailyReportData,
   useWeeklyReportData,
   useMonthlyReportData,
 } from '@/hooks/useReportData';
-import { useUserData } from './../../../hooks/useUser';
-import { getPeriodLastData, getWeightYearlyData, normalizeDataRange } from '../../../utils/reportDataParser';
-import { getWeightWeeklyData, getWeightMonthlyData } from './../../../utils/reportDataParser';
+import { useUserData } from '@/hooks/useUser';
+
+// 유틸
 import { callUserUid } from '@/utils/localStorage';
 
-const userId = callUserUid();
+// 스토어
+import { useReportStore } from '@/stores/useReportStore';
+import { useHomeStore } from '@/stores/useHomeStore';
+
 export default function WeightReportPage({
   originDate,
   fullDate,
@@ -22,6 +27,14 @@ export default function WeightReportPage({
   next,
   canMove,
 }) {
+  const userId = callUserUid();
+
+  const { currentWeight, weightData, setCurrentWeight, setDailyWeightData, setWeeklyWeightData, setMonthlyWeightData } =
+      useReportStore();
+
+  const {currentWeight : dailyCurrentWeight,
+    } = useHomeStore();
+
   const {
     dailyData,
     isLoading: daliyIsLoading,
@@ -39,9 +52,7 @@ export default function WeightReportPage({
   } = useMonthlyReportData(userId, originDate);
   const { userData } = useUserData(userId, originDate);
 
-  const [currentWeight, setCurrentWeight] = useState(0);
-  const [weights, setWeights] = useState([])
-
+  // 기간 변경
   const onPrevPeriod = () => {
     prev();
   };
@@ -50,44 +61,28 @@ export default function WeightReportPage({
     next();
   };
 
+  // 기간별 체중과 체중 비교 데이터 설정
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
-      const normalizedWaters = normalizeDataRange(
-        dailyData?.weightData ?? [],
-        originDate,
-        activePeriod,
-      );
-
-      setCurrentWeight(getPeriodLastData(normalizedWaters).weight)
-      setWeights(getWeightWeeklyData(normalizedWaters, originDate))
-
-      // console.log(getWeightWeeklyData(normalizedWaters, originDate))
+      // 일간의 경우 사용자 정보의 현재 체중을 사용
+      setCurrentWeight(dailyCurrentWeight, originDate, activePeriod)
+      setDailyWeightData(dailyData, originDate, activePeriod)
     }
   }, [dailyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '주간' && weeklyData) {
-      const normalizedWaters = normalizeDataRange(
-        weeklyData?.weightData ?? [],
-        originDate,
-        activePeriod,
-      );
 
-      setCurrentWeight(getPeriodLastData(normalizedWaters)?.weight);
-      setWeights(getWeightMonthlyData(normalizedWaters, originDate))
+      setCurrentWeight(weeklyData, originDate, activePeriod)
+      setWeeklyWeightData(weeklyData, originDate, activePeriod)
     }
   }, [weeklyData, activePeriod, originDate]);
 
   useEffect(() => {
     if (activePeriod === '월간' && monthlyData) {
-      const normalizedWaters = normalizeDataRange(
-        monthlyData?.weightData ?? [],
-        originDate,
-        activePeriod,
-      );
 
-      setCurrentWeight(getPeriodLastData(normalizedWaters).weight);
-      setWeights(getWeightYearlyData(normalizedWaters, originDate))
+      setCurrentWeight(monthlyData, originDate, activePeriod)
+      setMonthlyWeightData(monthlyData, originDate, activePeriod)
     }
   }, [monthlyData, activePeriod, originDate]);
 
@@ -104,10 +99,10 @@ export default function WeightReportPage({
         canMove={canMove}
         onPeriodChange={setActivePeriod}
       >
-        <LineCharts datas={weights} activePeriod={activePeriod} unit='Kg' />
+        <LineCharts datas={weightData} activePeriod={activePeriod} unit='Kg' />
       </ChartArea>
       <section>
-        <WaterWeightInfo period={activePeriod} date={fullDate} total={currentWeight} datas={weights} unit='Kg' />
+        <WaterWeightInfo period={activePeriod} date={fullDate} total={currentWeight} datas={weightData} unit='Kg' />
       </section>
     </main>
   );
