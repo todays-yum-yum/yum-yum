@@ -11,7 +11,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { firestore, model } from './firebase';
-import { endOfMonth, format, formatDate, startOfMonth } from 'date-fns';
+import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from 'date-fns';
 import { getCurrentTimePeriod } from '../data/timePeriods';
 import { getTodayKey } from '../utils/dateUtils';
 
@@ -98,7 +98,7 @@ export async function generateNutritionAnalysisWithBackoff(meals) {
   }
 }
 
-// 1번 호출한 AI Api는 DB에서 호출
+// 1번: 호출한 AI Api는 DB에서 호출
 export async function fetchAIResultWithCache(userId, meals, dataHash) {
   try {
     const aiRef = collection(firestore, 'users', userId, 'aimessage');
@@ -140,7 +140,7 @@ export async function fetchAIResultWithCache(userId, meals, dataHash) {
 // Ai Api 호출을 위한 식단 데이터 조회
 export async function getSelectedData(userId, selectedDate, type) {
   // console.log(selectedDate);
-  console.log(type)
+  // console.log(type);
   try {
     // 컬랙션 참조 생성
     const mealRef = collection(firestore, 'users', userId, 'meal');
@@ -160,6 +160,13 @@ export async function getSelectedData(userId, selectedDate, type) {
     }
 
     const querySnapshot = await getDocs(mealQuery);
+    if (querySnapshot.empty) {
+      return {
+        success: true,
+        data: null,
+        type,
+      };
+    }
     const data = querySnapshot.docs.map((docSnap) => ({
       id: docSnap.id,
       ...docSnap.data(),
@@ -211,7 +218,7 @@ function makeMonthRange(date) {
 }
 
 function makeWeekRange(date) {
-  const start = format(startOfMonth(date), 'yyyy-MM-dd');
-  const end = format(endOfMonth(date), 'yyyy-MM-dd');
+  const start = format(startOfWeek(date), 'yyyy-MM-dd');
+  const end = format(endOfWeek(date), 'yyyy-MM-dd');
   return { start, end };
 }
