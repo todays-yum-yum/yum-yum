@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import {
   normalizeDataRange,
+  weightNormalizeDataRange,
   dataSummary,
   getAllMealsSorted,
   waterDataSummary,
@@ -49,7 +50,6 @@ export const useReportStore = create((set, get) => ({
   searchType: '',
 
   nutrientionReport: {},
-
 
   // 식단
   setNutrients: (data, originDate, activePeriod) => {
@@ -106,26 +106,26 @@ export const useReportStore = create((set, get) => ({
 
   // 체중
   setCurrentWeight: (data, originDate, activePeriod) => {
-    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
-    const weightData = getPeriodLastData(weight).weight;
-
+    // const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    // const weightData = getPeriodLastData(weight).weight;
+    // data는 localstorage에서 가져온 데이터
     set({
-      currentWeight: weightData,
+      currentWeight: data,
     });
   },
 
   setDailyWeightData: (data, originDate, activePeriod) => {
-    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weight = weightNormalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
     const weightData = getWeightWeeklyData(weight, originDate);
-
     set({
       weightData: weightData,
     });
   },
 
   setWeeklyWeightData: (data, originDate, activePeriod) => {
-    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weight = weightNormalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
     const weightData = getWeightMonthlyData(weight, originDate);
+    // console.log('setWeeklyWeightData weightData: ', weightData);
 
     set({
       weightData: weightData,
@@ -133,9 +133,8 @@ export const useReportStore = create((set, get) => ({
   },
 
   setMonthlyWeightData: (data, originDate, activePeriod) => {
-    const weight = normalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
+    const weight = weightNormalizeDataRange(data?.weightData ?? [], originDate, activePeriod);
     const weightData = getWeightYearlyData(weight, originDate);
-
     set({
       weightData: weightData,
     });
@@ -150,8 +149,7 @@ export const useReportStore = create((set, get) => ({
 
   setNutrientionReport: (data) => {
     set({
-      nutrientionReport: data
+      nutrientionReport: data,
     });
-  }
-
+  },
 }));
