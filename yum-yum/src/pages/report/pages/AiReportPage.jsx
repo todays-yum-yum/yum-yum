@@ -12,13 +12,13 @@ import { getCurrentTimePeriod } from '@/data/timePeriods';
 import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
 import { useReportStore } from '@/stores/useReportStore';
 
+import ReactMarkdown from 'react-markdown';
 
-
-const searchConfig = {
-  일간: 'daily',
-  주간: 'weekly',
-  월간: 'monthly',
-};
+// const searchConfig = {
+//   일간: 'daily',
+//   주간: 'weekly',
+//   월간: 'monthly',
+// };
 
 export default function AiReportPage({
   originDate,
@@ -30,7 +30,7 @@ export default function AiReportPage({
   canMove,
 }) {
   const userId = callUserUid();
-  
+
   const { searchType, nutrientionReport, setSearchType, setNutrientionReport } = useReportStore();
 
   const parsedDate = parseDateString(originDate);
@@ -76,6 +76,12 @@ export default function AiReportPage({
     next();
   };
 
+  // Lookbehind / Lookahead
+  // 문장 부호 단위로 분리. 강조 구문은 분리안함
+  const splitMarkdownSentences = (text) => {
+    return text.split(/(?<=[.!?])(?!\*)/);
+  };
+
   useEffect(() => {
     setSearchType(activePeriod);
     setNutrientionReport([]);
@@ -90,7 +96,7 @@ export default function AiReportPage({
   // },[nutritionResults])
 
   return (
-    <main className='h-full flex flex-col gap-7.5'>
+    <main className='flex flex-col h-full gap-7.5'>
       <ChartArea
         date={fullDate}
         period='일간'
@@ -106,8 +112,8 @@ export default function AiReportPage({
           <article className='flex flex-row items-center justify-center text-lg'>
             <LightBulbIcon /> AI 코치의 조언
           </article>
-          <article className='text-xl '>
-            <p className=''>
+          <article className='text-xl'>
+            <div className=''>
               {mealsLoading && <LoadingSpinner />}
               {mealsError && <span>식단 조회 실패: 다시 시도해주세요</span>}
               {isLoading && <LoadingSpinner />}
@@ -117,17 +123,17 @@ export default function AiReportPage({
               {!(mealsLoading || mealsError || isLoading) &&
                 (nutrientionReport?.text ? (
                   nutrientionReport.text
-                    .split('.')
+                    .split('\n')
                     .filter(Boolean)
                     .map((sentence, idx) => (
                       <span key={idx} className='block mt-1 mb-2'>
-                        {sentence.trim()}.
+                        <ReactMarkdown>{sentence.trim()}</ReactMarkdown>
                       </span>
                     ))
                 ) : (
                   <span>아직 AI 코치의 분석 결과가 없습니다.</span>
                 ))}
-            </p>
+            </div>
           </article>
         </section>
       </ChartArea>

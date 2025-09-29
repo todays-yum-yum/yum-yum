@@ -1,5 +1,5 @@
 import React from 'react';
-import { toNum } from '@/utils/NutrientNumber';
+import { toNum } from '@/utils/nutrientNumber';
 // 컴포넌트
 import Input from '@/components/common/Input';
 
