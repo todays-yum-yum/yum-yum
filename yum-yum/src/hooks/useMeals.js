@@ -13,5 +13,6 @@ export function useMeals(userId, selectedDate, type) {
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 30,
     retry: 1,
+    enabled: !!userId && !!selectedDate && !!type,
   });
 }

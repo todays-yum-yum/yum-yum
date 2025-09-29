@@ -5,14 +5,14 @@ import { generateDataHash } from '../utils/hashUtils';
 import { getTodayKey } from '../utils/dateUtils';
 import { hasExecutedInTimePeriod, markExecutedInTimePeriod } from '@/utils/localStorage';
 
-export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTimePeriod) => {
+export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTimePeriod, searchType) => {
   const queryClient = useQueryClient();
   const dataHash = generateDataHash(meals);
   const today = getTodayKey(selectedDate);
   const periodKey = currentTimePeriod?.key;
 
   const queryKey = periodKey
-    ? ['nutrition-analysis', today, periodKey, dataHash]
+    ? ['nutrition-analysis', today, periodKey, dataHash, searchType]
     : ['nutrition-analysis', 'invalid-time'];
 
   const isCached = queryClient.getQueryData(queryKey) !== undefined;
