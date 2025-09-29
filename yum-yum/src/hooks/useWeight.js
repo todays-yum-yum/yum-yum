@@ -2,9 +2,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { saveWeight } from '@/services/weightApi';
 import { getUserWeightData } from '@/services/userApi';
+import { useEffect, useState } from 'react';
 
-export const useWeight = (userId) => {
+export const useWeight = (userId, selectedDate) => {
   const queryClient = useQueryClient();
+  // 날짜 선택
+  const [selectedDateModalOpen, setSelectedDateModalOpen] = useState(false);
+  const [selectedDateModal, setSelectedDateModal] = useState(selectedDate);
 
   // 사용자 데이터 불러오기(무게데이터만 가져옴)
   const userData = useQuery({
@@ -19,7 +23,7 @@ export const useWeight = (userId) => {
 
   // 체중 수정(저장)하기
   const saveWeightMutation = useMutation({
-    mutationFn: ({ weight }) => saveWeight({ userId, weight }),
+    mutationFn: ({ weight }) => saveWeight({ userId, weight, date: selectedDateModal }),
     onSuccess: (response) => {
       if (response.success) {
         // 사용자 데이터 쿼리 무효화하여 새로고침
@@ -55,5 +59,32 @@ export const useWeight = (userId) => {
 
     // 몸무게 저장 관련
     saveWeightMutation,
+
+    // 날짜 선택 관련
+    selectedDateModal,
+    setSelectedDateModal,
+    selectedDateModalOpen,
+    setSelectedDateModalOpen,
   };
 };
+
+// 바깥 클릭 감지 훅
+export function useOnClickOutside(ref, handler) {
+  useEffect(() => {
+    const listener = (event) => {
+      // ref가 아직 없거나, 클릭한 게 ref 내부라면 무시
+      if (!ref.current || ref.current.contains(event.target)) {
+        return;
+      }
+      handler(event);
+    };
+
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
+
+    return () => {
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
+}

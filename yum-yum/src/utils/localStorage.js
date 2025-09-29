@@ -21,3 +21,12 @@ export function callUserUid() {
     return null;
   }
 }
+
+export function hasCurrentWeight() {
+  const weightStorage = localStorage.getItem('current-weight');
+  if (weightStorage) {
+    const parsedData = JSON.parse(weightStorage);
+    const currentWeight = parsedData.state;
+    return currentWeight;
+  } else return null;
+}

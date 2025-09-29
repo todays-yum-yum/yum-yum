@@ -10,7 +10,7 @@ export const useUserStore = create(
       isAuthenticated: false, //임시로 true 설정. 기본은 false
       isLoading: false,
       error: null,
-      checkResult: null,
+      checkResult: null, // 이메일 중복확인 결과
 
       // 액션들
       setUser: (user) =>
@@ -58,6 +58,7 @@ export const useUserStore = create(
         set({
           user: null, // 회원가입한 사용자 정보
           userId: uid, // 회원가입한 사용자 ID
+          checkResult: null, // 이메일 중복확인 결과 초기화
           isAuthenticated: true, // 바로 로그인 상태로
           isLoading: false,
           error: null,

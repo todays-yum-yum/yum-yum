@@ -1,12 +1,26 @@
 // utils/normalizeData.ts
-import { eachDayOfInterval, eachWeekOfInterval, endOfWeek, format, startOfWeek } from 'date-fns';
+import {
+  eachDayOfInterval,
+  eachMonthOfInterval,
+  eachWeekOfInterval,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  format,
+  parseISO,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+} from 'date-fns';
 import {
   dateFormatting,
   getDayOfWeek,
   getEndDateOfMonth,
   getEndDateOfWeek,
+  getStartDateAndEndDate,
   getStartDateOfMonth,
   getStartDateOfWeek,
+  getTodayKey,
   parseDateString,
   parseKeyDateString,
 } from './dateUtils';
@@ -48,6 +62,37 @@ export function normalizeDataRange(rawData, selectedDate, period) {
       value: value ? structuredClone(value) : 0,
     };
   });
+}
+
+/**
+ * 체중 데이터는 normalizeDataRange를 분리시킬 필요가 있음
+ * @param {{date: string, value: any}[]} rawData
+ * @param {string|Date} selectedDate  // '2025-09-15' or Date 객체
+ * @param {'일간'|'주간'|'월간'} period
+ * @returns {{date: string, value: any}[]}
+ */
+export function weightNormalizeDataRange(rawData, selectedDate, period) {
+  const periodMap = { 주간: 'month', 일간: 'week', 월간: 'year' };
+
+  // 1) selectedDate → Date 객체
+  const parseDate = parseDateString(selectedDate);
+  const baseDate = new Date(parseDate.year, parseDate.month - 1, parseDate.date);
+
+  const { start, end } = getStartDateAndEndDate(baseDate, periodMap[period]);
+  // 기준의 모든 날짜만큼 생성
+  const allDays = eachDayOfInterval({ start, end });
+
+  const dataMap = new Map(rawData.map((d) => [d.date, d]));
+  // 2) rawData 전처리: dateObj 추가
+  const records = allDays.map((day) => {
+    const key = format(day, 'yyyy-MM-dd');
+    const value = dataMap.get(key);
+    return {
+      date: key,
+      value: value ? structuredClone(value) : 0,
+    };
+  });
+  return records;
 }
 
 // 특정 기간의 값을 가공
@@ -210,8 +255,7 @@ export const getWaterMonthlyAverages = (monthlyData, selectedDate) => {
 // ----
 
 export const getPeriodLastData = (datas) => {
-  // console.log("data", datas)
-
+  // console.log('getPeriodLastData', datas);
   const validData = datas.filter((data) => data.value !== 0);
 
   if (validData.length === 0) {
@@ -241,10 +285,12 @@ export const getWeightWeeklyData = (weeklyData, selectedDate) => {
   return WeekDays.map((day) => {
     const dayString = format(day, 'yyyy-MM-dd');
     const dayData = weeklyData.find((item) => item.date === dayString);
-
     let lastChange = null;
-    if (dayData?.value?.changes && Array.isArray(dayData.value.changes)) {
-      lastChange = dayData.value.changes[dayData.value.changes.length - 1];
+    // if (dayData?.value?.changes && Array.isArray(dayData.value.changes)) {
+    //   lastChange = dayData.value.changes[dayData.value.changes.length - 1];
+    // }
+    if (dayData?.value?.lastchanges) {
+      lastChange = dayData.value.lastchanges;
     }
 
     return {
@@ -274,9 +320,12 @@ export const getWeightMonthlyData = (weightData, selectedDate) => {
       return itemDate >= weekStart && itemDate <= weekEnd && item.value !== 0;
     });
 
-    const lastData = weekWeightData[weekWeightData.length - 1]?.value?.changes;
-    const lastWeight =
-      weekWeightData[weekWeightData.length - 1]?.value?.changes[lastData.length - 1].weight;
+    // const lastData = weekWeightData[weekWeightData.length - 1]?.value?.changes;
+    // const lastWeight =
+    //   weekWeightData[weekWeightData.length - 1]?.value?.changes[lastData.length - 1].weight;
+    const weightmap = weekWeightData[weekWeightData.length - 1];
+    const lastWeight = weightmap?.value?.lastchanges?.weight;
+    // console.log('getWeightMonthlyData: ', lastWeight);
 
     return {
       week: index + 1,
@@ -292,18 +341,25 @@ export const getWeightYearlyData = (weightData, selectedDate) => {
 
   return Array.from({ length: 12 }, (_, monthIndex) => {
     const monthStart = new Date(year, monthIndex, 1);
+    const monthStartStr = getTodayKey(monthStart);
     const monthEnd = new Date(year, monthIndex + 1, 0);
-    // const monthString = format(monthStart, 'yyyy-MM');
-
+    const monthEndStr = getTodayKey(monthEnd);
     // 해당 월의 체중 데이터들
-    const monthWeightData = weightData.filter((item) => {
-      const itemDate = new Date(item.date);
-      return itemDate >= monthStart && itemDate <= monthEnd && item.value !== 0;
-    });
+    // 0가 아닌 데이터만 필터링
+    const monthWeightData = weightData
+      .filter((item) => {
+        return (
+          item.date >= monthStartStr &&
+          item.date <= monthEndStr &&
+          item.value !== 0 &&
+          typeof item.value === 'object'
+        );
+      })
+      .sort((a, b) => new Date(a.date) - new Date(b.date)); // 안전하게 날짜 순으로 정렬
 
-    const lastData = monthWeightData[monthWeightData.length - 1]?.value?.changes;
-    const lastWeight =
-      monthWeightData[monthWeightData.length - 1]?.value?.changes[lastData.length - 1].weight;
+    const lastEntry = monthWeightData[monthWeightData.length - 1];
+    const lastWeight = lastEntry ? lastEntry.value.lastchanges?.weight : 0;
+
     return {
       month: monthIndex + 1,
       monthName: format(monthStart, 'MMM', { locale: ko }),
