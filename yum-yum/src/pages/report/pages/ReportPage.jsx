@@ -157,7 +157,7 @@ export default function ReportPage() {
           </BasicButton>
         ))}
       </nav>
-      <main >
+      <main className='h-full '>
         {CurrentComponent && (
           <CurrentComponent
             originDate={date}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { roundTo1, toNum } from '@/utils/nutrientNumber';
 
 export default function StackedCharts({ foodData }) {
@@ -83,58 +83,61 @@ export default function StackedCharts({ foodData }) {
   // console.log('chartData:', chartData);
 
   return (
-    <BarChart width={400} height={40} data={[chartData]} layout='vertical'>
-      {/* <CartesianGrid strokeDasharray="3 3" /> */}
-      <XAxis
-        type='number'
-        domain={[0, total > chartData.goal ? total : chartData.goal]}
-        axisLine={false} // 축 선 숨김
-        tick={false} // 눈금 숨김
-        hide
-      />
-      <YAxis type='category' dataKey='name' hide={true} />
-      {/* 음식별 스택*/}
+    <div className='w-full h-12 px-4'>
+      {/* 반응형 리사이징 */}
+      <ResponsiveContainer width='100%' height='100%'>
+        <BarChart width={400} height={40} data={[chartData]} layout='vertical'>
+          {/* <CartesianGrid strokeDasharray="3 3" /> */}
+          <XAxis
+            type='number'
+            domain={[0, total > chartData.goal ? total : chartData.goal]}
+            axisLine={false} // 축 선 숨김
+            tick={false} // 눈금 숨김
+            hide
+          />
+          <YAxis type='category' dataKey='name' hide={true} />
+          {/* 음식별 스택*/}
 
-      <Bar
-        dataKey='top1'
-        stackId='a'
-        fill={colors[0]}
-        radius={getRadius(true, lastElement === 'top1')}
-        background={{ fill: '#eee', radius: [10, 10, 10, 10] }}
-        isAnimationActive={false}
-      />
+          <Bar
+            dataKey='top1'
+            stackId='a'
+            fill={colors[0]}
+            radius={getRadius(true, lastElement === 'top1')}
+            background={{ fill: '#eee', radius: [10, 10, 10, 10] }}
+            isAnimationActive={false}
+          />
 
-      {chartData.top2 > 0 && (
-        <Bar
-          dataKey='top2'
-          stackId='a'
-          fill={colors[1]}
-          radius={getRadius(false, lastElement === 'top2')}
-          isAnimationActive={false}
-        />
-      )}
+          {chartData.top2 > 0 && (
+            <Bar
+              dataKey='top2'
+              stackId='a'
+              fill={colors[1]}
+              radius={getRadius(false, lastElement === 'top2')}
+              isAnimationActive={false}
+            />
+          )}
 
-      {chartData.top3 > 0 && (
-        <Bar
-          dataKey='top3'
-          stackId='a'
-          fill={colors[2]}
-          radius={getRadius(false, lastElement === 'top3')}
-          isAnimationActive={false}
-        />
-      )}
+          {chartData.top3 > 0 && (
+            <Bar
+              dataKey='top3'
+              stackId='a'
+              fill={colors[2]}
+              radius={getRadius(false, lastElement === 'top3')}
+              isAnimationActive={false}
+            />
+          )}
 
-      {chartData.etc > 0 && (
-        <Bar
-          dataKey='etc'
-          stackId='a'
-          fill={colors[3]}
-          radius={getRadius(false, lastElement === 'etc')}
-          isAnimationActive={false}
-        />
-      )}
+          {chartData.etc > 0 && (
+            <Bar
+              dataKey='etc'
+              stackId='a'
+              fill={colors[3]}
+              radius={getRadius(false, lastElement === 'etc')}
+              isAnimationActive={false}
+            />
+          )}
 
-      {/* <ReferenceLine
+          {/* <ReferenceLine
         x={chartData.goal} // 목표값 위치
         stroke='black'
         strokeWidth={2}
@@ -146,6 +149,8 @@ export default function StackedCharts({ foodData }) {
           fontSize: 12,
         }}
       /> */}
-    </BarChart>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

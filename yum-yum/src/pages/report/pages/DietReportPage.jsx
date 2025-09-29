@@ -8,6 +8,7 @@ import StackedCharts from '../charts/StackedCharts';
 import RoundButton from '@/components/button/RoundButton';
 import NutritionFood from '../components/NutritionFood';
 import NutritionInfo from '../components/NutritionInfo';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 // 아이콘
 import Carbohydrate from '@/assets/icons/icon-carbohydrate.svg?react';
@@ -25,6 +26,7 @@ import {
 import { roundTo1, toNum } from '@/utils/nutrientNumber';
 import { useUserData } from '@/hooks/useUser';
 import { callUserUid } from '@/utils/localStorage';
+
 
 export default function DietReportPage({
   originDate,
@@ -149,7 +151,11 @@ export default function DietReportPage({
 
   return (
     <main className='flex flex-col gap-7.5'>
-      {daliyIsLoading && <span>데이터를 불러오는 중입니다. </span>}
+      {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+        <div className="flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      )}
 
       {!(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
         <>
