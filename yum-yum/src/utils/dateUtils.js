@@ -15,6 +15,8 @@ import {
   endOfMonth,
   isDate,
   isValid,
+  startOfYear,
+  endOfYear,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -213,7 +215,7 @@ export function getTodayKey(input) {
  */
 export function getStartDateAndEndDate(date, type) {
   if (!date) return;
-
+  // console.log(date);
   let startDate, endDate;
   if (type === 'month') {
     startDate = startOfMonth(date);
@@ -222,6 +224,11 @@ export function getStartDateAndEndDate(date, type) {
     // 해당 주의 시작일, 끝일
     startDate = startOfWeek(date, { weekStartsOn: 0 });
     endDate = endOfWeek(date, { weekStartsOn: 0 });
+  } else {
+    // year
+    // 한 해의 시작일, 끝 일자
+    startDate = startOfYear(date);
+    endDate = endOfYear(date);
   }
   return {
     start: format(startDate, 'yyyy-MM-dd'),

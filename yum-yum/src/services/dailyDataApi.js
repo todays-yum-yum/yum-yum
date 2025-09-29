@@ -5,11 +5,14 @@ import { getStartDateAndEndDate } from '../utils/dateUtils';
 export async function getDailyData(userId, selectedDate) {
   const date = new Date(selectedDate).toISOString().split('T')[0];
   const { start, end } = getStartDateAndEndDate(selectedDate, 'week');
+  // 월만 보여주기
+  const monthly = start.substring(0, 7); // yyyy-mm
+
   try {
     // 컬렉션 참조 생성
     const waterRef = collection(firestore, 'users', userId, 'water');
     const mealRef = collection(firestore, 'users', userId, 'meal');
-    const weightRef = collection(firestore, 'users', userId, 'weight');
+    const weightRef = collection(firestore, 'users', userId, 'weight', monthly, 'weightLogs');
     // 쿼리 생성
     const waterQuery = query(waterRef, where('date', '==', date));
     const mealQuery = query(mealRef, where('date', '==', date));

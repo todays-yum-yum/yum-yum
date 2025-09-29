@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import {
+  dateFormatting,
   getEndDateOfMonth,
   getEndDateOfWeek,
+  getStartDateAndEndDate,
   getStartDateOfMonth,
   getStartDateOfWeek,
   parseDateString,
@@ -21,7 +23,7 @@ export const useDailyReportData = (userId, selectedDate) => {
     queryKey: ['mealData', userId, selectedDate, 'daily'],
     queryFn: () => getDailyData(userId, newDate),
     select: (response) => response.data,
-    staleTime: 0.5 * 60 * 1000, 
+    staleTime: 0.5 * 60 * 1000,
     enabled: !!userId && !!selectedDate,
   });
 
@@ -42,7 +44,6 @@ export const useWeeklyReportData = (userId, selectedDate) => {
 
   const startOfDay = getTodayKey(new Date(startDay.year, startDay.month - 1, startDay.date));
   const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date + 1));
-
 
   const weeklyDataQuery = useQuery({
     queryKey: ['mealData', userId, selectedDate, 'weekly'],
@@ -77,13 +78,13 @@ export const useMonthlyReportData = (userId, selectedDate) => {
     staleTime: 0.5 * 60 * 1000,
     enabled: !!userId && !!selectedDate,
   });
-  
+
   return {
     // 데이터
     monthlyData: monthlyDataQuery.data,
     monthlyLoading: monthlyDataQuery.isLoading,
 
     // 전체 로딩 상태
-    isLoading:  monthlyDataQuery.isLoading,
+    isLoading: monthlyDataQuery.isLoading,
   };
 };
