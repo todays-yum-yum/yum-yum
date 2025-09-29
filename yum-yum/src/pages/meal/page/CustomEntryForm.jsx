@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 // 훅
 import { useCustomFoods } from '@/hooks/useCustomFoods';
 // 유틸
+import { toNum } from '@/utils/nutrientNumber';
 import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
@@ -99,15 +100,19 @@ export default function CustomEntryForm() {
 
             <div className='flex gap-2'>
               <Input
+                id='servingSize'
                 type='number'
                 noSpinner
-                id='servingSize'
-                maxLength={8}
                 status={errors.servingSize ? 'error' : 'default'}
                 {...register('servingSize', {
+                  setValueAs: toNum,
                   required: '내용량을 입력해주세요.',
-                  min: { value: 0, message: '0 이상 입력해주세요' },
+                  min: { value: 1, message: '0 이상 입력해주세요' },
                   max: { value: 10000, message: '10,000 이하로 입력해주세요' },
+                  validate: (v) =>
+                    v == null ||
+                    /^\d+(\.\d{1})?$/.test(String(v)) ||
+                    '소수점은 한 자리까지 입력 가능합니다.',
                 })}
               />
 

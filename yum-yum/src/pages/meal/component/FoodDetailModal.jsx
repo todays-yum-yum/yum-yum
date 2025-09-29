@@ -1,7 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { roundTo1, strToNum } from '@/utils/nutrientNumber';
+// 스토어
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+// 유틸
+import { roundTo1, strToNum } from '@/utils/nutrientNumber';
 // 컴포넌트
 import Modal from '@/components/Modal';
 
@@ -10,27 +13,44 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
 
   const { selectedFoods, isFoodSelected, addFood } = useSelectedFoodsStore();
   const baseSize = strToNum(foodInfo.foodSize); // 기준 내용량
-  const [foodSize, setFoodSize] = useState(baseSize);
   const n = foodInfo?.nutrient; // 영양소
   const isFoodSelect = isFoodSelected(foodInfo.id); // 선택된 음식
-  const foodStep = 10; // 증가, 감소 단위
+  const FOOD_STEP = 10; // 증가, 감소 단위
 
-  // 모달 열었을때 수정한 값 유지
+  const {
+    register,
+    watch,
+    setValue,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      foodSize: baseSize || '',
+    },
+    mode: 'onChange',
+  });
+
+  const foodSize = watch('foodSize');
+
+  // 선택된 음식 수정한 값 유지
   useEffect(() => {
     if (foodInfo) {
       const storedFood = selectedFoods[foodInfo.id];
-      setFoodSize(storedFood ? storedFood.foodSize : strToNum(foodInfo.foodSize));
+      reset({
+        foodSize: storedFood ? storedFood.foodSize : strToNum(foodInfo.foodSize),
+      });
     }
-  }, [foodInfo, selectedFoods]);
+  }, [foodInfo, selectedFoods, reset]);
 
   // + 버튼
   const handleInc = () => {
-    setFoodSize((v) => Math.max(v + foodStep, 0));
+    setValue('foodSize', Math.max(roundTo1(strToNum(foodSize) + FOOD_STEP), 0));
   };
 
   // - 버튼
   const handleDec = () => {
-    setFoodSize((v) => Math.max(v - foodStep, foodStep));
+    setValue('foodSize', Math.max(roundTo1(strToNum(foodSize) - FOOD_STEP), 0));
   };
 
   // 현재 내용량 / 기준 내용량
@@ -57,6 +77,18 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
     };
   }, [n, ratio]);
 
+  // 추가, 수정
+  const onSubmit = (data) => {
+    addFood({
+      ...foodInfo,
+      foodSize: Number(data.foodSize),
+      nutrient: currentNutrients,
+    });
+    closeModal();
+    toast.success(isFoodSelect ? '수정 되었습니다' : '추가 되었습니다');
+  };
+
+  // 영양소 필드
   const nutritionFields = [
     { id: 'carbs', label: '탄수화물', value: currentNutrients.carbs, unit: 'g' },
     { id: 'sugar', label: '- 당', value: currentNutrients.sugar, unit: 'g', subtle: true },
@@ -91,52 +123,61 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
     { id: 'caffeine', label: '카페인', value: currentNutrients.caffeine, unit: 'mg' },
   ];
 
-  // 추가, 수정
-  const handleAddFoods = () => {
-    addFood({
-      ...foodInfo,
-      foodSize,
-      nutrient: currentNutrients,
-    });
-    closeModal();
-    toast.success(isFoodSelect ? '수정 되었습니다' : '추가 되었습니다');
-  };
-
   return (
     <Modal
       isOpenModal={openModal}
       onCloseModal={closeModal}
       title={foodInfo?.foodName}
       btnLabel={isFoodSelect ? '수정하기' : '추가하기'}
-      onBtnClick={handleAddFoods}
+      onBtnClick={handleSubmit(onSubmit)}
       showClose={true}
     >
       <div className='flex flex-col gap-[20px] max-h-[calc(100vh-300px)] overflow-y-auto'>
-        <div className='flex gap-[8px]'>
-          <div className='flex items-center justify-between min-w-[226px] h-[48px] border border-[var(--color-gray-300)] rounded-lg'>
-            <button onClick={handleDec} className='w-[44px] text-2xl font-extrabold'>
-              -
-            </button>
-            <input
-              type='number'
-              id='foodSize'
-              step={foodStep}
-              value={foodSize}
-              onChange={(e) => setFoodSize(strToNum(e.target.value))}
-              onBlur={() => {
-                const newSize = Math.max(strToNum(foodSize), foodStep); // 최소값 제한
-                setFoodSize(roundTo1(newSize));
-              }}
-              className='no-spinner w-[120px] outline-none text-center'
-            />
-            <button onClick={handleInc} className='w-[44px] text-2xl font-extrabold'>
-              +
-            </button>
+        <div>
+          <div className='flex gap-[8px]'>
+            <div className='flex items-center justify-between min-w-[226px] h-[48px] border border-[var(--color-gray-300)] rounded-lg'>
+              <button onClick={handleDec} className='w-[44px] text-2xl font-extrabold'>
+                -
+              </button>
+
+              <input
+                type='number'
+                step={FOOD_STEP}
+                placeholder='0'
+                min={1}
+                max={10000}
+                {...register('foodSize', {
+                  required: '용량을 입력해주세요.',
+                  min: { value: 1, message: '0 이상 입력해주세요.' },
+                  max: { value: 10000, message: '10,000 이하로 입력해주세요.' },
+                  pattern: {
+                    value: /^\d+(\.\d{1})?$/,
+                    message: '소수점은 한 자리까지 입력 가능합니다.',
+                  },
+                })}
+                onBlur={() => {
+                  if (foodSize != null) {
+                    setValue('foodSize', roundTo1(strToNum(foodSize)));
+                  }
+                }}
+                className='no-spinner w-[120px] outline-none text-center'
+              />
+
+              <button onClick={handleInc} className='w-[44px] text-2xl font-extrabold'>
+                +
+              </button>
+            </div>
+
+            <select className='w-full h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'>
+              <option value={foodInfo.foodUnit}>{foodInfo.foodUnit}</option>
+            </select>
           </div>
 
-          <select className='w-full h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'>
-            <option value={foodInfo.foodUnit}>{foodInfo.foodUnit}</option>
-          </select>
+          {errors.foodSize && (
+            <p className='text-[var(--color-error)] text-sm mt-1 text-left'>
+              {errors.foodSize.message}
+            </p>
+          )}
         </div>
 
         <div>
@@ -150,8 +191,8 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
             </p>
           </div>
 
+          {/* 값이 없으면 리스트 숨김 */}
           {nutritionFields
-            // 값이 없으면 리스트 숨김
             .filter((f) => f.value !== null && f.value !== undefined && f.value !== '')
             .map((f) => (
               <div

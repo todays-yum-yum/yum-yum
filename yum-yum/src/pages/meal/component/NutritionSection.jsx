@@ -1,6 +1,6 @@
 import React from 'react';
 // 유틸
-import { toNum } from '@/utils/NutrientNumber';
+import { toNum } from '@/utils/nutrientNumber';
 // 컴포넌트
 import Input from '@/components/common/Input';
 
@@ -45,7 +45,6 @@ export default function NutritionSection({ register, errors }) {
               <Input
                 id={f.id}
                 type='number'
-                step='any'
                 noSpinner
                 endAdornment={f.unit}
                 placeholder='0'
@@ -57,6 +56,10 @@ export default function NutritionSection({ register, errors }) {
                     required: `${f.label}를 입력해주세요.`,
                   }),
                   max: { value: 10000, message: '10,000 이하로 입력하세요' },
+                  validate: (v) =>
+                    v == null ||
+                    /^\d+(\.\d{1})?$/.test(String(v)) ||
+                    '소수점은 한 자리까지 입력 가능합니다.',
                 })}
               />
             </div>

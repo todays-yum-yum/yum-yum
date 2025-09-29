@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { firestore } from '@/services/firebase';
-import { deleteDoc, doc, Timestamp } from 'firebase/firestore';
+import { deleteField, doc, Timestamp, updateDoc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import toast from 'react-hot-toast';
@@ -63,11 +63,13 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
   const handleSubmitRecord = async () => {
     try {
       const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
+      const mealRef = doc(firestore, 'users', userId, 'meal', formattedSaveDate);
 
-      // 삭제 처리
+      // 해당 type만 삭제 처리
       if (foods.length === 0) {
-        const mealRef = doc(firestore, 'users', userId, 'meal', formattedSaveDate);
-        await deleteDoc(mealRef);
+        await updateDoc(mealRef, {
+          [`meals.${type}`]: deleteField(),
+        });
 
         // 캐시 무효화
         queryClient.invalidateQueries(['dailyData', userId, formattedSaveDate]);
