@@ -8,7 +8,7 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
   /* 체중 부분만 시작일, 마지막일자 범위 수정 */
   const parseDate = new Date(startOfDay);
   const { start, end } = getStartDateAndEndDate(parseDate, 'month');
-  console.log('weeklyDataApi_시작일, 마지막일:', start, end);
+  // console.log('weeklyDataApi_시작일, 마지막일:', start, end);
 
   try {
     // 컬렉션 참조 생성
@@ -65,7 +65,7 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
       ...doc.data(),
     }));
 
-    console.log('주간탭 데이터: ', startDay, endDay, weightData);
+    // console.log('주간탭 데이터: ', startDay, endDay, weightData);
 
     return {
       success: true,
