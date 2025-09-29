@@ -13,6 +13,7 @@ import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
 import { useReportStore } from '@/stores/useReportStore';
 
 import ReactMarkdown from 'react-markdown';
+import { useQueryClient } from '@tanstack/react-query';
 
 // const searchConfig = {
 //   일간: 'daily',
@@ -50,6 +51,8 @@ export default function AiReportPage({
 
   const currentTimePeriod = getCurrentTimePeriod(newDate);
 
+  const queryClient = useQueryClient();
+
   // 1. Firestore 에서 식단 가져오기
   const {
     data: meals,
@@ -66,6 +69,7 @@ export default function AiReportPage({
     meals,
     newDate,
     currentTimePeriod,
+    searchType
   );
 
   const onPrevPeriod = () => {
@@ -78,22 +82,17 @@ export default function AiReportPage({
 
   // Lookbehind / Lookahead
   // 문장 부호 단위로 분리. 강조 구문은 분리안함
-  const splitMarkdownSentences = (text) => {
-    return text.split(/(?<=[.!?])(?!\*)/);
-  };
+  // const splitMarkdownSentences = (text) => {
+  //   return text.split(/(?<=[.!?])(?!\*)/);
+  // };
 
   useEffect(() => {
     setSearchType(activePeriod);
-    setNutrientionReport([]);
   }, [activePeriod]);
 
   useEffect(() => {
     setNutrientionReport(data);
   }, [data]);
-
-  // useEffect(() => {
-  //   console.log(nutritionResults)
-  // },[nutritionResults])
 
   return (
     <main className='flex flex-col h-full gap-7.5'>
