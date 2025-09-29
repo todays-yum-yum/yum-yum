@@ -31,11 +31,17 @@ export default function MenuModal({ isOpen, onClose }) {
     // mealdata에 데이터 필터링 => addFood에 입력
     clearFoods();
     const copy = originalMealData?.[item.key];
-    copy?.map((meal) => addFood(meal));
-    // 선택 값 => 식단 total 이동
-    navigate(`/meal/${item.key}/total`, {
-      state: { date: selectedDate, formMain: true },
-    });
+    if (!copy) {
+      navigate(`/meal/${item.key}`, {
+        state: { date: selectedDate, formMain: true },
+      });
+    } else {
+      copy?.map((meal) => addFood(meal));
+      // 선택 값 => 식단 total 이동
+      navigate(`/meal/${item.key}/total`, {
+        state: { date: selectedDate, formMain: true },
+      });
+    }
     // ✅ Fix: Actually call the onClose function
     onClose();
   };
