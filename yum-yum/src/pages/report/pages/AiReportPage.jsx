@@ -94,6 +94,12 @@ export default function AiReportPage({
     setNutrientionReport(data);
   }, [data]);
 
+  useEffect(() => {
+    if(mealsError) {
+      console.log(mealsErrorMsg)
+    }
+  }, [mealsError])
+
   return (
     <main className='flex flex-col h-full gap-7.5'>
       <ChartArea
@@ -114,8 +120,8 @@ export default function AiReportPage({
           <article className='text-xl'>
             <div className=''>
               {mealsLoading && <LoadingSpinner />}
-              {mealsError && <span>식단 조회 실패: 다시 시도해주세요</span>}
-              {isLoading && <LoadingSpinner />}
+              {mealsError && <span>식단 조회 실패: 다시 시도해주세요. </span>}
+              {(isLoading && !mealsError) && <LoadingSpinner />}
 
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}
 

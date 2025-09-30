@@ -6,8 +6,8 @@ export default function StackedCharts({ foodData }) {
   // 상위 3개와 기타 색상 팔레트
   const PALETTES = {
     탄수화물: ['#ff5094', '#ff7ba1', '#ff96a9', '#ffb9bf'],
-    단백질: ['#ffd653', '#ffe897', '#fff9dc', '#fffcf0'],
-    지방: ['#2f73e5', '#7faff3', '#c8def9', '#d3e7fb'],
+    지방: ['#ffd653', '#ffe897', '#fff9dc', '#fffcf0'],
+    단백질: ['#2f73e5', '#7faff3', '#c8def9', '#d3e7fb'],
   };
 
   // 영양소에 따른 색상표 선택
