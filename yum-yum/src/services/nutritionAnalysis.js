@@ -1,15 +1,5 @@
 // AI 호출 API
-import {
-  addDoc,
-  collection,
-  getDoc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  setDoc,
-  where,
-} from 'firebase/firestore';
+import { addDoc, collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { firestore, model } from './firebase';
 import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from 'date-fns';
 import { getCurrentTimePeriod } from '../data/timePeriods';
@@ -50,8 +40,8 @@ export async function generateNutritionAnalysis(userId, meals, dataHash) {
       success: true,
     };
   }
-  const prompt = systemPrompt + createPrompt(meals);
   try {
+    const prompt = systemPrompt + createPrompt(meals);
     // model 호출 및 prompt start
     const result = await model.generateContent(prompt);
     const response = result.response;
