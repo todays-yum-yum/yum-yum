@@ -9,7 +9,13 @@ export function useMeals(userId, selectedDate, type) {
   return useQuery({
     queryKey: ['aireport-meals', userId, format(selectedDate, 'yyyy-MM-dd'), type],
     queryFn: () => getSelectedData(userId, selectedDate, type),
-    select: (rawMeals) => parseMeals(rawMeals, selectedDate),
+    select: (rawMeals) => {
+      if (rawMeals.error) {
+        //식단 호출 에러시 그냥 리턴
+        return;
+      }
+      return parseMeals(rawMeals, selectedDate);
+    },
     staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 30,
     retry: 1,
