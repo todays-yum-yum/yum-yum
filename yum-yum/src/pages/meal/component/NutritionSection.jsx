@@ -45,6 +45,7 @@ export default function NutritionSection({ register, errors }) {
               <Input
                 id={f.id}
                 type='number'
+                step='0.1'
                 noSpinner
                 endAdornment={f.unit}
                 placeholder='0'
