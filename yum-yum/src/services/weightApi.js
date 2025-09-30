@@ -53,7 +53,7 @@ export async function saveWeight({ userId, weight, date }) {
       // oldDate ≥ inputDate 이면 이미 최신 데이터가 있으므로 업데이트 스킵
       if (oldDate <= inputDate) {
         // inputDate가 더 최신일 때만 lastchanges 업데이트
-        batch.update(monthDocRef, {
+        batch.update(weightDocRef, {
           date: inputDate,
           lastchanges: {
             weight,
