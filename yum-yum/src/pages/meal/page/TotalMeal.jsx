@@ -1,18 +1,15 @@
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
-import { firestore } from '@/services/firebase';
-import { deleteField, doc, Timestamp, updateDoc } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import toast from 'react-hot-toast';
 // 스토어
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
+// 훅
+import { useDailyMeal } from '@/hooks/useDailyMeal';
 // 유틸
 import { toNum } from '@/utils/nutrientNumber';
 import { callUserUid } from '@/utils/localStorage';
-// 서비스
-import { saveMeal } from '@/services/mealApi';
 // 컴포넌트
 import MealHeader from '../component/MealHeader';
 import FoodList from '../component/FoodList';
@@ -25,7 +22,12 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
   const { selectedFoods, deleteFood, clearFoods } = useSelectedFoodsStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
+  const selectedDate = location.state?.date || defaultDate;
+  const formattedDate = format(selectedDate, dateFormat, { locale: ko });
+  const foods = Object.values(selectedFoods); // 선택된 음식
+  const foodCount = foods.length; // 선택된 음식 개수
+  const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
+  const { saveDailyMeal, deleteDailyMeal } = useDailyMeal(userId, formattedSaveDate);
   const { type } = useParams();
 
   const MEAL_LABELS = {
@@ -34,11 +36,6 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
     dinner: '저녁',
     snack: '기타',
   }[type];
-
-  const selectedDate = location.state?.date || defaultDate;
-  const formattedDate = format(selectedDate, dateFormat, { locale: ko });
-  const foods = Object.values(selectedFoods); // 선택된 음식
-  const foodCount = foods.length; // 선택된 음식 개수
 
   // 총 칼로리
   const totalKcal = useMemo(
@@ -49,7 +46,6 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
   // - 버튼
   const handleRemove = (id) => {
     deleteFood(id);
-    toast.success('삭제 되었습니다');
   };
 
   // 음식 추가 버튼
@@ -63,17 +59,9 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
   // 기록 완료 버튼
   const handleSubmitRecord = async () => {
     try {
-      const formattedSaveDate = format(selectedDate, 'yyyy-MM-dd');
-      const mealRef = doc(firestore, 'users', userId, 'meal', formattedSaveDate);
-
       // 해당 type만 삭제 처리
       if (foods.length === 0) {
-        await updateDoc(mealRef, {
-          [`meals.${type}`]: deleteField(),
-        });
-
-        // 캐시 무효화
-        queryClient.invalidateQueries(['dailyData', userId, formattedSaveDate]);
+        await deleteDailyMeal.mutateAsync(type);
         navigate('/', { replace: true });
         return;
       }
@@ -82,11 +70,11 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
         id: f.id,
         mealType: type ?? 'type',
         foodName: f.foodName ?? 'foodName',
-        makerName: f.makerName ?? '',
-        baseFoodSize: f.baseFoodSize, // 원본 기준량
-        foodSize: f.foodSize ?? 0,
+        makerName: f.makerName ?? null,
+        baseFoodSize: f.baseFoodSize ?? null, // 원본 기준량
+        foodSize: f.foodSize ?? null,
         foodUnit: f.foodUnit ?? 'g',
-        quantity: f.quantity ?? f.foodSize,
+        quantity: f.quantity ?? null,
         unit: f.unit ?? f.foodUnit,
         createdAt: Timestamp.now(),
         nutrient: {
@@ -107,16 +95,11 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
         },
       }));
 
-      await saveMeal(userId, formattedSaveDate, type, meals);
+      await saveDailyMeal.mutateAsync({ type, meals });
 
-      toast.success('기록이 완료 되었어요!');
       clearFoods();
-
-      // 캐시 무효화
-      queryClient.invalidateQueries(['dailyData', userId, formattedSaveDate]);
       navigate('/', { replace: true });
     } catch (error) {
-      toast.error('식단 기록 실패!');
       console.error(error);
     }
   };

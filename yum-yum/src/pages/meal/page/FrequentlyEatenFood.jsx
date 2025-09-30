@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { getRecentFoods } from '@/services/FrequentFoodsApi';
+import React from 'react';
+// 훅
+import { useRecentFoods } from '@/hooks/useRecentFoods';
+// 유틸
 import { callUserUid } from '@/utils/localStorage';
 // 컴포넌트
 import EmptyState from '@/components/EmptyState';
@@ -7,20 +9,7 @@ import FoodList from '../component/FoodList';
 
 export default function FrequentlyEatenFood({ selectedIds, onToggleSelect }) {
   const userId = callUserUid(); // 로그인한 유저 uid 가져오기
-  const [foodItems, setFoodItems] = useState([]);
-
-  useEffect(() => {
-    const fetchFoods = async () => {
-      try {
-        const data = await getRecentFoods(userId);
-        setFoodItems(data);
-      } catch (error) {
-        console.error('불러오기 실패:', error);
-        throw error;
-      }
-    };
-    fetchFoods();
-  }, []);
+  const { foodItems, isLoading, isError } = useRecentFoods(userId);
 
   return (
     <div>
