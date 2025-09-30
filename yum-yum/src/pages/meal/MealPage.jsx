@@ -61,12 +61,8 @@ export default function MealPage() {
       />
 
       <MealTabs activeTabId={activeTab} onChange={setActiveTab} tabItem={TAB_ITEM} />
-      <div className={activeTab === 'frequent' ? 'block' : 'hidden'}>
-        <FrequentlyEatenFood />
-      </div>
-      <div className={activeTab === 'custom' ? 'block' : 'hidden'}>
-        <CustomEntry />
-      </div>
+
+      {activeTab === 'frequent' ? <FrequentlyEatenFood /> : <CustomEntry />}
 
       <div className='sticky bottom-0 z-30 block w-full max-w-[500px] p-[20px] bg-white'>
         <BasicButton
