@@ -1,7 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 // 훅
 import { useCustomFoods } from '@/hooks/useCustomFoods';
 // 유틸
@@ -53,11 +52,7 @@ export default function CustomEntryForm() {
 
   const onSubmit = async (data) => {
     try {
-      await toast.promise(addFoodMutation.mutateAsync(data), {
-        loading: '등록 중...',
-        success: '등록 되었습니다!',
-        error: '등록 실패',
-      });
+      await addFoodMutation.mutateAsync(data);
       reset();
       navigate(`/meal/${type}`, { state: { date: selectedDate, type: type } });
     } catch (error) {

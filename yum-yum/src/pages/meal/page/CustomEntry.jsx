@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import toast from 'react-hot-toast';
 //훅
 import { useCustomFoods } from '@/hooks/useCustomFoods';
 // 유틸
@@ -60,11 +59,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
     if (!targetFoodId) return;
 
     try {
-      await toast.promise(deleteFoodMutation.mutateAsync(targetFoodId), {
-        loading: '삭제 중...',
-        success: '삭제 되었습니다!',
-        error: '삭제 실패',
-      });
+      await deleteFoodMutation.mutateAsync(targetFoodId);
     } catch (error) {
       console.error('직접 등록 실패', error);
     } finally {
@@ -106,7 +101,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
         )}
       </div>
 
-      <div className='flex flex-col min-h-[calc(100vh-278px)]'>
+      <div className='flex flex-col min-h-[calc(100vh-318px)]'>
         <div className='flex-1 px-[20px]'>
           {foodItems.length === 0 ? (
             <EmptyState className='min-h-[calc(100vh-278px)]'>등록한 음식이 없어요</EmptyState>
