@@ -92,7 +92,7 @@ export async function generateNutritionAnalysisWithBackoff(meals) {
 // 1번: 호출한 AI Api는 DB에서 호출
 export async function fetchAIResultWithCache(userId, meals, dataHash) {
   if (!meals?.date || !meals?.type || !dataHash) {
-    return;
+    return { success: false, text: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요.' };
   }
   try {
     const aiRef = collection(firestore, 'users', userId, 'aimessage');
@@ -157,7 +157,7 @@ export async function getSelectedData(userId, selectedDate, type) {
     if (querySnapshot.empty || querySnapshot.size === 0 || querySnapshot.docs.length === 0) {
       return {
         success: false,
-        error: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요.',
+        text: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요.',
       };
     }
     const data = querySnapshot.docs.map((docSnap) => ({

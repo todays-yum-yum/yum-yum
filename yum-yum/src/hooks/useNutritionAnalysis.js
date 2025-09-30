@@ -54,13 +54,6 @@ export const useNutritionAnalysis = (
     refetchOnMount: true,
     retry: (count, err) => count < 3 && err.type === 'RESOURCE_EXHAUSTED',
     retryDelay: (n) => Math.min(1000 * 2 ** n, 30_000),
-    onSuccess: (data) => {
-      // generateNutritionAnalysis 에서 성공적으로 생성된 데이터가 오면
-      // react-query 캐시에 함께 세팅
-      if (!hasExecutedInTimePeriod(today, periodKey, dataHash)) {
-        markExecutedInTimePeriod(today, periodKey, dataHash);
-      }
-    },
   });
 
   return {

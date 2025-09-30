@@ -9,9 +9,9 @@ export function useMeals(userId, selectedDate, type) {
     queryKey: ['aireport-meals', userId, format(selectedDate, 'yyyy-MM-dd'), type],
     queryFn: () => getSelectedData(userId, selectedDate, type),
     select: (rawMeals) => {
-      if (rawMeals.error) {
+      if (!rawMeals.success) {
         //식단 호출 에러시 그냥 리턴
-        return;
+        return rawMeals;
       }
       return parseMeals(rawMeals, selectedDate);
     },
