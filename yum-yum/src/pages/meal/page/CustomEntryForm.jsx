@@ -102,6 +102,7 @@ export default function CustomEntryForm() {
               <Input
                 id='servingSize'
                 type='number'
+                step='0.1'
                 noSpinner
                 status={errors.servingSize ? 'error' : 'default'}
                 {...register('servingSize', {

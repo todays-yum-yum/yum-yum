@@ -39,6 +39,7 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
   const formattedDate = format(selectedDate, dateFormat, { locale: ko });
   const foods = Object.values(selectedFoods); // 선택된 음식
   const foodCount = foods.length; // 선택된 음식 개수
+
   // 총 칼로리
   const totalKcal = useMemo(
     () => foods.reduce((sum, food) => sum + Number(food.nutrient?.kcal), 0),
@@ -82,8 +83,11 @@ export default function TotalMeal({ defaultDate = new Date(), dateFormat = 'MM�
         mealType: type ?? 'type',
         foodName: f.foodName ?? 'foodName',
         makerName: f.makerName ?? '',
+        baseFoodSize: f.baseFoodSize, // 원본 기준량
         foodSize: f.foodSize ?? 0,
         foodUnit: f.foodUnit ?? 'g',
+        quantity: f.quantity ?? f.foodSize,
+        unit: f.unit ?? f.foodUnit,
         createdAt: Timestamp.now(),
         nutrient: {
           kcal: toNum(f.nutrient?.kcal),
