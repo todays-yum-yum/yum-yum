@@ -10,6 +10,8 @@ export default function FoodItem({
   makerName,
   foodSize,
   foodUnit,
+  quantity,
+  unit,
   nutrient,
   variant = 'select' /* select, delete */,
   selected = false,
@@ -34,6 +36,7 @@ export default function FoodItem({
     e.stopPropagation();
     onRemove();
   };
+
   return (
     <li
       onClick={onOpenModal}
@@ -44,13 +47,10 @@ export default function FoodItem({
 
         <div className='flex gap-1 text-sm'>
           {makerName && <p className='text-gray-700'>{makerName}</p>}
-          {/* <p className='text-gray-400'>
-            1잔 ({foodSize}
-            {foodUnit})
-          </p> */}
           <p className='text-gray-400'>
-            {foodSize}
-            {foodUnit}
+            {unit && unit !== foodUnit
+              ? `${quantity}${unit}(${foodSize}${foodUnit})`
+              : `${foodSize}${foodUnit}`}
           </p>
         </div>
       </div>

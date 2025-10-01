@@ -74,11 +74,18 @@ export async function loginUser({ userid, password }) {
       user,
     };
   } catch (error) {
-    //throw new Error(error); // debug용
-    return {
-      success: false,
-      error: error.message,
-    };
+    // throw new Error(error); // debug용
+    if (error.code === 'auth/invalid-credential') {
+      return {
+        success: false,
+        error: '아이디 혹은 비밀번호가 일치하지 않습니다.',
+      };
+    } else {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
   }
 }
 

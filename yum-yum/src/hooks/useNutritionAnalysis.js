@@ -5,7 +5,13 @@ import { generateDataHash } from '../utils/hashUtils';
 import { getTodayKey } from '../utils/dateUtils';
 import { hasExecutedInTimePeriod, markExecutedInTimePeriod } from '@/utils/localStorage';
 
-export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTimePeriod, searchType) => {
+export const useNutritionAnalysis = (
+  userId,
+  meals = {},
+  selectedDate,
+  currentTimePeriod,
+  searchType,
+) => {
   const queryClient = useQueryClient();
   const dataHash = generateDataHash(meals);
   const today = getTodayKey(selectedDate);
@@ -35,26 +41,19 @@ export const useNutritionAnalysis = (userId, meals = {}, selectedDate, currentTi
         return cached;
       }
 
-      console.log('db에 없거나 아직 한번도 안 실행한 경우 AI 생성');
+      // console.log('db에 없거나 아직 한번도 안 실행한 경우 AI 생성');
       // 3. DB에 없거나 아직 한번도 안 실행한 경우 AI 생성
       const fresh = await generateNutritionAnalysis(userId, meals, dataHash);
       return fresh;
     },
     // enabled: false,
-    enabled: !!periodKey && !!meals.date,
+    enabled: !!periodKey && !!meals, // meals 객체가 완전 비어있으면 작동xx
     staleTime: 1000 * 60 * 60 * 24,
     gcTime: 1000 * 60 * 60 * 24 * 7,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
     retry: (count, err) => count < 3 && err.type === 'RESOURCE_EXHAUSTED',
     retryDelay: (n) => Math.min(1000 * 2 ** n, 30_000),
-    onSuccess: (data) => {
-      // generateNutritionAnalysis 에서 성공적으로 생성된 데이터가 오면
-      // react-query 캐시에 함께 세팅
-      if (!hasExecutedInTimePeriod(today, periodKey, dataHash)) {
-        markExecutedInTimePeriod(today, periodKey, dataHash);
-      }
-    },
   });
 
   return {
