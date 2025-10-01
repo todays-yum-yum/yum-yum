@@ -64,7 +64,7 @@ export default function AiReportPage({
   } = useMeals(userId, selectedDate, searchType);
 
   // 2. meals가 준비되면 AI 분석
-  const { data, refetch, isLoading } = useNutritionAnalysis(
+  const { data, refetch, isLoading, isError: aiError, error: aiErrorMsg, } = useNutritionAnalysis(
     userId,
     meals,
     newDate,
@@ -121,12 +121,15 @@ export default function AiReportPage({
           <article className='text-xl'>
             <div className=''>
               {mealsLoading && <LoadingSpinner />}
-              {mealsError && <span>식단 조회 실패: 다시 시도해주세요. </span>}
+              {mealsError && <span>식단 조회에 잠시 문제가 생겼어요. 다시 시도해 주시면 곧 확인하실 수 있습니다!</span>}
               {(isLoading && !mealsError) && <LoadingSpinner />}
+              {(aiError && !mealsError && !isLoading && !mealsLoading && meals.mealBreakdown) && 
+                <span>AI코치가 피드백을 하는 중에 잠시 문제가 생겼어요. 다시 시도해 주시면 곧 확인하실 수 있습니다!</span>
+              }
 
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}
 
-              {!(mealsLoading || mealsError || isLoading) &&
+              {!(mealsLoading || mealsError || isLoading) && (!aiError || !meals.mealBreakdown) &&
                 (nutrientionReport?.text ? (
                   nutrientionReport.text
                     .split('\n')
