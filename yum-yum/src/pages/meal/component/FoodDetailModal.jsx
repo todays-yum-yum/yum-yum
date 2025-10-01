@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 // 스토어
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 // 유틸
 import { roundTo1, strToNum } from '@/utils/nutrientNumber';
+import { calcNutrient } from '@/utils/calcNutrient';
 // 컴포넌트
 import Modal from '@/components/Modal';
 
@@ -12,10 +13,8 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
   if (!foodInfo) return null;
 
   const { selectedFoods, isFoodSelected, addFood } = useSelectedFoodsStore();
-  const baseSize = strToNum(foodInfo.foodSize); // 기준 내용량
-  const n = foodInfo?.nutrient; // 영양소
+  const baseSize = strToNum(foodInfo.baseFoodSize ?? foodInfo.foodSize); // 기준 내용량
   const isFoodSelect = isFoodSelected(foodInfo.id); // 선택된 음식
-  const FOOD_STEP = 10; // 증가, 감소 단위
 
   const {
     register,
@@ -26,64 +25,88 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      foodSize: baseSize || '',
+      foodSize: strToNum(foodInfo.baseFoodSize ?? foodInfo.foodSize) || 1,
+      quantity: strToNum(foodInfo.foodSize) || 1,
+      unit: foodInfo.foodUnit,
     },
     mode: 'onChange',
   });
 
-  const foodSize = watch('foodSize');
+  const { quantity, unit } = watch();
 
   // 선택된 음식 수정한 값 유지
   useEffect(() => {
     if (foodInfo) {
       const storedFood = selectedFoods[foodInfo.id];
-      reset({
-        foodSize: storedFood ? storedFood.foodSize : strToNum(foodInfo.foodSize),
-      });
+      if (storedFood) {
+        // 수정
+        reset({
+          foodSize: storedFood.foodSize ?? baseSize,
+          quantity: storedFood.quantity ?? (storedFood.unit === '인분' ? 1 : baseSize),
+          unit: storedFood.unit ?? foodInfo.foodUnit,
+        });
+      } else {
+        // 신규
+        reset({
+          foodSize: baseSize,
+          quantity: foodInfo.foodUnit === '인분' ? 1 : baseSize,
+          unit: foodInfo.foodUnit,
+        });
+      }
     }
   }, [foodInfo, selectedFoods, reset]);
 
+  const BASIC_UNITS = ['g', 'ml'];
+  const getStep = () => (BASIC_UNITS.includes(unit) ? 10 : 0.5);
+
   // + 버튼
   const handleInc = () => {
-    setValue('foodSize', Math.max(roundTo1(strToNum(foodSize) + FOOD_STEP), 0));
+    setValue('quantity', Math.max(roundTo1(strToNum(quantity) + getStep()), 0));
   };
 
   // - 버튼
   const handleDec = () => {
-    setValue('foodSize', Math.max(roundTo1(strToNum(foodSize) - FOOD_STEP), 0));
+    setValue('quantity', Math.max(roundTo1(strToNum(quantity) - getStep()), 0));
   };
 
-  // 현재 내용량 / 기준 내용량
-  const ratio = useMemo(() => (baseSize > 0 ? foodSize / baseSize : 0), [foodSize, baseSize]);
-
   // 영양소 계산
-  const currentNutrients = useMemo(() => {
-    const scale = (v) => (v == null ? null : roundTo1(strToNum(v) * ratio));
-    return {
-      kcal: n.kcal == null ? null : Math.round(strToNum(n.kcal) * ratio),
-      carbs: scale(n.carbs),
-      sugar: scale(n.sugar),
-      sweetener: scale(n.sweetener),
-      fiber: scale(n.fiber),
-      protein: scale(n.protein),
-      fat: scale(n.fat),
-      satFat: scale(n.satFat),
-      transFat: scale(n.transFat),
-      unsatFat: scale(n.unsatFat),
-      cholesterol: scale(n.cholesterol),
-      sodium: scale(n.sodium),
-      potassium: scale(n.potassium),
-      caffeine: scale(n.caffeine),
-    };
-  }, [n, ratio]);
+  const currentNutrients = calcNutrient(
+    foodInfo.baseNutrient ?? foodInfo.nutrient,
+    baseSize,
+    quantity,
+    unit,
+  );
+
+  // 단위 변경
+  const handleUnitChange = (e) => {
+    const newUnit = e.target.value;
+    if (newUnit === '인분') {
+      setValue('quantity', 1);
+    } else {
+      setValue('quantity', baseSize);
+    }
+    setValue('unit', newUnit);
+  };
+
+  // 현재 총 용량 계산
+  const totalSize = unit === '인분' ? baseSize * Number(quantity) : Number(quantity);
 
   // 추가, 수정
   const onSubmit = (data) => {
+    const convertedSize =
+      data.unit === '인분' ? baseSize * Number(data.quantity) : Number(data.quantity);
+
     addFood({
       ...foodInfo,
-      foodSize: Number(data.foodSize),
+      baseFoodSize: baseSize, // 원본 기준량
+      baseNutrient: foodInfo.nutrient,
+      foodSize: convertedSize, // 계산된 최종값
+      foodUnit: foodInfo.foodUnit, // 원본 단위
+      quantity: Number(data.quantity), // 입력한 수량
+      unit: data.unit, // 선택한 단위
       nutrient: currentNutrients,
     });
+
     closeModal();
     toast.success(isFoodSelect ? '수정 되었습니다' : '추가 되었습니다');
   };
@@ -142,11 +165,11 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
 
               <input
                 type='number'
-                step={FOOD_STEP}
+                step={getStep()}
                 placeholder='0'
                 min={1}
                 max={10000}
-                {...register('foodSize', {
+                {...register('quantity', {
                   required: '용량을 입력해주세요.',
                   min: { value: 1, message: '0 이상 입력해주세요.' },
                   max: { value: 10000, message: '10,000 이하로 입력해주세요.' },
@@ -156,8 +179,8 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
                   },
                 })}
                 onBlur={() => {
-                  if (foodSize != null) {
-                    setValue('foodSize', roundTo1(strToNum(foodSize)));
+                  if (quantity != null) {
+                    setValue('quantity', roundTo1(strToNum(quantity)));
                   }
                 }}
                 className='no-spinner w-[120px] outline-none text-center'
@@ -168,30 +191,39 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
               </button>
             </div>
 
-            <select className='w-full h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'>
+            <select
+              className='w-full h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'
+              {...register('unit')}
+              value={unit}
+              onChange={handleUnitChange}
+            >
               <option value={foodInfo.foodUnit}>{foodInfo.foodUnit}</option>
+              <option value='인분'>인분</option>
             </select>
           </div>
 
-          {errors.foodSize && (
+          {errors.quantity && (
             <p className='text-[var(--color-error)] text-sm mt-1 text-left'>
-              {errors.foodSize.message}
+              {errors.quantity.message}
             </p>
           )}
         </div>
 
+        {/* 칼로리, 총 용량 */}
         <div>
           <div className='flex items-center justify-between py-[20px] text-sm font-bold'>
             <h3>
               <strong className='text-2xl'>{currentNutrients.kcal}</strong> kcal
             </h3>
+
             <p className='text-gray-500'>
-              총 용량 {foodSize}
-              {foodInfo.foodUnit}
+              총 용량 {quantity}
+              {unit}
+              {unit === '인분' && ` (${totalSize}${foodInfo.foodUnit})`}
             </p>
           </div>
 
-          {/* 값이 없으면 리스트 숨김 */}
+          {/* 영양소 */}
           {nutritionFields
             .filter((f) => f.value !== null && f.value !== undefined && f.value !== '')
             .map((f) => (

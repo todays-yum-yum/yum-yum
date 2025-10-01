@@ -9,7 +9,7 @@ import BasicButton from '@/components/button/BasicButton';
 import FrequentlyEatenFood from './page/FrequentlyEatenFood';
 import CustomEntry from './page/CustomEntry';
 
-const tabItem = [
+const TAB_ITEM = [
   { id: 'frequent', label: '최근 먹은 음식' },
   { id: 'custom', label: '직접 등록' },
 ];
@@ -24,11 +24,13 @@ export default function MealPage() {
 
   // 페이지 진입 시 선택항목 초기화
   useEffect(() => {
-    if (location.state?.formMain) {
+    if (location.state?.formMain === true) {
       clearFoods();
       setActiveTab('frequent');
+      // 현재 페이지 경로 그대로 state 빈값으로 받아서 메인에서 들어올때만 clearFoods();실행
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state, clearFoods, setActiveTab]);
+  }, [location.state, clearFoods, setActiveTab, navigate]);
 
   const onSearchChange = (e) => {
     setSearchInputValue(e.target.value);
@@ -36,8 +38,6 @@ export default function MealPage() {
 
   // 돋보기 아이콘 클릭, 엔터
   const handleSearchSubmit = () => {
-    // console.log(searchInputValue);
-    // FoodSearchResult.jsx 페이지로 이동
     navigate(`/meal/search`, {
       state: { searchInputValue, type, date },
       replace: false, // 히스토리에 추가해서 뒤로가기 가능
@@ -60,13 +60,9 @@ export default function MealPage() {
         handleSearchSubmit={handleSearchSubmit}
       />
 
-      <MealTabs activeTabId={activeTab} onChange={setActiveTab} tabItem={tabItem} />
-      <div className={activeTab === 'frequent' ? 'block' : 'hidden'}>
-        <FrequentlyEatenFood />
-      </div>
-      <div className={activeTab === 'custom' ? 'block' : 'hidden'}>
-        <CustomEntry />
-      </div>
+      <MealTabs activeTabId={activeTab} onChange={setActiveTab} tabItem={TAB_ITEM} />
+
+      {activeTab === 'frequent' ? <FrequentlyEatenFood /> : <CustomEntry />}
 
       <div className='sticky bottom-0 z-30 block w-full max-w-[500px] p-[20px] bg-white'>
         <BasicButton
