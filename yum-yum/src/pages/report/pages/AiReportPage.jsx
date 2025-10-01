@@ -103,6 +103,7 @@ export default function AiReportPage({
   return (
     <main className='flex flex-col h-full gap-7.5'>
       <ChartArea
+        originDate={originDate}
         date={fullDate}
         period='일간'
         unit='AI'
