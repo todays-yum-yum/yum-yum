@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getRecentFoods } from '@/services/FrequentFoodsApi';
+import { getRecentFoods } from '@/services/frequentFoodsApi';
 
 export const useRecentFoods = (userId) => {
   const recentFoodData = useQuery({
