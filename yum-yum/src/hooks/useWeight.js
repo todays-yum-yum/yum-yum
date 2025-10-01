@@ -1,8 +1,59 @@
 // 몸무게 입력 커스텀 훅
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { saveWeight } from '@/services/weightApi';
 import { getUserWeightData } from '@/services/userApi';
-import { useEffect, useState } from 'react';
+import { useHomeStore } from '@/stores/useHomeStore';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+
+export const useWeightModal = (userId, selectedDate) => {
+  const { weightModalOpen, setWeightModalOpen } = useHomeStore();
+  const {
+    selectedDateModal,
+    setSelectedDateModal,
+    selectedDateModalOpen,
+    setSelectedDateModalOpen,
+    saveWeightMutation,
+  } = useWeight(userId, selectedDate);
+  const { register, handleSubmit, reset, formState } = useForm({
+    defaultValues: { weight: '' },
+    mode: 'onSubmit',
+  });
+
+  const open = () => setWeightModalOpen(true);
+  const close = () => setWeightModalOpen(false);
+
+  const onSubmit = handleSubmit(async (data) => {
+    const p = saveWeightMutation.mutateAsync({ weight: +data.weight, date: selectedDateModal });
+    await toast.promise(p, {
+      loading: '저장하는 중...',
+      success: (response) => {
+        setWeightModalOpen(false);
+        reset();
+        return response?.message || '몸무게가 성공적으로 저장되었습니다!';
+      },
+      error: (error) => {
+        return error?.message || '몸무게 저장에 실패했습니다.';
+      },
+    });
+    reset();
+    close();
+  });
+
+  return {
+    weightModalOpen,
+    open,
+    close,
+    selectedDateModal,
+    setSelectedDateModal,
+    selectedDateModalOpen,
+    setSelectedDateModalOpen,
+    register,
+    onSubmit,
+    formState,
+  };
+};
 
 export const useWeight = (userId, selectedDate) => {
   const queryClient = useQueryClient();

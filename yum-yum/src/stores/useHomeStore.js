@@ -51,16 +51,23 @@ export const useHomeStore = create(
         });
       },
 
-      // 데이터 정제
-      setDailyData: (data, userData) => {
+      // 음식 데이터 정제
+      setMealData: (data) => {
+        set({
+          mealData: normalizerMeal(data.mealData[0]),
+          originalMealData: data.mealData[0]?.meals,
+        });
+      },
+
+      // 수분 데이터 정제
+      setWaterData: (data, userData) => {
         const water = normalizerWater({
           water: data.waterData[0],
           age: userData?.age,
           gender: userData?.gender,
           targetIntake: userData?.targetIntake,
         });
-        const meal = normalizerMeal(data.mealData[0]);
-        set({ waterData: water, mealData: meal, originalMealData: data.mealData[0]?.meals });
+        set({ waterData: water });
       },
 
       // 초기화
