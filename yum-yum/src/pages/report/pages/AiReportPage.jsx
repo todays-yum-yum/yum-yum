@@ -137,7 +137,7 @@ export default function AiReportPage({
                       </span>
                     ))
                 ) : (
-                  <span>아직 AI 코치의 분석 결과가 없습니다.</span>
+                  <span>아직 분석 결과가 준비되지 않았습니다. 오늘의 식단을 기록하면 AI 코치가 맞춤 피드백을 드려요!</span>
                 ))}
             </div>
           </article>
