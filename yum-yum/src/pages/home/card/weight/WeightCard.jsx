@@ -14,15 +14,15 @@ export default function WeightCard({ currentWeight = 0, targetWeight = 0, onWeig
           {/* 체중 정보 */}
           <div className='space-y-3 mb-8'>
             <div className='flex justify-between items-center gap-1'>
-              <span className='text-gray-800 text-mb font-bold'>현재 체중</span>
-              <span className='text-gray-800 text-mb font-bold'>
+              <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>현재 체중</span>
+              <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>
                 {parseFloat(currentWeight)?.toFixed(1)}kg
               </span>
             </div>
 
             <div className='flex justify-between items-center gap-1'>
-              <span className='text-gray-800 text-mb font-bold'>목표 체중</span>
-              <span className='text-gray-800 text-mb font-bold'>
+              <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>목표 체중</span>
+              <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>
                 {parseFloat(targetWeight)?.toFixed(1)}kg
               </span>
             </div>
@@ -31,15 +31,14 @@ export default function WeightCard({ currentWeight = 0, targetWeight = 0, onWeig
 
         {/* 목표까지 남은 무게 박스 */}
         <div
-          className={`rounded-[20px] p-6  text-center flex-shrink-0 ${
-            isGoalReached ? 'bg-blue-100' : 'bg-pink-100'
-          }`}
+          className={`rounded-[20px] p-6  text-center flex-shrink-0 max-[365px]:max-w-[128px]
+            ${isGoalReached ? 'bg-blue-100' : 'bg-pink-100'} `}
         >
-          <div className='text-gray-800 text-mb  font-bold leading-tight mb-3'>
+          <div className='text-gray-800 text-mb  font-bold leading-tight mb-3 max-[365px]:text-sm mb-2'>
             {isGoalReached ? '목표 달성!' : '목표 무게까지'}
           </div>
           <div
-            className={`text-3xl font-bold leading-tight ${
+            className={`text-3xl font-bold leading-tight max-[365px]:text-2xl ${
               isGoalReached ? 'text-primary' : 'text-secondary'
             }`}
           >
