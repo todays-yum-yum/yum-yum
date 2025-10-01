@@ -13,6 +13,7 @@ import {
   getWeightWeeklyData,
   getWeightYearlyData,
 } from '../utils/reportDataParser';
+import { todayDate } from '../utils/dateUtils';
 
 const searchConfig = {
   일간: 'daily',
@@ -21,7 +22,12 @@ const searchConfig = {
 };
 
 export const useReportStore = create((set, get) => ({
+
+  // 날짜 관련
+  date: todayDate(),
+
   // UI
+  calendarOpen: false,
 
   // 식단 데이터
   originalMealData: null,
@@ -50,6 +56,14 @@ export const useReportStore = create((set, get) => ({
   searchType: '',
 
   nutrientionReport: {},
+
+  // ----
+
+  // 날짜
+  setDate: (date) => set({ date }),
+
+  // UI
+  setCalendarOpen: (status) => set({ calendarOpen: status }),
 
   // 식단
   setNutrients: (data, originDate, activePeriod) => {

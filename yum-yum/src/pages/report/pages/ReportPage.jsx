@@ -4,6 +4,7 @@ import DietReportPage from './DietReportPage';
 import WaterReportPage from './WaterReportPage';
 import WeightReportPage from './WeightReportPage';
 import AiReportPage from './AiReportPage';
+import { useReportStore } from '@/stores/useReportStore';
 
 import {
   getDayOfWeek,
@@ -36,21 +37,22 @@ const reportParam = {
 };
 
 const tabToParam = {
-  '식단': 'diet',
-  '수분': 'water',
-  '체중': 'weight',
-  'AI 리포트': 'ai'
+  식단: 'diet',
+  수분: 'water',
+  체중: 'weight',
+  'AI 리포트': 'ai',
 };
 
 export default function ReportPage() {
+  const { date, setDate, calendarOpen, setCalendarOpen } = useReportStore();
+
   const [activeTab, setActiveTab] = useState(null);
   const reportTypes = [{ name: '식단' }, { name: '수분' }, { name: '체중' }, { name: 'AI 리포트' }];
   const CurrentComponent = reportPath[activeTab];
 
   // 단위 기간 저장
   const [activePeriod, setActivePeriod] = useState('일간');
-  // 단위 기간 날짜
-  const [date, setDate] = useState(todayDate());
+  
   // 날짜의 요일
   const day = getDayOfWeek(date);
 
@@ -58,14 +60,14 @@ export default function ReportPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
-    
+
     let initialTab = '식단'; // 기본값
-    
+
     if (tabParam && reportParam[tabParam]) {
-      initialTab = reportParam[tabParam]; 
+      initialTab = reportParam[tabParam];
     } else {
       const url = new URL(window.location);
-      url.searchParams.set('tab', tabToParam[initialTab]); 
+      url.searchParams.set('tab', tabToParam[initialTab]);
       window.history.replaceState({}, '', url);
     }
     setActiveTab(initialTab);
@@ -74,8 +76,8 @@ export default function ReportPage() {
   // 탭 변경시 주소 변경
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
-    
-    const urlParam = tabToParam[tabName]; 
+
+    const urlParam = tabToParam[tabName];
     if (urlParam) {
       const url = new URL(window.location);
       url.searchParams.set('tab', urlParam);
@@ -112,6 +114,7 @@ export default function ReportPage() {
 
   // 이전 단위 기간으로
   const handlePrevDate = () => {
+
     switch (activePeriod) {
       case '일간':
         setDate(getYesterday(date));
@@ -129,6 +132,7 @@ export default function ReportPage() {
 
   // 이후 단위 기간으로
   const handleNextDate = () => {
+
     switch (activePeriod) {
       case '일간':
         setDate(getTomorrow(date));
@@ -144,8 +148,12 @@ export default function ReportPage() {
     }
   };
 
+  useEffect(() => {
+    setCalendarOpen(false)
+  }, [activeTab, activePeriod]);
+
   return (
-    <div className='bg-white flex flex-col' >
+    <div className='bg-white flex flex-col'>
       <nav className='flex flex-row gap-4 py-2.5 justify-center'>
         {reportTypes.map((type) => (
           <BasicButton

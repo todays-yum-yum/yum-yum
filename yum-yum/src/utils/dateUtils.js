@@ -154,6 +154,7 @@ export const parseDateString = (dateString) => {
     month: month.padStart(2, '0'),
     date: date.padStart(2, '0'),
     fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
+    originDate:  new Date(Number(year), Number(month) - 1, Number(date))
   };
 };
 
