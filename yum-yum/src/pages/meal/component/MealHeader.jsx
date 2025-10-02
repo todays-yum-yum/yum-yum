@@ -34,7 +34,11 @@ export default function FoodSearch({
 
   return (
     <div className='sticky top-0 z-30 flex justify-center items-center h-[60px] px-5 py-2 bg-white'>
-      <button onClick={handleBack} className='absolute left-[20px] flex items-center'>
+      <button
+        aria-label='뒤로가기'
+        onClick={handleBack}
+        className='absolute left-[20px] flex items-center'
+      >
         <PrevIcon className='h-[44px] mr-4' />
       </button>
 
@@ -42,7 +46,11 @@ export default function FoodSearch({
         <h2 className='font-bold text-lg'>{children}</h2>
       ) : (
         <div className='flex items-center gap-3 w-full ml-[26px] px-4 bg-gray-100 rounded-full '>
-          <button onClick={handleSearchSubmit} className='flex items-center justify-center'>
+          <button
+            aria-label='검색'
+            onClick={handleSearchSubmit}
+            className='flex items-center justify-center'
+          >
             <SearchIcon />
           </button>
 
@@ -59,6 +67,7 @@ export default function FoodSearch({
 
           {value && (
             <button
+              aria-label='검색어 지우기'
               type='button'
               onClick={() => onChange({ target: { value: '' } })}
               className='flex items-center justify-center bg-gray-300 rounded-full'

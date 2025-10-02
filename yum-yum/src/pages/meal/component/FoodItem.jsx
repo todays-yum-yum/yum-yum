@@ -62,11 +62,11 @@ export default function FoodItem({
           {variant === 'select' && (
             <>
               {selected ? (
-                <button onClick={handleRemove}>
+                <button aria-label='음식 선택 취소' onClick={handleRemove}>
                   <CheckIcon className='text-primary' />
                 </button>
               ) : (
-                <button onClick={handleSelect}>
+                <button aria-label='음식 추가' onClick={handleSelect}>
                   <PlusIcon className='text-[#CBE9DB] w-[24px] h-[24px]' />
                 </button>
               )}
@@ -74,7 +74,11 @@ export default function FoodItem({
           )}
 
           {variant === 'delete' && (
-            <button onClick={handleDelete} className='flex items-center justify-center'>
+            <button
+              aria-label='음식 삭제'
+              onClick={handleDelete}
+              className='flex items-center justify-center'
+            >
               <MinusIcon className='text-primary w-[24px] h-[24px]' />
             </button>
           )}

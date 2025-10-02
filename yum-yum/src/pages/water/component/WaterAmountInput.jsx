@@ -13,7 +13,7 @@ export default function WaterAmountInput({ control, waterStep }) {
       name='waterAmount'
       control={control}
       rules={{
-        required: { message: '수분 섭취량을 입력해주세요.' },
+        required: '수분 섭취량을 입력해주세요.',
         min: { value: 0, message: '0ml 이상 입력해주세요.' },
         max: { value: 10000, message: '최대 10,000ml까지만 기록할 수 있어요!' },
       }}
@@ -62,7 +62,12 @@ export default function WaterAmountInput({ control, waterStep }) {
 
         return (
           <div className='flex items-center w-full justify-around'>
-            <button type='button' onClick={handleDec} className='flex items-center justify-center'>
+            <button
+              aria-label='수분 섭취량 감소'
+              type='button'
+              onClick={handleDec}
+              className='flex items-center justify-center'
+            >
               <MinusIcon className='text-primary w-[40px] h-[40px]' />
             </button>
 
@@ -70,7 +75,6 @@ export default function WaterAmountInput({ control, waterStep }) {
               <input
                 type='text'
                 inputMode='numeric' // 모바일에서 숫자 키패드
-                maxLength={5}
                 placeholder='0'
                 value={value}
                 onChange={handleWaterAmountChange}
@@ -81,7 +85,12 @@ export default function WaterAmountInput({ control, waterStep }) {
               <p className='text-lg'>ml</p>
             </div>
 
-            <button type='button' onClick={handleInc} className='flex items-center justify-center'>
+            <button
+              aria-label='수분 섭취량 증가'
+              type='button'
+              onClick={handleInc}
+              className='flex items-center justify-center'
+            >
               <PlusIcon className='text-primary w-[40px] h-[40px]' />
             </button>
           </div>

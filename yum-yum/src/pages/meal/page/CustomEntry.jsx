@@ -86,7 +86,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
             </p>
           )}
 
-          <RoundButton color='secondary' onClick={handleCustomEntry}>
+          <RoundButton aria-label='직접 등록' color='secondary' onClick={handleCustomEntry}>
             직접 등록
           </RoundButton>
         </div>

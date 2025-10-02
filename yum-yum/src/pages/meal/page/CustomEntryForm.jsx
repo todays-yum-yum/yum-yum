@@ -114,6 +114,7 @@ export default function CustomEntryForm() {
 
               <select
                 {...register('servingUnit')}
+                aria-label='단위 선택'
                 className='w-full max-w-[226px] h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'
               >
                 <option value='g'>g</option>
@@ -130,7 +131,7 @@ export default function CustomEntryForm() {
         </div>
 
         <div className='sticky bottom-0 z-30 w-full max-w-[500px] p-[20px] bg-white'>
-          <BasicButton size='full' type='submit'>
+          <BasicButton aria-label='등록 완료' size='full' type='submit'>
             등록 완료
           </BasicButton>
         </div>
