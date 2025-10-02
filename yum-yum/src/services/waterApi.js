@@ -41,6 +41,11 @@ export const getWaterIntake = async (userId, date) => {
     if (snapShot.exists()) {
       return snapShot.data();
     }
+    return {
+      date,
+      intakes: [],
+      dailyTotal: 0,
+    };
   } catch (error) {
     console.error('수분 기록 불러오는 중 오류 발생:', error);
     throw error;
