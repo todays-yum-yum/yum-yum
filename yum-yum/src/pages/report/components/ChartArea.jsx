@@ -1,9 +1,17 @@
 import React from 'react';
 import RoundButton from '@/components/button/RoundButton';
+import DateHeader from '@/components/common/DateHeader';
+
 import PrevDateIcon from '@/assets/icons/icon-left.svg?react';
 import NextDateIcon from '@/assets/icons/icon-right.svg?react';
+
 import { roundTo1, toNum } from '@/utils/nutrientNumber';
+import { parseDateString } from '@/utils/dateUtils';
+
+import { useReportStore } from '@/stores/useReportStore';
 import clsx from 'clsx';
+import DatePicker from 'react-datepicker';
+import { dateFormatting } from '../../../utils/dateUtils';
 
 // 단위 기간별 접두어
 const periodPrefixConfig = {
@@ -36,6 +44,7 @@ const unitConfig = {
 const periods = ['일간', '주간', '월간'];
 
 export default function ChartArea({
+  originDate,
   date,
   unit,
   value,
@@ -46,6 +55,8 @@ export default function ChartArea({
   nextDate,
   canMove,
 }) {
+  const { setDate, calendarOpen, setCalendarOpen } = useReportStore();
+
   // 활성화된 단위기간과 리포트 타입에 맞는 접두어 및 접미어 설정
   const periodPrefix =
     activePeriod === '일간'
@@ -54,7 +65,23 @@ export default function ChartArea({
 
   const unitInfo = unitConfig[unit];
 
-  const aiArea = clsx(unit === "AI" && 'h-[calc(100vh-190px)] overflow-y-auto');
+  const dateFormat = (activePeriod) => {
+    switch (activePeriod) {
+      case '일간': {
+        return 'MM월 dd일';
+      }
+
+      case '주간': {
+        return '';
+      }
+
+      case '월간': {
+        return 'yyyy년 MM월';
+      }
+    }
+  };
+
+  const aiArea = clsx(unit === 'AI' && 'h-[calc(100vh-190px)] overflow-y-auto');
 
   const valueNormaize = () => {
     const num = toNum(value) || 0;
@@ -72,17 +99,61 @@ export default function ChartArea({
 
   // console.log("value", value)
 
+  // console.log(date, originDate)
+
   return (
-    <section className={clsx(aiArea, 'flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)] ' )}>
-      
+    <section
+      className={clsx(
+        aiArea,
+        'flex flex-col items-center gap-7.5 py-5 border-t border-b border-gray-200 bg-[var(--color-primary-light)] ',
+      )}
+    >
       {/* 날짜 및 날짜 변경 버튼 */}
       {date && (
-        <div className='flex flex-row gap-5 items-center'>
+        <div className='flex flex-row gap-3 items-center'>
           <button onClick={prevDate}>
             <PrevDateIcon />
           </button>
 
-          <article className='text-2xl font-bold'>{date}</article>
+          {/* 날짜 표기와 캘린더 */}
+          <article className='text-2xl font-bold'>
+            <DateHeader
+              date={activePeriod === '주간' ? '' : parseDateString(originDate).originDate}
+              dateString={activePeriod === '주간' ? date : ''}
+              dateFormat={dateFormat(activePeriod)}
+              showOnBoardIcon={false}
+              onCalendarClick={() => {
+                setCalendarOpen(!calendarOpen);
+              }}
+              className={'!bg-transparent'}
+              textSize={'!text-2xl'}
+            />
+            {calendarOpen && (
+              <>
+                {/* 캘린더 */}
+                <div
+                  className={clsx(
+                    'absolute z-10',
+                    activePeriod === '월간' ? 'left-[135px]' : 'left-[120px]',
+                  )}
+                >
+                  <DatePicker
+                    dateFormat={dateFormat(activePeriod)}
+                    showMonthYearPicker={activePeriod === '월간'} // 추가
+                    selected={parseDateString(originDate).originDate}
+                    onChange={(date) => {
+                      setDate(dateFormatting(date));
+                      setCalendarOpen(false); // 날짜 선택 후 닫기
+                    }}
+                    minDate={new Date('2000-01-01')}
+                    maxDate={new Date()}
+                    locale='ko'
+                    inline // 인라인으로 표시
+                  />
+                </div>
+              </>
+            )}
+          </article>
           {canMove && (
             <button onClick={nextDate} disabled={!canMove}>
               <NextDateIcon />

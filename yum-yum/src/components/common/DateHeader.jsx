@@ -6,13 +6,16 @@ import DateSelector from './DateSelector';
 
 export default function DateHeader({
   date = new Date(),
+  dateString,
   dateFormat = 'yyyy년 MM월 dd일',
   showOnBoardIcon = true,
   onCalendarClick,
   onOnBoardClick,
   className = '',
+  textSize = '',
 }) {
-  const formattedDate = format(date, dateFormat, { locale: ko });
+
+  const formattedDate = dateString || format(date, dateFormat, { locale: ko });
 
   return (
     <div className={`w-full h-16 bg-white  ${className}`}>
@@ -23,7 +26,7 @@ export default function DateHeader({
 
         {/* 중앙: 날짜 + 캘린더 버튼 */}
         <div className='flex items-center gap-2'>
-          <DateSelector onCalendarClick={onCalendarClick} formattedDate={formattedDate} />
+          <DateSelector onCalendarClick={onCalendarClick} formattedDate={formattedDate} textSize={textSize} />
         </div>
 
         {/* 오른쪽: 온보딩 버튼 */}
