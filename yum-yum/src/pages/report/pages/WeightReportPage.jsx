@@ -93,6 +93,7 @@ export default function WeightReportPage({
   return (
     <main className='flex flex-col gap-7.5'>
       <ChartArea
+        originDate={originDate}
         date={fullDate}
         period='일간'
         unit='Kg'

@@ -11,20 +11,22 @@ export default function BasicButton({
   onClick,
   children,
 }) {
+  const sizeMap = {
+    xs: 'px-2 h-8 max-[350px]:text-sm',
+    sm: 'px-2 h-12 max-[350px]:text-sm',
+    md: 'px-5 h-12 max-[350px]:text-sm max-[350px]:px-4',
+    lg: 'px-8 h-12 max-[350px]:text-sm',
+    xl: 'px-11 h-12 max-[350px]:text-sm',
+    '2xl': 'w-[140px] h-12 max-[350px]:text-sm',
+    full: 'w-full h-12 max-[350px]:text-sm',
+  };
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
       // h-12 px-5 bg-emerald-500 rounded-lg inline-flex justify-center items-center gap-2 overflow-hidden
-      className={clsx('rounded-lg flex justify-center items-center', {
-        'px-2 h-8': size === 'xs',
-        'px-2 h-12': size === 'sm',
-        'px-5 h-12': size === 'md',
-        'px-8 h-12': size === 'lg',
-        'px-11 h-12': size === 'xl',
-        'w-[140px] h-12': size === '2xl',
-        'w-full h-12': size === 'full',
+      className={clsx('rounded-lg flex justify-center items-center', sizeMap[size], {
         'bg-primary text-white': color === 'primary' && variant === 'filled' && !disabled,
         'bg-secondary text-white': color === 'secondary' && variant === 'filled' && !disabled,
         'bg-gray-600 text-white': color === 'gray' && variant === 'filled' && !disabled,
