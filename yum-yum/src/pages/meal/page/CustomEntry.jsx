@@ -122,7 +122,6 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
       {/* 삭제 확인 모달 */}
       <ConfirmModal
         isOpenModal={confirmOpen}
-        s
         onCloseModal={() => setConfirmOpen(false)}
         title='음식을 삭제하시겠어요?'
         desc='리스트에서 삭제됩니다.'
