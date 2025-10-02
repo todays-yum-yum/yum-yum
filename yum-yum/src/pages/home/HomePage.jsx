@@ -43,6 +43,7 @@ export default function HomePage() {
     setCalendarOpen,
     onboardOpen,
     setOnboardOpen,
+    originalMealData,
   } = useHomeStore();
   // hoook 요청
   const weightModal = useWeightModal(userId, selectedDate);
@@ -168,10 +169,10 @@ export default function HomePage() {
               onUpdateMeal={(id, mealType) => {
                 clearFoods(); // zustand에 이미 저장되어있는 선택값 clear()
                 // selected zustand에 값 추가
-                const copy = mealDataOrigin[id]?.meals[mealType];
+                const copy = originalMealData?.[mealType];
                 copy.map((meal) => addFood(meal));
                 navigate(`/meal/${mealType}/total`, {
-                  state: { date: selectedDate },
+                  state: { date: selectedDate, formMain: true },
                 });
               }}
               onAddWater={() => {

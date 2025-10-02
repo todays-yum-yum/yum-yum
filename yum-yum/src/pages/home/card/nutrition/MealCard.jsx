@@ -51,7 +51,7 @@ const MealCard = ({
             <CheckButton
               hasData={section.data.foods && section.data.foods.length > 0}
               onClick={() => {
-                if (section.data.calories > 0) {
+                if (section.data.foods) {
                   onUpdateMeal(meals._id, section.key);
                 } else {
                   onAddMeal(meals._id, section.key);
