@@ -10,8 +10,11 @@ export const useCustomFoods = (userId) => {
     queryKey: ['customFoods', userId],
     queryFn: () => getCustomFoods(userId),
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5분
     select: (data) => data ?? [],
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 30,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // 직접 등록
