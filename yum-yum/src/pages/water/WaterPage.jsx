@@ -108,7 +108,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
       setTargetIntake(data.targetIntake);
 
       // 캐시 무효화
-      queryClient.invalidateQueries(['dailyData', userId]);
+      queryClient.invalidateQueries(['daily-water-data', userId]);
 
       toast.success('설정 저장 완료!');
       setOpenModal(false);
@@ -126,7 +126,7 @@ export default function WaterPage({ defaultDate = new Date() }) {
       // await addWaterIntake(user.uid, formattedSaveDate, waterAmount);
 
       // 캐시 무효화
-      queryClient.invalidateQueries(['dailyData', userId, formattedSaveDate]);
+      queryClient.invalidateQueries(['daily-water-data', userId, formattedSaveDate]);
 
       toast.success('기록이 완료 되었어요!');
 

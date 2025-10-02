@@ -28,7 +28,7 @@ export const usePageData = (userId, selectedDate) => {
     targetCalories,
     currentWeight,
     goalWeight,
-    mealDataOrigin: mealOrigin.mealData,
+    mealDataOrigin: mealOrigin?.mealData,
   };
 };
 
