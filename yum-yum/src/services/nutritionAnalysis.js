@@ -29,8 +29,8 @@ function createPrompt(meals) {
 
 // AI API 호출 함수
 export async function generateNutritionAnalysis(userId, meals, dataHash) {
-  // meals에 아무것도 없을 때
-  if (meals.mealBreakdown.length === 0 || !meals.totalNutrition) {
+  // meals에 아무것도 없을 때 (mealBreakdown이나 total값이 없어도 빈값으로 처리)
+  if (!meals || !meals.mealBreakdown || meals.mealBreakdown.length === 0 || !meals.totalNutrition) {
     // 식단이 없어서 api 호출을 안한거라 success는 true로 리턴 => text 표출 이유
     return {
       text: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요!',
