@@ -104,7 +104,6 @@ const mealSum = (dailySummary, meals) => {
     totalCarbs = 0,
     totalProtein = 0,
     totalFat = 0;
-  // console.log(meals);
   if (!Array.isArray(meals)) {
     Object.keys(meals)?.map((meal) => {
       totalCalories += meal?.calorie ?? 0;

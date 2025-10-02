@@ -1,6 +1,6 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from './firebase';
-import { getStartDateAndEndDate } from '../utils/dateUtils';
+import { getStartDateAndEndDate, getTodayKey } from '../utils/dateUtils';
 
 export async function getDailyData(userId, selectedDate) {
   const date = new Date(selectedDate).toISOString().split('T')[0];
@@ -49,6 +49,70 @@ export async function getDailyData(userId, selectedDate) {
         mealData: mealData,
         weightData: weightData,
       },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * 식단 검색(하루 단위)
+ * @param {string} userId 유저아이디
+ * @param {Date} selectedDate 선택날짜
+ * @returns
+ */
+export async function getDailyMeal(userId, selectedDate) {
+  const date = getTodayKey(selectedDate);
+
+  try {
+    // 컬랙션 참조 생성
+    const mealRef = collection(firestore, 'users', userId, 'meal');
+    // 음식 쿼리 생성
+    const mealQuery = query(mealRef, where('date', '==', date));
+    // 음식 doc 호출
+    const mealSnap = await getDocs(mealQuery);
+
+    const mealData = mealSnap.docs.map((doc) => {
+      return doc.data();
+    });
+
+    return {
+      success: true,
+      mealData,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * 수분 검색(하루 단위)
+ * @param {string} userId 유저아이디
+ * @param {Date} selectedDate 선택날짜
+ * @returns
+ */
+export async function getDailyWater(userId, selectedDate) {
+  const date = getTodayKey(selectedDate);
+  try {
+    const waterRef = collection(firestore, 'users', userId, 'water');
+    const waterQuery = query(waterRef, where('date', '==', date));
+    const waterSnap = await getDocs(waterQuery);
+
+    const waterData = waterSnap.docs.map((doc) => {
+      return doc.data();
+    });
+
+    return {
+      success: true,
+      waterData,
     };
   } catch (error) {
     console.error(error);

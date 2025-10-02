@@ -1,8 +1,10 @@
 // 사용자 데이터 쿼리 훅
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserData } from '../services/userApi';
+import { useHomeStore } from '../stores/useHomeStore';
 
-export const useUserData = (userId, selectedDate) => {
+export const useUserData = (userId) => {
   // 사용자 데이터 불러오기
   const userQuery = useQuery({
     queryKey: ['user', userId],
@@ -15,5 +17,17 @@ export const useUserData = (userId, selectedDate) => {
   return {
     userData: userQuery.data,
     userLoading: userQuery.isLoading,
+  };
+};
+
+export const useHomeUserHook = (userId) => {
+  const { calcuateCalories } = useHomeStore();
+  const { userData } = useUserData(userId);
+  useEffect(() => {
+    if (userData) calcuateCalories(userData);
+  }, [userData, calcuateCalories]);
+
+  return {
+    userData,
   };
 };
