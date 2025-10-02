@@ -3,16 +3,15 @@ import { firestore } from './firebase';
 import { toNum } from '@/utils/nutrientNumber';
 import { format, subDays } from 'date-fns';
 import { callUserUid } from '@/utils/localStorage';
-const userId = callUserUid(); // 로그인한 유저 uid 가져오기
 
 // 최근 3일 먹은 음식 조회
 export const getRecentFoods = async () => {
   try {
+    const userId = callUserUid(); // 로그인한 유저 uid 가져오기
     const today = new Date(); // 오늘 날짜
     const fiveDaysAgo = subDays(today, 5); // 5일전
     const startDate = format(fiveDaysAgo, 'yyyy-MM-dd');
 
-    // const mealCol = collection(firestore, 'users', useId, 'meal');
     const mealCol = collection(firestore, 'users', userId, 'meal');
 
     const q = query(mealCol, where('date', '>=', startDate), orderBy('date', 'desc'));

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 // 컴포넌트
 import Modal from '@/components/Modal';
 import Input from '@/components/common/Input';
@@ -13,7 +13,12 @@ export default function WaterIntakeModal({
   oneTimeIntake,
   targetIntake,
 }) {
-  const { control, handleSubmit, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       oneTimeIntake,
       targetIntake,
@@ -45,80 +50,62 @@ export default function WaterIntakeModal({
       <div className='flex flex-col gap-[28px]'>
         <div className='flex flex-col gap-[20px]'>
           {/* 1회 섭취량 */}
-          <Controller
-            name='oneTimeIntake'
-            control={control}
-            rules={{
-              required: '1회 섭취량을 입력해주세요',
-              pattern: {
-                value: /^[0-9]+$/,
-                message: '숫자만 입력 가능합니다',
-              },
-              min: { value: 50, message: '50ml 이상 입력해주세요.' },
-              max: { value: 1000, message: '1000ml 이하로 입력해주세요.' },
-            }}
-            render={({ field, fieldState }) => (
-              <div className=''>
-                <div className='flex items-center justify-between'>
-                  <label htmlFor='oneTimeIntake' className='w-full font-bold'>
-                    1회 섭취량
-                  </label>
-                  <Input
-                    {...field}
-                    id='oneTimeIntake'
-                    type='number'
-                    noSpinner
-                    endAdornment='ml'
-                    placeholder='50 ~ 1,000'
-                    status={fieldState.error ? 'error' : 'default'}
-                  />
-                </div>
-                {fieldState.error && (
-                  <p className='text-[var(--color-error)] text-sm mt-1 text-right'>
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </div>
+          <div>
+            <div className='flex items-center justify-between'>
+              <label htmlFor='oneTimeIntake' className='w-full font-bold'>
+                1회 섭취량
+              </label>
+              <Input
+                id='oneTimeIntake'
+                type='number'
+                noSpinner
+                endAdornment='ml'
+                placeholder='50 ~ 1,000'
+                min={50}
+                max={1000}
+                status={errors.oneTimeIntake ? 'error' : 'default'}
+                {...register('oneTimeIntake', {
+                  required: '1회 섭취량을 입력해주세요',
+                  min: { value: 50, message: '50ml 이상 입력해주세요.' },
+                  max: { value: 1000, message: '1,000ml 이하로 입력해주세요.' },
+                })}
+              />
+            </div>
+            {errors.oneTimeIntake && (
+              <p className='text-[var(--color-error)] text-sm mt-1 text-right'>
+                {errors.oneTimeIntake.message}
+              </p>
             )}
-          />
+          </div>
 
           {/* 목표 섭취량 */}
-          <Controller
-            name='targetIntake'
-            control={control}
-            rules={{
-              required: '목표 섭취량을 입력해주세요',
-              pattern: {
-                value: /^[0-9]+$/,
-                message: '숫자만 입력 가능합니다',
-              },
-              min: { value: 500, message: '500ml 이상 입력해주세요.' },
-              max: { value: 10000, message: '10000ml 이하로 입력해주세요.' },
-            }}
-            render={({ field, fieldState }) => (
-              <div>
-                <div className='flex items-center justify-between'>
-                  <label htmlFor='targetIntake' className='w-full font-bold'>
-                    목표 섭취량
-                  </label>
-                  <Input
-                    {...field}
-                    id='targetIntake'
-                    type='number'
-                    noSpinner
-                    endAdornment='ml'
-                    placeholder='500 ~ 10,000'
-                    status={fieldState.error ? 'error' : 'default'}
-                  />
-                </div>
-                {fieldState.error && (
-                  <p className='text-[var(--color-error)] text-sm mt-1 text-right'>
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </div>
+          <div>
+            <div className='flex items-center justify-between'>
+              <label htmlFor='targetIntake' className='w-full font-bold'>
+                목표 섭취량
+              </label>
+              <Input
+                id='targetIntake'
+                type='number'
+                noSpinner
+                endAdornment='ml'
+                placeholder='500 ~ 10,000'
+                min={500}
+                max={10000}
+                status={errors.targetIntake ? 'error' : 'default'}
+                {...register('targetIntake', {
+                  required: '목표 섭취량을 입력해주세요',
+                  min: { value: 500, message: '500ml 이상 입력해주세요.' },
+                  max: { value: 10000, message: '10,000ml 이하로 입력해주세요.' },
+                })}
+              />
+            </div>
+            {errors.targetIntake && (
+              <p className='text-[var(--color-error)] text-sm mt-1 text-right'>
+                {errors.targetIntake.message}
+              </p>
             )}
-          />
+          </div>
         </div>
 
         {/* 수분 섭취 참고 */}
