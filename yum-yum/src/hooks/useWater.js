@@ -42,6 +42,7 @@ export function useWaterIntake(userId, selectedDate) {
     onSuccess: (_, variables) => {
       toast.success('기록이 완료 되었어요!');
       queryClient.invalidateQueries(['waterIntake', userId, variables.date]);
+      queryClient.invalidateQueries(['daily-water-data', userId]);
     },
     onError: (error) => {
       toast.error('수분 기록 실패');
@@ -53,16 +54,10 @@ export function useWaterIntake(userId, selectedDate) {
   const saveWaterSettingsMutation = useMutation({
     mutationFn: ({ oneTimeIntake, targetIntake }) =>
       saveWaterSettings(userId, oneTimeIntake, targetIntake),
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       toast.success('설정 저장 완료!');
-      // 옵티미스틱 업데이트 (즉시 UI 반영)
-      queryClient.setQueryData(['waterSettings', userId], (prev) => {
-        return {
-          ...(prev ?? {}),
-          oneTimeIntake: variables.oneTimeIntake,
-          targetIntake: variables.targetIntake,
-        };
-      });
+      queryClient.invalidateQueries(['waterSettings', userId]);
+      queryClient.invalidateQueries(['daily-water-data', userId]);
     },
     onError: (error) => {
       toast.error('수분 섭취량 설정 실패');
