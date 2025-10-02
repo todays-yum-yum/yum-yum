@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserData } from '../services/userApi';
 import { useHomeStore } from '../stores/useHomeStore';
 
-const useUserData = (userId) => {
+export const useUserData = (userId) => {
   // 사용자 데이터 불러오기
   const userQuery = useQuery({
     queryKey: ['user', userId],
