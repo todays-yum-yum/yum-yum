@@ -355,7 +355,7 @@ export const getWeightYearlyData = (weightData, selectedDate) => {
           typeof item.value === 'object'
         );
       })
-      .sort((a, b) => new Date(a.date) - new Date(b.date)); // 안전하게 날짜 순으로 정렬
+      .sort((a, b) => new Date(a.date) - new Date(b.date)); // 날짜 순으로 정렬
 
     const lastEntry = monthWeightData[monthWeightData.length - 1];
     const lastWeight = lastEntry ? lastEntry.value.lastchanges?.weight : 0;

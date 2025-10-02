@@ -6,12 +6,11 @@ import PrevDateIcon from '@/assets/icons/icon-left.svg?react';
 import NextDateIcon from '@/assets/icons/icon-right.svg?react';
 
 import { roundTo1, toNum } from '@/utils/nutrientNumber';
-import { parseDateString } from '@/utils/dateUtils';
+import { parseDateString, dateFormatting } from '@/utils/dateUtils';
 
 import { useReportStore } from '@/stores/useReportStore';
 import clsx from 'clsx';
 import DatePicker from 'react-datepicker';
-import { dateFormatting } from '../../../utils/dateUtils';
 
 // 단위 기간별 접두어
 const periodPrefixConfig = {
@@ -43,19 +42,17 @@ const unitConfig = {
 // 단위기간 버튼용
 const periods = ['일간', '주간', '월간'];
 
-export default function ChartArea({
-  originDate,
-  date,
-  unit,
-  value,
-  children,
-  activePeriod,
-  onPeriodChange,
-  prevDate,
-  nextDate,
-  canMove,
-}) {
-  const { setDate, calendarOpen, setCalendarOpen } = useReportStore();
+export default function ChartArea({ originDate, date, unit, value, children }) {
+  const {
+    setDate,
+    calendarOpen,
+    setCalendarOpen,
+    handlePrevDate,
+    handleNextDate,
+    getCanMove,
+    activePeriod,
+    setActivePeriod,
+  } = useReportStore();
 
   // 활성화된 단위기간과 리포트 타입에 맞는 접두어 및 접미어 설정
   const periodPrefix =
@@ -111,7 +108,7 @@ export default function ChartArea({
       {/* 날짜 및 날짜 변경 버튼 */}
       {date && (
         <div className='flex flex-row gap-3 items-center'>
-          <button onClick={prevDate}>
+          <button onClick={() => handlePrevDate(activePeriod)}>
             <PrevDateIcon />
           </button>
 
@@ -154,8 +151,8 @@ export default function ChartArea({
               </>
             )}
           </article>
-          {canMove && (
-            <button onClick={nextDate} disabled={!canMove}>
+          {getCanMove() && (
+            <button onClick={() => handleNextDate(activePeriod)} disabled={!getCanMove()}>
               <NextDateIcon />
             </button>
           )}
@@ -189,7 +186,7 @@ export default function ChartArea({
         {periods.map((period) => (
           <RoundButton
             key={period}
-            onClick={() => onPeriodChange(period)}
+            onClick={() => setActivePeriod(period)}
             variant={activePeriod === period ? 'filled' : 'line'}
           >
             {period}

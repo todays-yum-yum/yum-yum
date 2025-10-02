@@ -24,15 +24,10 @@ import { useQueryClient } from '@tanstack/react-query';
 export default function AiReportPage({
   originDate,
   fullDate,
-  activePeriod,
-  setActivePeriod,
-  prev,
-  next,
-  canMove,
 }) {
   const userId = callUserUid();
 
-  const { searchType, nutrientionReport, setSearchType, setNutrientionReport } = useReportStore();
+  const { searchType, nutrientionReport, setSearchType, setNutrientionReport, activePeriod } = useReportStore();
 
   const parsedDate = parseDateString(originDate);
 
@@ -71,15 +66,7 @@ export default function AiReportPage({
     currentTimePeriod,
     searchType
   );
-
-  const onPrevPeriod = () => {
-    prev();
-  };
-
-  const onNextPeriod = () => {
-    next();
-  };
-
+  
   // Lookbehind / Lookahead
   // 문장 부호 단위로 분리. 강조 구문은 분리안함
   // const splitMarkdownSentences = (text) => {
@@ -94,25 +81,23 @@ export default function AiReportPage({
     setNutrientionReport(data);
   }, [data]);
 
-  useEffect(() => {
-    if(mealsError) {
-      console.log(mealsErrorMsg)
-    }
-  }, [mealsError])
+  // useEffect(() => {
+  //   if(mealsError) {
+  //     console.log(mealsErrorMsg)
+  //   }
+  // }, [mealsError])
+
+  // useEffect(() => {
+  //   console.log(aiErrorMsg)
+  // }, [aiErrorMsg])
 
   return (
     <main className='flex flex-col h-full gap-7.5'>
       <ChartArea
         originDate={originDate}
         date={fullDate}
-        period='일간'
         unit='AI'
         value='1.2'
-        activePeriod={activePeriod}
-        prevDate={onPrevPeriod}
-        nextDate={onNextPeriod}
-        canMove={canMove}
-        onPeriodChange={setActivePeriod}
       >
         <section className='flex flex-col flex-1 align-items justify-center gap-2.5 w-90 pt-5 pb-5 pr-5 pl-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
           <article className='flex flex-row items-center justify-center text-lg'>

@@ -15,16 +15,11 @@ import { useReportStore } from '@/stores/useReportStore';
 export default function WaterReportPage({
   originDate,
   fullDate,
-  activePeriod,
-  setActivePeriod,
-  prev,
-  next,
-  canMove,
 }) {
   // 데이터
   const userId = callUserUid();
   
-  const { watersData, totalWaters, setWatersData, setMonthlyWatersData, setCalcuatWatersData, resetWaters } =
+  const { watersData, totalWaters, setWatersData, setMonthlyWatersData, setCalcuatWatersData, resetWaters, activePeriod } =
     useReportStore();
 
   const {
@@ -73,27 +68,13 @@ export default function WaterReportPage({
   //   console.log('waters : ', activePeriod, ':', waters);
   // }, [waters]);
 
-  const onPrevPeriod = () => {
-    prev();
-  };
-
-  const onNextPeriod = () => {
-    next();
-  };
-
   return (
     <main className='flex flex-col gap-7.5'>
       <ChartArea
         originDate={originDate}
         date={fullDate}
-        period='일간'
         unit='L'
         value={totalWaters}
-        activePeriod={activePeriod}
-        prevDate={onPrevPeriod}
-        nextDate={onNextPeriod}
-        canMove={canMove}
-        onPeriodChange={setActivePeriod}
       >
         <LineCharts datas={watersData} activePeriod={activePeriod} unit='L' />
       </ChartArea>
