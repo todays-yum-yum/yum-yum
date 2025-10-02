@@ -5,28 +5,28 @@
   font-family: 'NanumSquareRound';
   font-weight: 300;
   font-style: normal;
-  src: url('../assets/fonts/NanumSquareRoundL.ttf') format('truetype');
+  src: url('@/assets/fonts/NanumSquareRoundL.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
   font-family: 'NanumSquareRound';
   font-weight: 400;
   font-style: normal;
-  src: url('../assets/fonts/NanumSquareRoundR.ttf') format('truetype');
+  src: url('@/assets/fonts/NanumSquareRoundR.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
   font-family: 'NanumSquareRound';
   font-weight: 700;
   font-style: normal;
-  src: url('../assets/fonts/NanumSquareRoundB.ttf') format('truetype');
+  src: url('@/assets/fonts/NanumSquareRoundB.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
   font-family: 'NanumSquareRound';
   font-weight: 800;
   font-style: normal;
-  src: url('../assets/fonts/NanumSquareRoundEB.ttf') format('truetype');
+  src: url('@/assets/fonts/NanumSquareRoundEB.woff2') format('woff2');
   font-display: swap;
 }
 
