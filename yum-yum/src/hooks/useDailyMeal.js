@@ -1,7 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { firestore } from '@/services/firebase';
-import { saveMeal } from '@/services/mealApi';
-import { deleteField, doc, updateDoc } from 'firebase/firestore';
+import { saveMeal, totalDailySummary } from '@/services/mealApi';
+import {
+  deleteDoc,
+  deleteField,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
 export const useDailyMeal = (userId, date) => {
@@ -22,13 +29,34 @@ export const useDailyMeal = (userId, date) => {
     },
   });
 
-  // 리스트 0개면 삭제
+  // 식단 수정
   const deleteDailyMeal = useMutation({
     mutationFn: async (type) => {
       const mealRef = doc(firestore, 'users', userId, 'meal', date);
-      await updateDoc(mealRef, {
-        [`meals.${type}`]: deleteField(),
-      });
+      const snapShot = await getDoc(mealRef);
+
+      if (!snapShot.exists()) return;
+      const data = snapShot.data();
+      const updatedMeals = { ...(data.meals || {}) };
+
+      // 해당 type 삭제
+      delete updatedMeals[type];
+
+      // 모든 끼니가 비어있으면 문서 삭제함
+      if (Object.keys(updatedMeals).length === 0) {
+        await deleteDoc(mealRef);
+      } else {
+        // 일부만 삭제되면 dailySummary 재계산
+        await updateDoc(
+          mealRef,
+          {
+            [`meals.${type}`]: deleteField(),
+            dailySummary: totalDailySummary(Object.values(updatedMeals).flat()),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
+      }
     },
     onSuccess: () => {
       toast.success('식단 기록이 삭제 되었어요!');

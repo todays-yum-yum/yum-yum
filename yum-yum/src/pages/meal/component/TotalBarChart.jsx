@@ -7,7 +7,7 @@ import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 import { calculateNutrientRatio } from '@/utils/calorieCalculator';
 
 export default function TotalBarChart() {
-  const NUTRIENT_COLORS = { carbs: '#FF5094', protein: '#FFD653', fat: '#2F73E5' };
+  const NUTRIENT_COLORS = { carbs: '#FF5094', protein: '#2F73E5', fat: '#FFD653' };
   const MIN_BAR_WIDTH = 10;
 
   const { selectedFoods } = useSelectedFoodsStore();
