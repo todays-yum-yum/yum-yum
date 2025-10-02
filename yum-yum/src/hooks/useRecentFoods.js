@@ -6,8 +6,10 @@ export const useRecentFoods = (userId) => {
     queryKey: ['recentFoods', userId],
     queryFn: () => getRecentFoods(userId),
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5분
     select: (data) => data ?? [],
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   return {
