@@ -16,22 +16,17 @@ import { callUserUid } from '@/utils/localStorage';
 
 // 스토어
 import { useReportStore } from '@/stores/useReportStore';
-import { useHomeStore } from '@/stores/useHomeStore';
-import { hasCurrentWeight } from '../../../utils/localStorage';
+import { hasCurrentWeight } from '@/utils/localStorage';
 
 export default function WeightReportPage({
   originDate,
   fullDate,
-  activePeriod,
-  setActivePeriod,
-  prev,
-  next,
-  canMove,
 }) {
   const userId = callUserUid();
 
   const {
     currentWeight,
+    activePeriod,
     weightData,
     setCurrentWeight,
     setDailyWeightData,
@@ -57,15 +52,6 @@ export default function WeightReportPage({
     isError: monthlyIsError,
   } = useMonthlyReportData(userId, originDate);
   const { userData } = useUserData(userId, originDate);
-
-  // 기간 변경
-  const onPrevPeriod = () => {
-    prev();
-  };
-
-  const onNextPeriod = () => {
-    next();
-  };
 
   // 기간별 체중과 체중 비교 데이터 설정
   useEffect(() => {
@@ -95,14 +81,8 @@ export default function WeightReportPage({
       <ChartArea
         originDate={originDate}
         date={fullDate}
-        period='일간'
         unit='Kg'
         value={dailyCurrentWeight ?? 0}
-        activePeriod={activePeriod}
-        prevDate={onPrevPeriod}
-        nextDate={onNextPeriod}
-        canMove={canMove}
-        onPeriodChange={setActivePeriod}
       >
         <LineCharts datas={weightData} activePeriod={activePeriod} unit='Kg' />
       </ChartArea>

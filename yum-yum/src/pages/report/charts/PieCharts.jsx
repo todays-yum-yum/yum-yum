@@ -101,10 +101,15 @@ export default function PieCharts({ data }) {
         verticalAlign='bottom'
         align='center'
         // 범례
-        payload={pieData.map((item, index) => ({
-          value: item.name,
-          type: 'square', // 범례 도형
-        }))}
+        payload={pieData
+          .sort((a, b) => {
+            const order = ['탄수화물', '단백질', '지방'];
+            return order.indexOf(a.name) - order.indexOf(b.name);
+          })
+          .map((item, index) => ({
+            value: item.name,
+            type: 'square',
+          }))}
         wrapperStyle={{
           whiteSpace: 'nowrap', // 줄바꿈 방지
           marginTop: 20,

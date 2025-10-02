@@ -194,7 +194,7 @@ export const canMoveDate = (date, days) => {
     compareDate = endOfMonth(compareDate);
   }
 
-  today.setHours(0, 0, 0, 0);
+  newDate.setHours(0, 0, 0, 0);
   compareDate.setHours(0, 0, 0, 0);
 
   return newDate <= compareDate;

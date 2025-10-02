@@ -30,16 +30,12 @@ import { callUserUid } from '@/utils/localStorage';
 export default function DietReportPage({
   originDate,
   fullDate,
-  activePeriod,
-  setActivePeriod,
-  prev,
-  next,
-  canMove,
 }) {
   // 데이터
   const userId = callUserUid();
   const {
     nutrients,
+    activePeriod,
     mealSortedByCarbs,
     mealSortedByFat,
     mealSortedByProtein,
@@ -68,24 +64,12 @@ export default function DietReportPage({
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
 
-  // 이전, 다음 기간 함수
-  const onPrevPeriod = () => {
-    prev();
-  };
-
-  const onNextPeriod = () => {
-    next();
-  };
-
   // 영양소별 음식 아이콘
   const nutritionIcon = {
     탄수화물: <Carbohydrate />,
     단백질: <Protein />,
     지방: <Fat />,
   };
-
-  const isLoading = daliyIsLoading || weeklyIsLoading || monthlyIsLoading;
-  const isError = daliyIsError || weeklyIsError || monthlyIsError;
 
   useEffect(() => {
     let currentData = null;
@@ -153,14 +137,8 @@ export default function DietReportPage({
       <ChartArea
         originDate={originDate}
         date={fullDate}
-        period='일간'
         unit='Kcal'
         value={nutrients?.totalCalories ?? 0}
-        activePeriod={activePeriod}
-        prevDate={onPrevPeriod}
-        nextDate={onNextPeriod}
-        canMove={canMove}
-        onPeriodChange={setActivePeriod}
       >
         {/* 탄단지 비율 차트 */}
         {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
