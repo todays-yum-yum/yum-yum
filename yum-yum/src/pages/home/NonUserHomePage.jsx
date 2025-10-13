@@ -1,12 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import mainLogo from '@/assets/images/Group99.png';
+import mainLogo from '@/assets/images/mainLogo.png';
 import RoundButton from '@/components/button/RoundButton';
 import Carousel from './carousel/CustomCarousel';
 // carousel images
-import carousel1 from '@/assets/images/Frame37090.png';
-import carousel2 from '@/assets/images/Frame37089.png';
-import carousel3 from '@/assets/images/Frame37088.png';
+import carousel1 from '@/assets/images/carousel1.png';
+import carousel2 from '@/assets/images/carousel2.png';
+import carousel3 from '@/assets/images/carousel3.png';
 
 export default function NonUserHomePage() {
   const naviagte = useNavigate();
