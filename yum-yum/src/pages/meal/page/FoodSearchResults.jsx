@@ -11,6 +11,7 @@ import BasicButton from '@/components/button/BasicButton';
 import EmptyState from '@/components/EmptyState';
 import FoodList from '../component/FoodList';
 import MealHeader from '../component/MealHeader';
+import FoodListSkeleton from '@/components/skeleton/FoodListSkeleton';
 
 export default function FoodSearchResultsPage() {
   const location = useLocation();
@@ -19,8 +20,8 @@ export default function FoodSearchResultsPage() {
   const type = location.state?.type; // 추가 타입
   const date = location.state?.date; // 추가 타입
   const { searchFoodResults: foodItems, setSearchFoodResults } = useSearchFoodStore();
-  const { selectedFoods, clearFoods } = useSelectedFoodsStore();
-  const { searchData, isLoading, isError, refetch } = useSearchFoodData(searchItem);
+  const { selectedFoods } = useSelectedFoodsStore();
+  const { searchData, isLoading, isError } = useSearchFoodData(searchItem);
   const [searchInputValue, setSearchInputValue] = useState(searchItem || '');
 
   // 음식 검색
@@ -70,9 +71,20 @@ export default function FoodSearchResultsPage() {
       <div>
         <div className='flex flex-col min-h-[calc(100vh-148px)]'>
           <div className='flex-1 px-[20px]'>
-            {foodItems?.length > 0 ? (
+            {isError ? (
+              // API 에러
+              <EmptyState className='min-h-[calc(100vh-148px)] text-center'>
+                국가정보자원관리원 화재로 인하여 <br />
+                장애 복구 시까지 음식 정보를 불러올 수 없어요.
+              </EmptyState>
+            ) : isLoading ? (
+              // 로딩 중
+              <FoodListSkeleton />
+            ) : foodItems?.length > 0 ? (
+              // 결과 있음
               <FoodList variant='select' items={foodItems} />
             ) : (
+              // 결과 없음
               <EmptyState
                 className='min-h-[calc(100vh-148px)]'
                 btn='직접 등록'
