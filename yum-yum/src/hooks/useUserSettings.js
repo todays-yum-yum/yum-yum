@@ -1,5 +1,5 @@
 // 사용자 정보 확인 및 수정 훅
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useUserData } from './useUser';
