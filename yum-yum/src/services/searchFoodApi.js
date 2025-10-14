@@ -25,7 +25,7 @@ export const fetchNutritionData = async (searchKeyword = '') => {
     return parseNutritionData(jsonData);
   } catch (error) {
     console.error('API 호출 또는 파싱 에러:', error);
-    return [];
+    throw error;
   }
 };
 
