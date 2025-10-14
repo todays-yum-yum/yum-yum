@@ -11,57 +11,37 @@ import {
   activityUtils,
 } from '@/data/userContext';
 
-// defaultValues용 데이터 변환 함수
-const createDefaultValues = (userSettings) => {
-  if (!userSettings) return {};
-
-  return userSettings.reduce((acc, item) => {
-    if (item.type === 'number') {
-      // "75kg" → "75", "25세" → "25" 형태로 숫자만 추출
-      acc[item.id] = item.value.replace(/[^0-9.]/g, '');
-    } else if (item.type === 'select') {
-      // select는 value 그대로 사용
-      acc[item.id] = item.value;
-    }
-    return acc;
-  }, {});
-};
-
 // 커스텀 훅
 export const useUserSettings = (userId) => {
   const queryClient = useQueryClient();
   // 사용자 설정 조회
   const { userData, isLoading } = useUserData(userId);
-  const [userSettings, setUserSettings] = useState([]);
 
-  useEffect(() => {
-    const parsed = parsedUserSetting(userData);
-    setUserSettings(parsed);
-  }, [userData]);
-
-  // defaultValues 생성
-  const defaultValues = useMemo(() => {
-    if (!userSettings) return {};
-
-    return userSettings.reduce((acc, item) => {
-      if (item.type === 'number') {
-        acc[item.id] = item.value.replace(/[^0-9.]/g, '');
-      } else if (item.type === 'select') {
-        acc[item.id] = item.value;
-      }
+  // 설정 데이터 생성
+  const { userSettings, defaultValues } = useMemo(() => {
+    if (!userData) {
+      return { userSettings: [], defaultValues: {} };
+    }
+    const settings = parsedUserSetting(userData);
+    console.log('파싱결과: ', settings);
+    const defaults = settings.reduce((acc, item) => {
+      // number 타입은 숫자만 추출, select는 그대로
+      acc[item.id] = item.type === 'number' ? item.value.replace(/[^0-9.]/g, '') : item.value;
       return acc;
     }, {});
-  }, [userSettings]);
+
+    return { userSettings: settings, defaultValues: defaults };
+  }, [userData]);
 
   const { register, handleSubmit, reset, formState } = useForm({
-    defaultValues: defaultValues,
+    defaultValues,
+    values: defaultValues,
   });
-  // 설정 업데이트 mutation
+
   // 모달 상태 관리
   const [modalState, setModalState] = useState({
     isOpen: false,
     currentItem: null,
-    tempValue: '',
   });
 
   // 설정 항목 클릭 핸들러
@@ -71,7 +51,6 @@ export const useUserSettings = (userId) => {
     setModalState({
       isOpen: true,
       currentItem: item,
-      tempValue: item.value,
     });
   };
 
@@ -80,9 +59,18 @@ export const useUserSettings = (userId) => {
     setModalState({
       isOpen: false,
       currentItem: null,
-      tempValue: '',
     });
   };
+
+  // 저장 핸들러
+  const handleSave = (data) => {
+    const { currentItem } = modalState;
+    const newValue = data[currentItem.id];
+    console.log(currentItem);
+    console.log(`${newValue}`);
+    setModalState({ isOpen: false, currentItem: null });
+  };
+  // 설정 업데이트 mutation
 
   return {
     // 서버 상태
@@ -107,7 +95,7 @@ export const useUserSettings = (userId) => {
 
     // hook form
     register,
-    handleSubmit,
+    handleSubmit: handleSubmit(handleSave),
     reset,
     formState,
   };
@@ -134,7 +122,7 @@ const parsedUserSetting = (userData) => {
     {
       id: 'age',
       label: '나이',
-      value: `${userData.age}세`,
+      value: `${userData.age}`,
       type: 'number',
       unit: '세',
       min: 1,
@@ -143,7 +131,7 @@ const parsedUserSetting = (userData) => {
     {
       id: 'height',
       label: '키',
-      value: `${userData.height}cm`,
+      value: `${userData.height}`,
       type: 'number',
       unit: 'cm',
       min: 100,
@@ -152,7 +140,7 @@ const parsedUserSetting = (userData) => {
     {
       id: 'targetWeight',
       label: '목표 체중',
-      value: `${goalWegiht}kg`,
+      value: `${goalWegiht}`,
       type: 'number',
       unit: 'kg',
       min: 30,

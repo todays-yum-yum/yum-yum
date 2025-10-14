@@ -11,6 +11,7 @@ const ProfileList = ({ profileData, onItemClick }) => {
               key={item.id}
               label={item.label}
               value={item.value}
+              unit={item.unit}
               onClick={() => onItemClick(item.id)}
             />
           ))}

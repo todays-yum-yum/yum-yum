@@ -37,7 +37,7 @@ export default function MyPageUpdate() {
           max={max}
           register={register}
           name={id}
-          placeholder={tempValue.replace(/[^0-9.]/g, '')}
+          errors={formState.errors}
         />
       );
     }
@@ -61,7 +61,7 @@ export default function MyPageUpdate() {
         title={currentItem?.label || ''}
         btnLabel='수정'
         showClose={true}
-        onBtnClick={() => {}}
+        onBtnClick={handleSubmit}
       >
         {renderModalContent()}
       </Modal>
