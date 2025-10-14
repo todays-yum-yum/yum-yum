@@ -1,4 +1,3 @@
-import React from 'react';
 // 컴포넌트
 import ProfileList from '../component/edit/ProfileList';
 import Modal from '@/components/Modal';
@@ -21,9 +20,7 @@ export default function MyPageUpdate() {
     handleModalClose,
     register,
     handleSubmit,
-    reset,
     formState,
-    watch,
   } = useUserSettings(userId);
 
   // Modal children 렌더링 함수

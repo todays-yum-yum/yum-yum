@@ -8,6 +8,7 @@ import {
   getCountFromServer,
   query,
   serverTimestamp,
+  updateDoc,
 } from 'firebase/firestore';
 import { auth, firestore } from './firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
@@ -170,5 +171,29 @@ export async function addUserFireStore(user) {
       success: false,
       error: error.message,
     };
+  }
+}
+
+//------------------------------------------------------------
+
+// 사용자 데이터 업데이트
+export async function editProfile({ currentItem, newValue, userId }) {
+  let fieldName = currentItem.id;
+  if (fieldName === 'goal' || fieldName === 'targetExercise' || fieldName === 'targetWeight') {
+    fieldName = `goals.${currentItem.id}`;
+  }
+  try {
+    const userDocRef = doc(firestore, 'users', userId);
+    await updateDoc(userDocRef, {
+      [fieldName]: newValue,
+      updatedAt: serverTimestamp(),
+    });
+
+    return {
+      success: true,
+      data: { fieldName: fieldName, newValue: newValue },
+    };
+  } catch (error) {
+    console.error('업데이트 실패:', error);
   }
 }

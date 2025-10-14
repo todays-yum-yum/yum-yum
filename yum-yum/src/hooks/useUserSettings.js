@@ -10,6 +10,8 @@ import {
   activityLevel,
   activityUtils,
 } from '@/data/userContext';
+import { editProfile } from '../services/userApi';
+import toast from 'react-hot-toast';
 
 // 커스텀 훅
 export const useUserSettings = (userId) => {
@@ -46,7 +48,6 @@ export const useUserSettings = (userId) => {
 
   // 설정 항목 클릭 핸들러
   const handleSettingClick = (itemId) => {
-    console.log('클릭한거:', itemId);
     const item = userSettings.find((item) => item.id === itemId);
     setModalState({
       isOpen: true,
@@ -56,6 +57,9 @@ export const useUserSettings = (userId) => {
 
   // 모달 닫기
   const handleModalClose = () => {
+    // 모달 닫을 때 원래 값으로 롤백
+    reset(defaultValues);
+
     setModalState({
       isOpen: false,
       currentItem: null,
@@ -63,14 +67,59 @@ export const useUserSettings = (userId) => {
   };
 
   // 저장 핸들러
-  const handleSave = (data) => {
+  const handleSave = async (data) => {
     const { currentItem } = modalState;
     const newValue = data[currentItem.id];
-    console.log(currentItem);
-    console.log(`${newValue}`);
-    setModalState({ isOpen: false, currentItem: null });
+    // 업데이트 호출
+    const edit = userSettingsMutation.mutateAsync({ currentItem, newValue });
+    // toast 알람
+    await toast.promise(edit, {
+      loading: '수정하는 중...',
+      success: (response) => {
+        setModalState({ isOpen: false, currentItem: null });
+        return response?.message || '성공적으로 수정되었습니다!';
+      },
+      error: (error) => {
+        return error?.message || '수정에 실패했습니다.';
+      },
+    });
   };
+
   // 설정 업데이트 mutation
+  const userSettingsMutation = useMutation({
+    mutationFn: ({ currentItem, newValue }) => editProfile({ currentItem, newValue, userId }),
+    onSuccess: (response) => {
+      const { fieldName, newValue } = response.data;
+      queryClient.setQueryData(['user', userId], (oldData) => {
+        if (!oldData) return oldData;
+
+        const newData = { ...oldData };
+
+        // 중첩객체 처리
+        if (fieldName.includes('.')) {
+          // goals.~~~ 같은 경우
+          const [parentKey, childKey] = fieldName.split('.');
+          newData[parentKey] = {
+            ...newData[parentKey],
+            [childKey]: newValue,
+          };
+        } else {
+          // 일반 필드
+          newData[fieldName] = newValue;
+        }
+
+        newData.updatedAt = new Date();
+        return newData;
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['user', userId],
+      });
+    },
+    onError: (error) => {
+      console.error('업데이트 에러: ', error);
+    },
+  });
 
   return {
     // 서버 상태
@@ -78,8 +127,8 @@ export const useUserSettings = (userId) => {
     isLoading,
 
     // mutation 상태
-    // isSaving: updateSettingMutation.isPending,
-    // saveError: updateSettingMutation.error,
+    isSaving: userSettingsMutation.isPending,
+    saveError: userSettingsMutation.error,
 
     // 클라이언트 상태
     modalState,
@@ -88,7 +137,7 @@ export const useUserSettings = (userId) => {
     handleSettingClick,
     handleModalClose,
 
-    // 파생 상태
+    // 모달 상태
     currentItem: modalState.currentItem,
     isModalOpen: modalState.isOpen,
     tempValue: modalState.tempValue,
@@ -157,7 +206,7 @@ const parsedUserSetting = (userData) => {
       options: goalsOption,
     },
     {
-      id: 'activity',
+      id: 'targetExercise',
       label: '활동량',
       key: userData.goals['targetExercise'],
       value: activity,
