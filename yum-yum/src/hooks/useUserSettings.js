@@ -23,17 +23,17 @@ export const useUserSettings = (userId) => {
       return { userSettings: [], defaultValues: {} };
     }
     const settings = parsedUserSetting(userData);
-    console.log('파싱결과: ', settings);
+
     const defaults = settings.reduce((acc, item) => {
       // number 타입은 숫자만 추출, select는 그대로
-      acc[item.id] = item.type === 'number' ? item.value.replace(/[^0-9.]/g, '') : item.value;
+      acc[item.id] = item.type === 'number' ? item.value.replace(/[^0-9.]/g, '') : item.key;
       return acc;
     }, {});
 
     return { userSettings: settings, defaultValues: defaults };
   }, [userData]);
 
-  const { register, handleSubmit, reset, formState } = useForm({
+  const { register, control, handleSubmit, reset, formState } = useForm({
     defaultValues,
     values: defaultValues,
   });
@@ -95,6 +95,7 @@ export const useUserSettings = (userId) => {
 
     // hook form
     register,
+    control,
     handleSubmit: handleSubmit(handleSave),
     reset,
     formState,
@@ -115,6 +116,7 @@ const parsedUserSetting = (userData) => {
     {
       id: 'gender',
       label: '성별',
+      key: userData.gender,
       value: usergender,
       type: 'select',
       options: gender,
@@ -149,6 +151,7 @@ const parsedUserSetting = (userData) => {
     {
       id: 'goal',
       label: '목표 설정',
+      key: userData.goals['goal'],
       value: goal,
       type: 'select',
       options: goalsOption,
@@ -156,6 +159,7 @@ const parsedUserSetting = (userData) => {
     {
       id: 'activity',
       label: '활동량',
+      key: userData.goals['targetExercise'],
       value: activity,
       type: 'select',
       options: activityLevel,

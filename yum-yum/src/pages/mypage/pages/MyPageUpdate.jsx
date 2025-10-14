@@ -7,6 +7,7 @@ import NumberInput from '@/components/common/NumberInput';
 import { callUserUid } from '@/utils/localStorage';
 // 커스텀 훅
 import { useUserSettings } from '@/hooks/useUserSettings';
+import SelectButtonGroup from '../component/edit/SelectButtonGroup';
 
 export default function MyPageUpdate() {
   // 유저 id 불러오기
@@ -15,13 +16,14 @@ export default function MyPageUpdate() {
     userSettings: profileData,
     currentItem,
     isModalOpen,
-    tempValue,
+    control,
     handleSettingClick,
     handleModalClose,
     register,
     handleSubmit,
     reset,
     formState,
+    watch,
   } = useUserSettings(userId);
 
   // Modal children 렌더링 함수
@@ -38,6 +40,17 @@ export default function MyPageUpdate() {
           register={register}
           name={id}
           errors={formState.errors}
+        />
+      );
+    } else if (type === 'select') {
+      return (
+        <SelectButtonGroup
+          name={id}
+          control={control}
+          options={options}
+          rules={{
+            required: `${currentItem.label}을(를) 선택해주세요`,
+          }}
         />
       );
     }

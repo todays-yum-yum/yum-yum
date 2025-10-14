@@ -5,7 +5,6 @@ export const gender = { male: '남성', female: '여성' };
 
 // 목표
 export const goalsOption = [
-  { value: '', title: '목표 선택' },
   { value: 'loss', title: '체중 감량' },
   { value: 'gain', title: '체중 증가' },
   { value: 'maintain', title: '건강증진 및 유지' },
@@ -19,8 +18,24 @@ export const activityLevel = [
   { value: 'intense', title: '격렬한 운동', sub: '주 6-7회, 1시간씩 (크로스핏, 마라톤 훈련)' },
 ];
 
+// 성별 유틸
+export const genderUtils = {
+  getValue: (key) => {
+    return gender[key];
+  },
+  getKey: (value) => {
+    return Object.keys(gender).find((key) => gender[key] === value);
+  },
+};
+
 // 활동량 유틸
 export const activityUtils = {
+  // value 가져오기
+  getValue: (title) => {
+    const activity = activityLevel.find((item) => item.title === title);
+    return activity?.value || '';
+  },
+
   // title 가져오기
   getTitle: (value) => {
     const activity = activityLevel.find((item) => item.value === value);
@@ -47,8 +62,8 @@ export const activityUtils = {
 // 목표 유틸
 export const goalsOptionUtils = {
   // value 가져오기
-  getValue: (value) => {
-    const goals = goalsOption.find((item) => item.value === value);
+  getValue: (title) => {
+    const goals = goalsOption.find((item) => item.title === title);
     return goals?.value || '';
   },
   // label 가져오기
