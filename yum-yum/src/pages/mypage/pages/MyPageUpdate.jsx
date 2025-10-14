@@ -40,6 +40,8 @@ export default function MyPageUpdate() {
         />
       );
     } else if (type === 'select') {
+      let style =
+        id === 'targetExercise' ? 'justify-start items-start' : 'justify-center items-center';
       return (
         <SelectButtonGroup
           name={id}
@@ -48,6 +50,7 @@ export default function MyPageUpdate() {
           rules={{
             required: `${currentItem.label}을(를) 선택해주세요`,
           }}
+          className={style}
         />
       );
     }

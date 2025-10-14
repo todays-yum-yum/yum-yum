@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo } from 'react';
-import BasicButton from '@/components/button/BasicButton';
+import { useMemo } from 'react';
+import SelectButton from '@/components/button/SelectButton';
 import { Controller } from 'react-hook-form';
 
-export default function SelectButtonGroup({ name, control, options, rules = {} }) {
+export default function SelectButtonGroup({ name, control, options, rules = {}, className = '' }) {
   // 옵션 정규화
   const normalizedOptions = useMemo(() => {
     if (Array.isArray(options)) {
@@ -19,7 +19,6 @@ export default function SelectButtonGroup({ name, control, options, rules = {} }
       sub: null,
     }));
   }, [options]);
-
   return (
     <Controller
       name={name}
@@ -31,26 +30,19 @@ export default function SelectButtonGroup({ name, control, options, rules = {} }
           <div className='py-4 space-y-3'>
             {normalizedOptions.map((option) => {
               return (
-                <BasicButton
+                <SelectButton
                   key={option.value}
                   type='button'
                   onClick={() => onChange(option.value)}
                   size='full'
                   color={value === option.value ? 'primary' : 'gray'}
-                  variant='line'
                 >
-                  {/* <div className='flex flex-col justify-start items-start'> */}
-                  <div>
-                    <div
-                      className={`text-md text-gray-800 font-bold ${
-                        value === option.value ? 'text-primary' : 'text-gray-800'
-                      }`}
-                    >
-                      {option.label}
-                    </div>
-                    {option.sub && <div className={`text-sm mt-1 text-gray-500`}>{option.sub}</div>}
+                  <div className={`flex flex-col ${className}`}>
+                    {/* <div className=''> */}
+                    <div className={`text-mb font-semibold`}>{option.label}</div>
+                    {option.sub && <div className={`text-sm mt-1 text-gray-400`}>{option.sub}</div>}
                   </div>
-                </BasicButton>
+                </SelectButton>
               );
             })}
           </div>
