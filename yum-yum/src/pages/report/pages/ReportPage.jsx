@@ -49,7 +49,6 @@ export default function ReportPage() {
 
   // 현재 활성화 된 리포트탭
   const [activeTab, setActiveTab] = useState(null);
-  
   const CurrentComponent = reportPath[activeTab];
 
   // 날짜의 요일

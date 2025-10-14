@@ -26,17 +26,23 @@ export default function WaterReportPage({
     dailyData,
     isLoading: daliyIsLoading,
     isError: daliyIsError,
-  } = useDailyReportData(userId, originDate);
+  } = useDailyReportData(userId, originDate, {
+    enabled: activePeriod === '일간',
+  });
   const {
     weeklyData,
     isLoading: weeklyIsLoading,
     isError: weeklyIsError,
-  } = useWeeklyReportData(userId, originDate);
+  } = useWeeklyReportData(userId, originDate, {
+    enabled: activePeriod === '주간',
+  });
   const {
     monthlyData,
     isLoading: monthlyIsLoading,
     isError: monthlyIsError,
-  } = useMonthlyReportData(userId, originDate);
+  } = useMonthlyReportData(userId, originDate, {
+    enabled: activePeriod === '월간',
+  });
   const { userData } = useUserData(userId, originDate);
 
   useEffect(() => {

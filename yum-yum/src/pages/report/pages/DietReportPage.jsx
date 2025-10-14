@@ -27,10 +27,7 @@ import { roundTo1, toNum } from '@/utils/nutrientNumber';
 import { useUserData } from '@/hooks/useUser';
 import { callUserUid } from '@/utils/localStorage';
 
-export default function DietReportPage({
-  originDate,
-  fullDate,
-}) {
+export default function DietReportPage({ originDate, fullDate }) {
   // 데이터
   const userId = callUserUid();
   const {
@@ -47,17 +44,23 @@ export default function DietReportPage({
     dailyData,
     isLoading: daliyIsLoading,
     isError: daliyIsError,
-  } = useDailyReportData(userId, originDate);
+  } = useDailyReportData(userId, originDate, {
+    enabled: activePeriod === '일간',
+  });
   const {
     weeklyData,
     isLoading: weeklyIsLoading,
     isError: weeklyIsError,
-  } = useWeeklyReportData(userId, originDate);
+  } = useWeeklyReportData(userId, originDate, {
+    enabled: activePeriod === '주간',
+  });
   const {
     monthlyData,
     isLoading: monthlyIsLoading,
     isError: monthlyIsError,
-  } = useMonthlyReportData(userId, originDate);
+  } = useMonthlyReportData(userId, originDate, {
+    enabled: activePeriod === '월간',
+  });
   const { userData } = useUserData(userId, originDate);
 
   // 상세 정보 토글버튼
