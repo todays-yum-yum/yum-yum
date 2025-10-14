@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import toast from 'react-hot-toast';
 // 훅
 import useAuth from '@/hooks/useAuth';
+import { useHomeStore } from '@/stores/useHomeStore';
 // 컴포넌트
 import Header from '@/components/Header';
 import SignupAgreements from './pages/SignupAgreements';
@@ -38,11 +38,13 @@ export default function SignUpPage() {
   });
   const { signUp } = useAuth();
   const [signUpStep, setSignUpStep] = useState(1);
+  const { setOnboardOpen } = useHomeStore();
 
   const onSubmit = async (data) => {
     try {
       await signUp(data);
       toast.success('회원가입 완료');
+      setOnboardOpen(true);
     } catch (error) {
       toast.error('회원가입 실패');
     }
