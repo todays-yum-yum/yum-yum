@@ -44,7 +44,18 @@ export default function BottomBar() {
 
   // url 동기화
   useEffect(() => {
-    const urlMatch = navItem.find((nav) => nav.to === location.pathname);
+    // 현재 경로와 정확히 일치하는 항목을 먼저 찾기
+    let urlMatch = navItem.find((nav) => nav.to === location.pathname);
+
+    // 정확히 일치하는 항목이 없으면 경로가 시작하는 항목 찾기
+    if (!urlMatch && location.pathname !== '/') {
+      urlMatch = navItem.find((nav) => nav.to !== '/' && location.pathname.startsWith(nav.to));
+    }
+
+    // 매칭되는 항목이 없으면 기본값으로 home 설정
+    if (!urlMatch) {
+      urlMatch = navItem.find((nav) => nav.id === 'home');
+    }
 
     if (urlMatch) return setActiveNav(urlMatch.id);
   }, [location.pathname]);
