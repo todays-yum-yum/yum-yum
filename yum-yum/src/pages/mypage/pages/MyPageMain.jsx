@@ -10,6 +10,7 @@ import TOSModal from '../component/TOSModal';
 import { differenceInDays } from 'date-fns';
 
 import { useUserStore } from '@/stores/useUserStore';
+import { deleteUserFireStore } from '../../../services/userApi';
 
 const goalsOption = [
   { value: '', label: '목표 선택' },
