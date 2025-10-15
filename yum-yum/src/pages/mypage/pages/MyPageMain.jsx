@@ -41,6 +41,14 @@ export default function MyPageMain() {
     return differenceInDays(today, signUpDate);
   };
 
+  const handleSupportClick = () => {
+    try {
+      window.open('mailto:tnoreply@todays-yum-yum.firebaseapp.com');
+    } catch (e) {
+      alert('메일 앱을 열 수 없습니다. 기본 메일 프로그램이 설정되어 있는지 확인해주세요.');
+    }
+  };
+
   return (
     <div className='flex flex-col gap-5 px-5 justify-around item-center bg-gray-50 w-full h-[calc(100vh-122px)] overflow-y-auto'>
       <div className='flex flex-col gap-5'>
@@ -91,7 +99,7 @@ export default function MyPageMain() {
                 <span className='text-xl font-bold'>고객지원</span>
               </div>
 
-              <MyPageCSItem label={'문의하기'} />
+              <MyPageCSItem label={'문의하기'} onItemClick={handleSupportClick} />
 
               <MyPageCSItem label={'서비스 이용약관'} type='service' setOpenModal={setOpenModal} />
 

@@ -7,7 +7,7 @@ import { formatTime } from '@/utils/reportDataParser';
 function InfoData({ datas, unit, period }) {
   const textStyle = 'font-bold text-xl';
 
-  console.log('data', period, ' : ', datas);
+  // console.log('data', period, ' : ', datas);
 
   const getLabelByPeriod = (datas, period) => {
     switch (period) {
