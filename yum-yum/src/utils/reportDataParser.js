@@ -94,7 +94,7 @@ export function weightNormalizeDataRange(rawData, selectedDate, period) {
     };
   });
 
-  console.log(records)
+  // console.log(records)
   return records;
 }
 
