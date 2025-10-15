@@ -15,15 +15,18 @@ export default function AgreementItem({
   type,
 }) {
   return (
-    <div className='flex items-center justify-between'>
+    <div className='flex items-center justify-between gap-2'>
       <label
         htmlFor={id}
-        className={`flex items-center gap-[8px] w-full cursor-pointer 
-                    ${isAll ? 'border-b border-gray-300 pb-[12px] mb-[12px]' : ''}
+        className={`flex items-center gap-[12px] flex-1 cursor-pointer 
+                    ${isAll ? 'border-b border-gray-300 pb-[20px] mb-[20px]' : ''}
                   `}
       >
-        <CheckBox id={id} checked={checked} onChange={(e) => onChange(e.target.checked)} />
-        <p className={`${isAll ? 'font-bold' : 'text-gray-600 text-sm'}`}>{label}</p>
+        <div className='w-5 h-5'>
+          <CheckBox id={id} checked={checked} onChange={(e) => onChange(e.target.checked)} />
+        </div>
+
+        <p className={`${isAll ? 'font-bold text-lg' : 'text-gray-600 '}`}>{label}</p>
       </label>
 
       {isNext && (

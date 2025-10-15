@@ -10,6 +10,7 @@ import FoodList from '../component/FoodList';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import SearchBar from '../component/SearchBar';
 import RoundButton from '@/components/button/RoundButton';
+import FoodListSkeleton from '@/components/skeleton/FoodListSkeleton';
 
 export default function CustomEntry({ selectedIds, onToggleSelect }) {
   const userId = callUserUid(); // 로그인한 유저 uid 가져오기
@@ -17,7 +18,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
   const navigate = useNavigate();
   const { type } = useParams();
   const date = location.state?.date;
-  const { foodItems, deleteFoodMutation } = useCustomFoods(userId);
+  const { foodItems, deleteFoodMutation, isLoading, isError } = useCustomFoods(userId);
   const [isEditing, setIsEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetFoodId, setTargetFoodId] = useState(null);
@@ -81,7 +82,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
               className='flex-1'
             />
           ) : (
-            <p className='text-sm text-gray-500 font-bold'>
+            <p className='text-sm text-gray-500 font-bold flex-1'>
               찾는 음식이 없나요? 직접 등록해보세요.
             </p>
           )}
@@ -103,7 +104,17 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
 
       <div className='flex flex-col min-h-[calc(100vh-318px)]'>
         <div className='flex-1 px-[20px]'>
-          {foodItems.length === 0 ? (
+          {isError ? (
+            // API 에러
+            <EmptyState className='min-h-[calc(100vh-278px)] text-center'>
+              서버와의 연결에 문제가 있습니다.
+              <br />
+              잠시 후 다시 시도해주세요.
+            </EmptyState>
+          ) : isLoading ? (
+            // 로딩 중
+            <FoodListSkeleton showHeader className='min-h-[calc(100vh-278px)]' />
+          ) : foodItems.length === 0 ? (
             <EmptyState className='min-h-[calc(100vh-278px)]'>등록한 음식이 없어요</EmptyState>
           ) : filteredFoodItems.length === 0 ? (
             <EmptyState className='min-h-[calc(100vh-278px)]'>검색 결과가 없어요</EmptyState>

@@ -8,9 +8,14 @@ import {
   getCountFromServer,
   query,
   serverTimestamp,
+  updateDoc,
 } from 'firebase/firestore';
 import { auth, firestore } from './firebase';
-import { createUserWithEmailAndPassword, deleteUser, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  deleteUser,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 import { calculateWaterIntake } from '../utils/calorieCalculator';
 
 // 사용자 데이터 가져오기(전체 데이터)
@@ -173,18 +178,42 @@ export async function addUserFireStore(user) {
   }
 }
 
+//------------------------------------------------------------
+
+// 사용자 데이터 업데이트
+export async function editProfile({ currentItem, newValue, userId }) {
+  let fieldName = currentItem.id;
+  if (fieldName === 'goal' || fieldName === 'targetExercise' || fieldName === 'targetWeight') {
+    fieldName = `goals.${currentItem.id}`;
+  }
+  try {
+    const userDocRef = doc(firestore, 'users', userId);
+    await updateDoc(userDocRef, {
+      [fieldName]: newValue,
+      updatedAt: serverTimestamp(),
+    });
+
+    return {
+      success: true,
+      data: { fieldName: fieldName, newValue: newValue },
+    };
+  } catch (error) {
+    console.error('업데이트 실패:', error);
+  }
+}
+
+//
+
 export async function deleteUserFireStore(userId) {
-  const userRef = doc(firestore, "users", userId);
-
-
+  const userRef = doc(firestore, 'users', userId);
 }
 
 export async function deleteAccount(user) {
   deleteUser(user)
     .then(() => {
-      console.log("탈퇴가 완료되었습니다.")
+      console.log('탈퇴가 완료되었습니다.');
     })
     .catch((error) => {
-      console.log("에러가 발생했습니다.")
+      console.log('에러가 발생했습니다.');
     });
 }

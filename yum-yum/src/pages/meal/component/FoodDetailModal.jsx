@@ -158,7 +158,7 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
       <div className='flex flex-col gap-[20px] max-h-[calc(100vh-300px)] overflow-y-auto'>
         <div>
           <div className='flex gap-[8px]'>
-            <div className='flex items-center justify-between min-w-[226px] h-[48px] border border-[var(--color-gray-300)] rounded-lg'>
+            <div className='flex-1 flex items-center justify-between h-[48px] border border-[var(--color-gray-300)] rounded-lg'>
               <button onClick={handleDec} className='w-[44px] text-2xl font-extrabold'>
                 -
               </button>
@@ -183,7 +183,7 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
                     setValue('quantity', roundTo1(strToNum(quantity)));
                   }
                 }}
-                className='no-spinner w-[120px] outline-none text-center'
+                className='flex-1 no-spinner outline-none text-center'
               />
 
               <button onClick={handleInc} className='w-[44px] text-2xl font-extrabold'>
@@ -192,7 +192,7 @@ export default function FoodDetailModal({ openModal, closeModal, foodInfo }) {
             </div>
 
             <select
-              className='w-full h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'
+              className='flex-1 h-[48px] indent-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'
               {...register('unit')}
               value={unit}
               onChange={handleUnitChange}

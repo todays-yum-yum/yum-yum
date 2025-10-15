@@ -20,7 +20,7 @@ export default function AgreementsSection() {
 
   return (
     <div className='p-[20px]'>
-      <div className=' p-[20px] border border-gray-300 rounded-xl'>
+      <div className=' p-[20px]'>
         <Controller
           name='agreeAll'
           control={control}
@@ -39,7 +39,7 @@ export default function AgreementsSection() {
           )}
         />
 
-        <div className='flex flex-col gap-[4px]'>
+        <div className='flex flex-col gap-[20px]'>
           <Controller
             name='service'
             control={control}
@@ -96,7 +96,9 @@ export default function AgreementsSection() {
         control={control}
         render={({ fieldState }) =>
           fieldState.error && (
-            <p className='text-[var(--color-error)] text-sm mt-2'>{fieldState.error.message}</p>
+            <p className='text-[var(--color-error)] text-sm px-[20px]'>
+              {fieldState.error.message}
+            </p>
           )
         }
       />

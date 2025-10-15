@@ -14,6 +14,8 @@ export const useUserData = (userId) => {
     enabled: !!userId, // userId가 있을 때만 실행
   });
 
+  console.log(userQuery.data)
+
   return {
     userData: userQuery.data,
     userLoading: userQuery.isLoading,

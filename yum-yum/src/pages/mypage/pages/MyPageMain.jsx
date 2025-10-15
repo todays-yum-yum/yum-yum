@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SettingIcon from '@/assets/icons/icon-setting.svg?react';
 import { callUserUid } from '@/utils/localStorage';
-import { useUserData } from '@/hooks/useUser';
+import { useMyPageUserData } from '@/hooks/useMyPageUser';
 
 import MyPageGoalCard from '../component/MyPageGoalCard';
 import MyPageCSItem from '../component/MyPageCSItem';
@@ -10,26 +10,11 @@ import TOSModal from '../component/TOSModal';
 import { differenceInDays } from 'date-fns';
 
 import { useUserStore } from '@/stores/useUserStore';
-import { deleteUserFireStore } from '../../../services/userApi';
 
-const goalsOption = [
-  { value: '', label: '목표 선택' },
-  { value: 'loss', label: '체중 감량' },
-  { value: 'gain', label: '체중 증가' },
-  { value: 'maintain', label: '건강증진 및 유지' },
-];
-
-// 활동량
-const activityLevel = [
-  { value: 'none', title: '운동 안함' },
-  { value: 'light', title: '가벼운 운동' },
-  { value: 'moderate', title: '적당한 운동' },
-  { value: 'intense', title: '격렬한 운동' },
-];
 
 export default function MyPageMain() {
   const userId = callUserUid();
-  const { userData } = useUserData(userId);
+  const { userName, goal, targetWeight, targetExercise, createAt } = useMyPageUserData(userId);
 
   const { logout } = useUserStore();
 
@@ -41,8 +26,8 @@ export default function MyPageMain() {
 
   useEffect(() => {
     // console.log(userData);
-    setDDays(getDDays(userData?.createdAt?.seconds));
-  }, [userData]);
+    setDDays(getDDays(createAt));
+  }, [createAt]);
 
   // 가입일로부터 날짜 계산
   const getDDays = (timestamp) => {
@@ -54,16 +39,6 @@ export default function MyPageMain() {
     return differenceInDays(today, signUpDate);
   };
 
-  // 목표
-  const getGoalLabel = (value) => {
-    return goalsOption.find((option) => option.value === value)?.label || '목표';
-  };
-
-  // 활동량
-  const getActivityTitle = (value) => {
-    return activityLevel.find((level) => level.value === value)?.title || '활동량';
-  };
-
   return (
     <div className='flex flex-col gap-5 px-5 justify-around item-center bg-gray-50 w-full h-[calc(100vh-122px)] overflow-y-auto'>
       <div className='flex flex-col gap-5'>
@@ -72,7 +47,7 @@ export default function MyPageMain() {
           {/* 이름과 기록일 */}
           <div className='flex flex-row justify-between items-baseline'>
             <div>
-              <span className='text-2xl text-primary font-bold'>{userData?.name} </span>
+              <span className='text-2xl text-primary font-bold'>{userName? userName : ''} </span>
               <span className='text-base font-bold text-gray-400'>{'님'}</span>
             </div>
 
@@ -94,9 +69,9 @@ export default function MyPageMain() {
             <div>
               <MyPageGoalCard
                 goals={{
-                  '목표 체중': `${userData?.goals?.targetWeight || 0} kg`,
-                  '목표 설정': getGoalLabel(userData?.goals?.goal),
-                  활동량: getActivityTitle(userData?.goals?.targetExercise),
+                  '목표 체중': `${targetWeight ?? 0} kg`,
+                  '목표 설정': goal,
+                  활동량: targetExercise,
                 }}
               />
             </div>
