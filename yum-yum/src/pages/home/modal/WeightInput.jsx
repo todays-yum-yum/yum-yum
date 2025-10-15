@@ -19,6 +19,10 @@ export default function WeightInput({ register, errors }) {
               value: /^\d+\.?\d*$/,
               message: '숫자만 입력해주세요.',
             },
+            pattern: {
+              value: /^(?:\d{1,3}(?:.\d)?|)$/,
+              message: '소수점 첫째 자리까지 입력 가능합니다',
+            },
           })}
         />
         {errors?.weight && (

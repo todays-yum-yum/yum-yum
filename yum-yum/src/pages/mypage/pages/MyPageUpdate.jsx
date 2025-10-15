@@ -26,7 +26,7 @@ export default function MyPageUpdate() {
   // Modal children 렌더링 함수
   const renderModalContent = () => {
     if (!currentItem) return null;
-    const { id, type, options, unit, min, max } = currentItem;
+    const { id, type, options, unit, min, max, validationRules } = currentItem;
 
     if (type === 'number') {
       return (
@@ -37,6 +37,7 @@ export default function MyPageUpdate() {
           register={register}
           name={id}
           errors={formState.errors}
+          validationRules={validationRules}
         />
       );
     } else if (type === 'select') {
