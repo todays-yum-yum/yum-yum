@@ -21,7 +21,7 @@ import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
 import WeightInput from './modal/WeightInput';
 // 훅
-import { useWeightModal } from '@/hooks/useWeight';
+import { useWeightModal, useWeightLog } from '@/hooks/useWeight';
 import { usePageData } from '@/hooks/useMainPageData';
 // 스토어
 import { useHomeStore } from '@/stores/useHomeStore';
@@ -50,6 +50,7 @@ export default function HomePage() {
     usePageData(userId, selectedDate);
   const weightModal = useWeightModal(userId, selectedDate, currentWeight);
   const { clearFoods, addFood } = useSelectedFoodsStore();
+  const { weightLogs } = useWeightLog(userId, selectedDate);
 
   return (
     <div className='flex flex-col gap-8 justify-start item-center bg-primary-light w-full h-full min-h-screen'>

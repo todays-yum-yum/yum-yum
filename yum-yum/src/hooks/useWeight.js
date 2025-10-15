@@ -6,6 +6,7 @@ import { getUserWeightData } from '@/services/userApi';
 import { useHomeStore } from '@/stores/useHomeStore';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useUserData } from './useUser';
 
 export const useWeightModal = (userId, selectedDate, currentWeight) => {
   const { weightModalOpen, setWeightModalOpen } = useHomeStore();
@@ -56,22 +57,13 @@ export const useWeightModal = (userId, selectedDate, currentWeight) => {
   };
 };
 
+// 몸무게 업데이트(수정)
 export const useWeight = (userId, selectedDate) => {
   const queryClient = useQueryClient();
   // 날짜 선택
   const [selectedDateModalOpen, setSelectedDateModalOpen] = useState(false);
   const [selectedDateModal, setSelectedDateModal] = useState(selectedDate);
-
-  // 사용자 데이터 불러오기(무게데이터만 가져옴)
-  const userData = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => getUserWeightData(userId),
-    select: (response) => response.data,
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
-    retry: 2,
-  });
+  const { userData } = useUserData(userId);
 
   // 체중 수정(저장)하기
   const saveWeightMutation = useMutation({
@@ -102,12 +94,8 @@ export const useWeight = (userId, selectedDate) => {
 
   return {
     // 사용자 데이터 관련
-    currentWeight: userData.data?.weight,
-    targetWeight: userData.data?.goals?.targetWeight,
-    isLoading: userData.isLoading,
-    isError: userData.isError,
-    error: userData.error,
-    userWeightData: userData.data, // 사용자 무게 데이터
+    currentWeight: userData?.weight,
+    targetWeight: userData?.goals?.targetWeight,
 
     // 몸무게 저장 관련
     saveWeightMutation,
@@ -117,6 +105,26 @@ export const useWeight = (userId, selectedDate) => {
     setSelectedDateModal,
     selectedDateModalOpen,
     setSelectedDateModalOpen,
+  };
+};
+
+// TODO: 몸무게 로그 호출 -> 이걸 메인 체중 카드에 사용
+export const useWeightLog = (userId, selectedDate) => {
+  // 몸무게 로그 호출 훅
+  const weightQuery = useQuery({
+    queryKey: ['weight-log', userId, selectedDate],
+    queryFn: () => getUserWeightData(userId, selectedDate),
+    select: (response) => {
+      console.log('호출 데이터: ', response);
+      // TODO: 1달 데이터를 뽑아서 이 중에서 선택 날짜와 같거나 과거 중 최근데이터 파싱해야함
+      return response.data;
+    },
+    staleTime: 10 * 60 * 1000,
+    enabled: !!userId && !!selectedDate,
+  });
+
+  return {
+    weightLogs: weightQuery.data,
   };
 };
 
