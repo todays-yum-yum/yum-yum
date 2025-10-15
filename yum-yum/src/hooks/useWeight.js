@@ -18,10 +18,15 @@ export const useWeightModal = (userId, selectedDate, currentWeight) => {
     saveWeightMutation,
   } = useWeight(userId, selectedDate);
   const { register, handleSubmit, reset, formState } = useForm({
-    defaultValues: { weight: currentWeight },
-    values: { weight: currentWeight },
+    defaultValues: { weight: currentWeight, date: selectedDate },
+    values: { weight: currentWeight, date: selectedDate },
     mode: 'onSubmit',
   });
+
+  // selectedDate 변경시 동기화
+  useEffect(() => {
+    setSelectedDateModal(selectedDate);
+  }, [selectedDate]);
 
   const open = () => setWeightModalOpen(true);
   const close = () => setWeightModalOpen(false);
