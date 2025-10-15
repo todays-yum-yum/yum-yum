@@ -7,7 +7,7 @@ import { useHomeStore } from '@/stores/useHomeStore';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-export const useWeightModal = (userId, selectedDate) => {
+export const useWeightModal = (userId, selectedDate, currentWeight) => {
   const { weightModalOpen, setWeightModalOpen } = useHomeStore();
   const {
     selectedDateModal,
@@ -17,7 +17,8 @@ export const useWeightModal = (userId, selectedDate) => {
     saveWeightMutation,
   } = useWeight(userId, selectedDate);
   const { register, handleSubmit, reset, formState } = useForm({
-    defaultValues: { weight: '' },
+    defaultValues: { weight: currentWeight },
+    values: { weight: currentWeight },
     mode: 'onSubmit',
   });
 
