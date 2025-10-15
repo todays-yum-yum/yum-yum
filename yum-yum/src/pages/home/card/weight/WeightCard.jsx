@@ -26,14 +26,14 @@ export default function WeightCard({
           </div>
           {/* 체중 정보 */}
           <div className='space-y-3 mb-8'>
-            <div className='flex justify-between items-center gap-1'>
+            <div className='flex justify-start items-center gap-2'>
               <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>현재 체중</span>
               <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>
                 {parseFloat(currentWeight)?.toFixed(1)}kg
               </span>
             </div>
 
-            <div className='flex justify-between items-center gap-1'>
+            <div className='flex justify-start items-center gap-2'>
               <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>목표 체중</span>
               <span className='text-gray-800 text-mb font-bold max-[365px]:text-sm'>
                 {parseFloat(targetWeight)?.toFixed(1)}kg
