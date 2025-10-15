@@ -72,15 +72,14 @@ export const useWeight = (userId, selectedDate) => {
       if (response.success) {
         // 사용자 데이터 쿼리 무효화하여 새로고침
         queryClient.invalidateQueries({
-          queryKey: ['user', userId],
+          queryKey: ['weight-log', userId, selectedDate],
         });
         // 옵티미스틱 업데이트 (즉시 UI 반영)
-        queryClient.setQueryData(['user', userId], (oldData) => {
+        queryClient.setQueryData(['weight-log', userId, selectedDate], (oldData) => {
           if (oldData) {
             return {
               ...oldData,
               weight: response.data.weight,
-              updatedAt: new Date(),
             };
           }
           return oldData;
@@ -108,23 +107,23 @@ export const useWeight = (userId, selectedDate) => {
   };
 };
 
-// TODO: 몸무게 로그 호출 -> 이걸 메인 체중 카드에 사용
+// 몸무게 로그 호출 -> 이걸 메인 체중 카드에 사용
 export const useWeightLog = (userId, selectedDate) => {
   // 몸무게 로그 호출 훅
   const weightQuery = useQuery({
     queryKey: ['weight-log', userId, selectedDate],
     queryFn: () => getUserWeightData(userId, selectedDate),
-    select: (response) => {
-      console.log('호출 데이터: ', response);
-      // TODO: 1달 데이터를 뽑아서 이 중에서 선택 날짜와 같거나 과거 중 최근데이터 파싱해야함
-      return response.data;
-    },
+    select: (response) => response.data,
     staleTime: 10 * 60 * 1000,
     enabled: !!userId && !!selectedDate,
   });
 
   return {
     weightLogs: weightQuery.data,
+    // 파생 데이터
+    weight: weightQuery.data?.weight,
+    isExacDate: weightQuery.data?.isExacDate,
+    displayText: weightQuery.data?.displayText,
   };
 };
 

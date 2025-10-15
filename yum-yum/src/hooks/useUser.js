@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserData } from '../services/userApi';
 import { useHomeStore } from '../stores/useHomeStore';
+import { useWeightLog } from './useWeight';
 
 export const useUserData = (userId) => {
   // 사용자 데이터 불러오기
@@ -20,12 +21,17 @@ export const useUserData = (userId) => {
   };
 };
 
-export const useHomeUserHook = (userId) => {
-  const { calcuateCalories } = useHomeStore();
+export const useHomeUserHook = (userId, selectedDate) => {
+  const { calcuateCalories, setWeightLogs } = useHomeStore();
   const { userData } = useUserData(userId);
+  const { weight, isExacDate, displayText } = useWeightLog(userId, selectedDate);
+
   useEffect(() => {
-    if (userData) calcuateCalories(userData);
-  }, [userData, calcuateCalories]);
+    if (userData) {
+      calcuateCalories(userData, weight);
+      setWeightLogs({ isExacDate: isExacDate, displayText: displayText });
+    }
+  }, [userData, weight, calcuateCalories]);
 
   return {
     userData,

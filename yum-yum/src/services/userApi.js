@@ -47,7 +47,7 @@ export async function getUserData(userId) {
 export async function getUserWeightData(userId, targetDate) {
   const targetDay = getTodayKey(targetDate); // 전체 날짜 (yyyy-MM-dd 형)
   const queryMonth = targetDay.substring(0, 7); // 월까지만
-  console.log('무게 검색: ', targetDay);
+
   try {
     // Case 1: 해당 날짜의 정확한 체중 기록 확인
     const exactWeight = await getExactDateWeight(userId, queryMonth, targetDay);
@@ -55,7 +55,7 @@ export async function getUserWeightData(userId, targetDate) {
       return {
         success: true,
         data: {
-          weight: exactWeight.data,
+          weight: exactWeight.data?.lastchanges.weight,
           date: targetDay,
           isExactDate: true,
           displayText: '',
@@ -69,10 +69,10 @@ export async function getUserWeightData(userId, targetDate) {
       return {
         success: true,
         data: {
-          weight: nearestWeight.data,
+          weight: nearestWeight.data?.lastchanges.weight,
           date: nearestWeight.data.date,
           isExactDate: false,
-          displayText: `${nearestWeight.data.date} 기록 기준`,
+          displayText: `${nearestWeight.data.date} 기준`,
         },
       };
     }

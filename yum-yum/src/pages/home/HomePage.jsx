@@ -21,7 +21,7 @@ import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
 import WeightInput from './modal/WeightInput';
 // 훅
-import { useWeightModal, useWeightLog } from '@/hooks/useWeight';
+import { useWeightModal } from '@/hooks/useWeight';
 import { usePageData } from '@/hooks/useMainPageData';
 // 스토어
 import { useHomeStore } from '@/stores/useHomeStore';
@@ -44,13 +44,16 @@ export default function HomePage() {
     onboardOpen,
     setOnboardOpen,
     originalMealData,
+    isExacDate,
+    displayText,
   } = useHomeStore();
   // hoook 요청
-  const { waterData, mealData, targetCalories, currentWeight, goalWeight, mealDataOrigin } =
-    usePageData(userId, selectedDate);
+  const { waterData, mealData, targetCalories, currentWeight, goalWeight } = usePageData(
+    userId,
+    selectedDate,
+  );
   const weightModal = useWeightModal(userId, selectedDate, currentWeight);
   const { clearFoods, addFood } = useSelectedFoodsStore();
-  const { weightLogs } = useWeightLog(userId, selectedDate);
 
   return (
     <div className='flex flex-col gap-8 justify-start item-center bg-primary-light w-full h-full min-h-screen'>
@@ -119,6 +122,8 @@ export default function HomePage() {
             currentWeight={currentWeight}
             targetWeight={goalWeight}
             onWeightInput={weightModal.open}
+            isExacDate={isExacDate}
+            displayText={displayText}
           />
         </BaseCard>
 

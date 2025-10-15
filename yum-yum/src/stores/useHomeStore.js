@@ -17,6 +17,9 @@ export const useHomeStore = create(
       waterData: null, //{current, goal}
       mealData: null, // {id, breackfast, lunch, dinner, snack}
       originalMealData: null, // 원본 식단 데이터
+      // 체중 값 관련
+      isExacDate: '', // 선택한 날의 값이 있는경우 true
+      displayText: '', // 선택한 날에 값이 없는경우 보일 글자
 
       // UI 상태
       selectedDate: new Date(),
@@ -30,12 +33,16 @@ export const useHomeStore = create(
       setOnboardOpen: (isOpen) => set({ onboardOpen: isOpen }),
       setWeightModalOpen: (isOpen) => set({ weightModalOpen: isOpen }),
 
+      setWeightLogs: ({ isExacDate, displayText }) =>
+        set({ isExacDate: isExacDate, displayText: displayText }),
+
       // 계산 액션들
-      calcuateCalories: (userData) => {
+      calcuateCalories: (userData, weight) => {
         if (!userData) return;
 
         const { tdee, targetCalories, currentWeight, goalWeight } = calorieCalculator({
-          weight: userData?.weight,
+          // weight: userData?.weight,
+          weight: weight || userData?.weight,
           height: userData?.height,
           gender: userData?.gender,
           age: userData?.age,
