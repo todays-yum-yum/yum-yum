@@ -46,9 +46,9 @@ export default function HomePage() {
     originalMealData,
   } = useHomeStore();
   // hoook 요청
-  const weightModal = useWeightModal(userId, selectedDate);
   const { waterData, mealData, targetCalories, currentWeight, goalWeight, mealDataOrigin } =
     usePageData(userId, selectedDate);
+  const weightModal = useWeightModal(userId, selectedDate, currentWeight);
   const { clearFoods, addFood } = useSelectedFoodsStore();
 
   return (
