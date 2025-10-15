@@ -18,10 +18,7 @@ import { callUserUid } from '@/utils/localStorage';
 import { useReportStore } from '@/stores/useReportStore';
 import { hasCurrentWeight } from '@/utils/localStorage';
 
-export default function WeightReportPage({
-  originDate,
-  fullDate,
-}) {
+export default function WeightReportPage({ originDate, fullDate }) {
   const userId = callUserUid();
 
   const {
@@ -40,17 +37,24 @@ export default function WeightReportPage({
     dailyData,
     isLoading: daliyIsLoading,
     isError: daliyIsError,
-  } = useDailyReportData(userId, originDate);
+  } = useDailyReportData(userId, originDate, {
+    enabled: activePeriod === '일간',
+  });
   const {
     weeklyData,
     isLoading: weeklyIsLoading,
     isError: weeklyIsError,
-  } = useWeeklyReportData(userId, originDate);
+  } = useWeeklyReportData(userId, originDate, {
+    enabled: activePeriod === '주간',
+  });
   const {
     monthlyData,
     isLoading: monthlyIsLoading,
     isError: monthlyIsError,
-  } = useMonthlyReportData(userId, originDate);
+  } = useMonthlyReportData(userId, originDate, {
+    enabled: activePeriod === '월간',
+  });
+
   const { userData } = useUserData(userId, originDate);
 
   // 기간별 체중과 체중 비교 데이터 설정
@@ -78,12 +82,7 @@ export default function WeightReportPage({
 
   return (
     <main className='flex flex-col gap-7.5'>
-      <ChartArea
-        originDate={originDate}
-        date={fullDate}
-        unit='Kg'
-        value={dailyCurrentWeight ?? 0}
-      >
+      <ChartArea originDate={originDate} date={fullDate} unit='Kg' value={dailyCurrentWeight ?? 0}>
         <LineCharts datas={weightData} activePeriod={activePeriod} unit='Kg' />
       </ChartArea>
       <section>

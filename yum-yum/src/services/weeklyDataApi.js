@@ -26,22 +26,22 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
     const mealQuery = query(
       mealRef,
       where('date', '>=', startOfDay),
-      where('date', '<', endOfDay),
+      where('date', '<=', endOfDay),
       orderBy('date'),
     );
 
     const waterQuery = query(
       waterRef,
       where('date', '>=', startOfDay),
-      where('date', '<', endOfDay),
+      where('date', '<=', endOfDay),
       orderBy('date'),
     );
 
     const weightQuery = query(
       weightRef,
       where('date', '>=', start),
-      where('date', '<', end),
-      orderBy('date'),
+      where('date', '<=', end),
+      // orderBy('date'),
     );
 
     const [waterSnap, mealSnap, weightSnap] = await Promise.all([
@@ -64,7 +64,7 @@ export const getWeeklyData = async (userId, startDay, endDay) => {
       id: doc.id,
       ...doc.data(),
     }));
-
+    
     // console.log('주간탭 데이터: ', startDay, endDay, weightData);
 
     return {

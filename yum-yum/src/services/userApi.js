@@ -11,7 +11,11 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { auth, firestore } from './firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  deleteUser,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 import { calculateWaterIntake } from '../utils/calorieCalculator';
 
 // 사용자 데이터 가져오기(전체 데이터)
@@ -196,4 +200,20 @@ export async function editProfile({ currentItem, newValue, userId }) {
   } catch (error) {
     console.error('업데이트 실패:', error);
   }
+}
+
+//
+
+export async function deleteUserFireStore(userId) {
+  const userRef = doc(firestore, 'users', userId);
+}
+
+export async function deleteAccount(user) {
+  deleteUser(user)
+    .then(() => {
+      console.log('탈퇴가 완료되었습니다.');
+    })
+    .catch((error) => {
+      console.log('에러가 발생했습니다.');
+    });
 }

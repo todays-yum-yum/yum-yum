@@ -13,18 +13,19 @@ import { getMonthlyData } from '../services/monthlyDataApi';
 import { getDailyData } from '../services/dailyDataApi';
 import { getTodayKey } from './../utils/dateUtils';
 
-export const useDailyReportData = (userId, selectedDate) => {
+export const useDailyReportData = (userId, selectedDate, options = {}) => {
   // 단위 기간 범위 설정
   const day = parseDateString(selectedDate);
 
   const newDate = getTodayKey(new Date(day.year, day.month - 1, day.date));
 
   const dailyDataQuery = useQuery({
-    queryKey: ['mealData', userId, selectedDate, 'daily'],
+    queryKey: ['reportData', userId, selectedDate, 'daily'],
     queryFn: () => getDailyData(userId, newDate),
     select: (response) => response.data,
     staleTime: 0.5 * 60 * 1000,
-    enabled: !!userId && !!selectedDate,
+    enabled: !!userId && !!selectedDate && (options.enabled ?? true),
+    ...options,
   });
 
   return {
@@ -37,7 +38,7 @@ export const useDailyReportData = (userId, selectedDate) => {
   };
 };
 
-export const useWeeklyReportData = (userId, selectedDate) => {
+export const useWeeklyReportData = (userId, selectedDate, options = {}) => {
   // 단위 기간 범위 설정
   const startDay = parseDateString(getStartDateOfWeek(selectedDate));
   const endDay = parseDateString(getEndDateOfWeek(selectedDate));
@@ -46,11 +47,12 @@ export const useWeeklyReportData = (userId, selectedDate) => {
   const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date + 1));
 
   const weeklyDataQuery = useQuery({
-    queryKey: ['mealData', userId, selectedDate, 'weekly'],
+    queryKey: ['reportData', userId, selectedDate, 'weekly'],
     queryFn: () => getWeeklyData(userId, startOfDay, endOfDay),
     select: (response) => response.data,
     staleTime: 0.5 * 60 * 1000,
-    enabled: !!userId && !!selectedDate,
+    enabled: !!userId && !!selectedDate && (options.enabled ?? true),
+    ...options,
   });
 
   return {
@@ -63,7 +65,7 @@ export const useWeeklyReportData = (userId, selectedDate) => {
   };
 };
 
-export const useMonthlyReportData = (userId, selectedDate) => {
+export const useMonthlyReportData = (userId, selectedDate, options = {}) => {
   // 단위 기간 범위 설정
   const startDay = parseDateString(getStartDateOfMonth(selectedDate));
   const endDay = parseDateString(getEndDateOfMonth(selectedDate));
@@ -72,11 +74,12 @@ export const useMonthlyReportData = (userId, selectedDate) => {
   const endOfDay = getTodayKey(new Date(endDay.year, endDay.month - 1, endDay.date + 1));
 
   const monthlyDataQuery = useQuery({
-    queryKey: ['mealData', userId, selectedDate, 'monthly'],
+    queryKey: ['reportData', userId, selectedDate, 'monthly'],
     queryFn: () => getMonthlyData(userId, startOfDay, endOfDay),
     select: (response) => response.data,
     staleTime: 0.5 * 60 * 1000,
-    enabled: !!userId && !!selectedDate,
+    enabled: !!userId && !!selectedDate && (options.enabled ?? true),
+    ...options,
   });
 
   return {

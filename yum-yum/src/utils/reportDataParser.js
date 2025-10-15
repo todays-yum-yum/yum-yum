@@ -83,6 +83,7 @@ export function weightNormalizeDataRange(rawData, selectedDate, period) {
   const allDays = eachDayOfInterval({ start, end });
 
   const dataMap = new Map(rawData.map((d) => [d.date, d]));
+
   // 2) rawData 전처리: dateObj 추가
   const records = allDays.map((day) => {
     const key = format(day, 'yyyy-MM-dd');
@@ -92,6 +93,8 @@ export function weightNormalizeDataRange(rawData, selectedDate, period) {
       value: value ? structuredClone(value) : 0,
     };
   });
+
+  console.log(records)
   return records;
 }
 
