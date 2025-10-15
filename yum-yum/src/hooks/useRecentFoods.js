@@ -7,9 +7,6 @@ export const useRecentFoods = (userId) => {
     queryFn: () => getRecentFoods(userId),
     enabled: !!userId,
     select: (data) => data ?? [],
-    staleTime: 1000 * 60 * 5,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
   });
 
   return {

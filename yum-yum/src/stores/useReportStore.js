@@ -14,7 +14,6 @@ import {
   getWeightYearlyData,
 } from '@/utils/reportDataParser';
 import { todayDate, getEndDateOfWeek, getStartDateOfWeek, parseDateString  } from '@/utils/dateUtils';
-import { setDate } from 'date-fns';
 import { canMoveDate, getLastMonth, getLastWeek, getNextMonth, getNextWeek, getTomorrow, getYesterday } from '../utils/dateUtils';
 
 const searchConfig = {

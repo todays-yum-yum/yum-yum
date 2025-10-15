@@ -99,7 +99,7 @@ export default function AiReportPage({
         unit='AI'
         value='1.2'
       >
-        <section className='flex flex-col flex-1 align-items justify-center gap-2.5 w-90 pt-5 pb-5 pr-5 pl-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
+        <section className='flex flex-col flex-1 align-items justify-center gap-2.5 w-full max-w-[320px] p-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
           <article className='flex flex-row items-center justify-center text-lg'>
             <LightBulbIcon /> AI 코치의 조언
           </article>

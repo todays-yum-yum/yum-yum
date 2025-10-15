@@ -22,6 +22,7 @@ export const useDailyMeal = (userId, date) => {
     onSuccess: () => {
       toast.success('식단 기록이 완료 되었어요!');
       queryClient.invalidateQueries({ queryKey: ['daily-meal-data', userId, date] });
+      queryClient.invalidateQueries({ queryKey: ['recentFoods', userId] });
     },
     onError: (error) => {
       toast.error('식단 기록 실패!');
@@ -61,6 +62,7 @@ export const useDailyMeal = (userId, date) => {
     onSuccess: () => {
       toast.success('식단 기록이 삭제 되었어요!');
       queryClient.invalidateQueries({ queryKey: ['daily-meal-data', userId, date] });
+      queryClient.invalidateQueries({ queryKey: ['recentFoods', userId] });
     },
     onError: (error) => {
       toast.error('식단 삭제 실패!');
