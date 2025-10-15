@@ -10,10 +10,12 @@ import TOSModal from '../component/TOSModal';
 import { differenceInDays } from 'date-fns';
 
 import { useUserStore } from '@/stores/useUserStore';
-
+import { Link } from 'react-router-dom';
 
 export default function MyPageMain() {
   const userId = callUserUid();
+
+  // 사용자 정보
   const { userName, goal, targetWeight, targetExercise, createAt } = useMyPageUserData(userId);
 
   const { logout } = useUserStore();
@@ -47,7 +49,7 @@ export default function MyPageMain() {
           {/* 이름과 기록일 */}
           <div className='flex flex-row justify-between items-baseline'>
             <div>
-              <span className='text-2xl text-primary font-bold'>{userName? userName : ''} </span>
+              <span className='text-2xl text-primary font-bold'>{userName ? userName : ''} </span>
               <span className='text-base font-bold text-gray-400'>{'님'}</span>
             </div>
 
@@ -61,11 +63,14 @@ export default function MyPageMain() {
           <div className='flex flex-col bg-primary-light rounded-[12px] gap-8 p-7'>
             <div className='flex flex-row justify-between items-center'>
               <span className='text-xl font-bold'>나의 목표</span>
-              <button>
+
+              {/* 정보 수정 버튼 */}
+              <Link to={'/mypage/update'} className='flex flex-col items-center gap-1'>
                 <SettingIcon />
-              </button>
+              </Link>
             </div>
 
+            {/* 목표 카드 */}
             <div>
               <MyPageGoalCard
                 goals={{
@@ -115,7 +120,9 @@ export default function MyPageMain() {
       </div>
 
       <div className='flex justify-center'>
-        <span className='text-center text-sm text-gray-500'>© 2025 TODAYS YUM YUM. All rights reserved.</span>
+        <span className='text-center text-sm text-gray-500'>
+          © 2025 TODAYS YUM YUM. All rights reserved.
+        </span>
       </div>
 
       {openModal && (
