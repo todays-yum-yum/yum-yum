@@ -183,7 +183,7 @@ const parsedUserSetting = (userData) => {
         max: { value: 120, message: '나이를 다시 확인해주세요.' },
         pattern: {
           value: /^\d+$/,
-          message: '정수만 입력해주세요',
+          message: '숫자만 입력 가능합니다',
         },
       },
     },
