@@ -70,8 +70,13 @@ export const useUserSettings = (userId) => {
   const handleSave = async (data) => {
     const { currentItem } = modalState;
     const newValue = data[currentItem.id];
+
+    // newValue의 타입 구별
+    let num = Number(newValue);
+    num = Number.isNaN(num) ? newValue : num;
+
     // 업데이트 호출
-    const edit = userSettingsMutation.mutateAsync({ currentItem, newValue });
+    const edit = userSettingsMutation.mutateAsync({ currentItem, newValue: num });
     // toast 알람
     await toast.promise(edit, {
       loading: '수정하는 중...',
