@@ -19,7 +19,7 @@ import CalorieChart from './card/calorie/CalorieChart';
 import CalorieHeader from './card/calorie/CalorieHeader';
 import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
-import WeightInput from './modal/WeightInput';
+import NumberInput from '@/components/common/NumberInput';
 // 훅
 import { useWeightModal } from '@/hooks/useWeight';
 import { usePageData } from '@/hooks/useMainPageData';
@@ -139,7 +139,22 @@ export default function HomePage() {
             {/* 날짜 선택 부분 */}
             <MyDateField {...weightModal} />
             {/* 몸무게 입력 부분 */}
-            <WeightInput register={weightModal.register} errors={weightModal.formState.errors} />
+            <NumberInput
+              name={'weight'}
+              register={weightModal.register}
+              errors={weightModal.formState.errors}
+              unit='kg'
+              min={30}
+              max={200}
+              validationRules={{
+                min: { value: 20, message: '20kg 이상 입력해주세요.' },
+                max: { value: 300, message: '300kg 이하로 입력해주세요.' },
+                pattern: {
+                  value: /^(?:\d{1,3}(?:\.\d{1})?|\d{1,2})$/,
+                  message: '숫자만 입력 가능하며, 소수점 첫째 자리까지만 입력해주세요',
+                },
+              }}
+            />
           </Modal>
         )}
 
