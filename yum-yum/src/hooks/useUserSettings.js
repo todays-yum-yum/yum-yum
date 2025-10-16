@@ -176,8 +176,12 @@ const parsedUserSetting = (userData) => {
       value: `${userData.age}`,
       type: 'number',
       unit: '세',
-      min: 1,
-      max: 100,
+      min: 14,
+      max: 120,
+      validationRules: {
+        min: { value: 14, message: '14세 이상만 가입 가능해요.' },
+        max: { value: 120, message: '나이를 다시 확인해주세요.' },
+      },
     },
     {
       id: 'height',
@@ -185,8 +189,12 @@ const parsedUserSetting = (userData) => {
       value: `${userData.height}`,
       type: 'number',
       unit: 'cm',
-      min: 100,
+      min: 50,
       max: 250,
+      validationRules: {
+        min: { value: 50, message: '50cm 이상 입력해주세요.' },
+        max: { value: 250, message: '250cm 이하로 입력해주세요.' },
+      },
     },
     {
       id: 'targetWeight',
@@ -196,6 +204,14 @@ const parsedUserSetting = (userData) => {
       unit: 'kg',
       min: 30,
       max: 200,
+      validationRules: {
+        min: { value: 20, message: '20kg 이상 입력해주세요.' },
+        max: { value: 300, message: '300kg 이하로 입력해주세요.' },
+        pattern: {
+          value: /^(?:\d{1,3}(?:.\d)?|)$/,
+          message: '소수점 첫째 자리까지 입력 가능합니다',
+        },
+      },
     },
     {
       id: 'goal',

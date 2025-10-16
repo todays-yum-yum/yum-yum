@@ -10,7 +10,7 @@ export const usePageData = (userId, selectedDate) => {
   const { setWaterData, setMealData } = useHomeStore();
   const { waterData: waterOrigin } = useDailyWaterData(userId, selectedDate);
   const { mealData: mealOrigin } = useDailyMealData(userId, selectedDate);
-  const { userData } = useHomeUserHook(userId);
+  const { userData } = useHomeUserHook(userId, selectedDate);
 
   useEffect(() => {
     if (waterOrigin) setWaterData(waterOrigin, userData);

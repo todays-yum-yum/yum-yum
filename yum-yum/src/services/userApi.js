@@ -9,6 +9,10 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  documentId,
+  limit,
+  getDocs,
+  orderBy,
 } from 'firebase/firestore';
 import { auth, firestore } from './firebase';
 import {
@@ -17,6 +21,7 @@ import {
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { calculateWaterIntake } from '../utils/calorieCalculator';
+import { getTodayKey } from '../utils/dateUtils';
 
 // 사용자 데이터 가져오기(전체 데이터)
 export async function getUserData(userId) {
@@ -42,22 +47,157 @@ export async function getUserData(userId) {
 }
 
 // 사용자 데이터 가져오기(무게만 가져옴)
-export async function getUserWeightData(userId) {
-  try {
-    const userDoc = await getDoc(doc(firestore, 'users', userId));
+// 10.15 수정 : 무게 로그 호출
+export async function getUserWeightData(userId, targetDate) {
+  const targetDay = getTodayKey(targetDate); // 전체 날짜 (yyyy-MM-dd 형)
+  const queryMonth = targetDay.substring(0, 7); // 월까지만
 
-    if (userDoc.exists()) {
+  try {
+    // Case 1: 해당 날짜의 정확한 체중 기록 확인
+    const exactWeight = await getExactDateWeight(userId, queryMonth, targetDay);
+    if (exactWeight.success) {
       return {
         success: true,
-        data: userDoc.data(),
+        data: {
+          weight: exactWeight.data?.lastchanges.weight,
+          date: targetDay,
+          isExactDate: true,
+          displayText: '',
+        },
       };
     }
+
+    // Case 2: 가장 가까운 과거 날짜의 체중 찾기
+    const nearestWeight = await getNearestPastWeight(userId, queryMonth, targetDay);
+    if (nearestWeight.success) {
+      return {
+        success: true,
+        data: {
+          weight: nearestWeight.data?.lastchanges.weight,
+          date: nearestWeight.data.date,
+          isExactDate: false,
+          displayText: `${nearestWeight.data.date} 기준`,
+        },
+      };
+    }
+
+    // Case 3: 기록이 전혀 없는 경우
     return {
       success: false,
-      error: '사용자 정보를 찾을 수 없습니다.',
+      error: '체중 입력 정보가 없습니다.',
+      data: {
+        weight: null,
+        date: null,
+        isExactDate: false,
+        displayText: '체중 기록 없음',
+      },
     };
   } catch (error) {
     console.error(error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+// 정확한 날짜의 체중 기록 조회
+async function getExactDateWeight(userId, queryMonth, targetDate) {
+  try {
+    const weightLogRef = doc(
+      firestore,
+      'users',
+      userId,
+      'weight',
+      queryMonth,
+      'weightLogs',
+      targetDate,
+    );
+    const weightLogDoc = await getDoc(weightLogRef);
+
+    if (weightLogDoc.exists()) {
+      return {
+        success: true,
+        data: weightLogDoc.data(),
+      };
+    }
+
+    return {
+      success: false,
+      error: 'No exact date record found',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+// 가장 가까운 과거 날짜의 체중 조회
+async function getNearestPastWeight(userId, queryMonth, targetDate) {
+  try {
+    const targetMonth = queryMonth;
+    let currentYear = parseInt(targetMonth.split('-')[0]);
+    let currentMonth = parseInt(targetMonth.split('-')[1]);
+    let monthsChecked = 0;
+    const maxMonthsToCheck = 3; // 3개월치만 검색
+
+    while (monthsChecked < maxMonthsToCheck) {
+      const monthKey = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
+
+      try {
+        const weightLogsRef = collection(
+          firestore,
+          'users',
+          userId,
+          'weight',
+          monthKey,
+          'weightLogs',
+        );
+
+        let weightQuery;
+        if (monthKey === queryMonth) {
+          weightQuery = query(
+            weightLogsRef,
+            where(documentId(), '<', targetDate),
+            orderBy(documentId(), 'desc'),
+            limit(1),
+          );
+        } else {
+          weightQuery = query(weightLogsRef, orderBy(documentId(), 'desc'), limit(1));
+        }
+
+        const weightSnapshot = await getDocs(weightQuery);
+        if (!weightSnapshot.empty) {
+          const latestDoc = weightSnapshot.docs[0];
+          return {
+            success: true,
+            data: {
+              ...latestDoc.data(),
+              date: latestDoc.id,
+            },
+          };
+        }
+      } catch (monthError) {
+        // 해당 월이 존재하지 않거나 권한 에러등
+        // firebase는 존재하지 않는 컬렉션 조회시 빈 결과를 반환하므로 에러가 발생하면 다음 월로 넘어감
+        console.error(`에러 혹은 ${monthKey}에 데이터가 없습니다:`, monthError);
+      }
+      // 이전 월로 이동
+      currentMonth--;
+      if (currentMonth < 1) {
+        currentMonth = 12;
+        currentYear--;
+      }
+      monthsChecked++;
+    }
+
+    return {
+      success: false,
+      error: 'No past records found',
+    };
+  } catch (error) {
     return {
       success: false,
       error: error.message,

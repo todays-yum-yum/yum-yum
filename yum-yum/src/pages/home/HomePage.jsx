@@ -44,10 +44,14 @@ export default function HomePage() {
     onboardOpen,
     setOnboardOpen,
     originalMealData,
+    isExacDate,
+    displayText,
   } = useHomeStore();
   // hoook 요청
-  const { waterData, mealData, targetCalories, currentWeight, goalWeight, mealDataOrigin } =
-    usePageData(userId, selectedDate);
+  const { waterData, mealData, targetCalories, currentWeight, goalWeight } = usePageData(
+    userId,
+    selectedDate,
+  );
   const weightModal = useWeightModal(userId, selectedDate, currentWeight);
   const { clearFoods, addFood } = useSelectedFoodsStore();
 
@@ -118,6 +122,8 @@ export default function HomePage() {
             currentWeight={currentWeight}
             targetWeight={goalWeight}
             onWeightInput={weightModal.open}
+            isExacDate={isExacDate}
+            displayText={displayText}
           />
         </BaseCard>
 
