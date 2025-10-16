@@ -35,7 +35,13 @@ export const useUserSettings = (userId) => {
     return { userSettings: settings, defaultValues: defaults };
   }, [userData]);
 
-  const { register, control, handleSubmit, reset, formState } = useForm({
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm({
     defaultValues,
     values: defaultValues,
   });
@@ -68,6 +74,8 @@ export const useUserSettings = (userId) => {
 
   // 저장 핸들러
   const handleSave = async (data) => {
+    if (!isDirty) return;
+
     const { currentItem } = modalState;
     const newValue = data[currentItem.id];
 
@@ -152,7 +160,8 @@ export const useUserSettings = (userId) => {
     control,
     handleSubmit: handleSubmit(handleSave),
     reset,
-    formState,
+    formErrors: errors,
+    isDirty,
   };
 };
 
