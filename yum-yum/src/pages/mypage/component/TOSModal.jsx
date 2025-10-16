@@ -3,7 +3,7 @@ import React from 'react';
 import Modal from '@/components/Modal';
 
 export default function TOSModal({ isOpenModal, onCloseModal, type }) {
-  const agreementContent = () => {
+  const tosContent = () => {
     switch (type) {
       case 'service':
         return {
@@ -117,7 +117,7 @@ export default function TOSModal({ isOpenModal, onCloseModal, type }) {
     }
   };
 
-  const { title, content } = agreementContent();
+  const { title, content } = tosContent();
 
   return (
     <Modal
