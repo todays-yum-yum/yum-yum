@@ -73,9 +73,15 @@ export default function FoodSearchResultsPage() {
           <div className='flex-1 px-[20px]'>
             {isError ? (
               // API 에러
-              <EmptyState className='min-h-[calc(100vh-148px)] text-center'>
+              <EmptyState
+                btn='직접 등록'
+                btnClick={handleCustomEntry}
+                className='min-h-[calc(100vh-148px)] text-center'
+              >
                 국가정보자원관리원 화재로 인하여 <br />
                 장애 복구 시까지 음식 정보를 불러올 수 없어요.
+                <br />
+                직접 등록으로 음식을 추가해 보세요.
               </EmptyState>
             ) : isLoading ? (
               // 로딩 중
