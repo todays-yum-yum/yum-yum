@@ -16,12 +16,8 @@ export default function WeightInput({ register, errors }) {
             min: { value: 20, message: '올바른 체중을 입력해주세요' },
             max: { value: 300, message: '300kg 이하로 입력해주세요' },
             pattern: {
-              value: /^\d+\.?\d*$/,
-              message: '숫자만 입력해주세요.',
-            },
-            pattern: {
-              value: /^(?:\d{1,3}(?:.\d)?|)$/,
-              message: '소수점 첫째 자리까지 입력 가능합니다',
+              value: /^(?:\d{1,3}(?:\.\d{1})?|\d{1,2})$/,
+              message: '숫자만 입력 가능하며, 소수점 첫째 자리까지만 입력해주세요',
             },
           })}
         />
