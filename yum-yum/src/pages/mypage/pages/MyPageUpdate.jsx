@@ -20,7 +20,8 @@ export default function MyPageUpdate() {
     handleModalClose,
     register,
     handleSubmit,
-    formState,
+    formErrors,
+    isDirty,
   } = useUserSettings(userId);
 
   // Modal children 렌더링 함수
@@ -36,7 +37,7 @@ export default function MyPageUpdate() {
           max={max}
           register={register}
           name={id}
-          errors={formState.errors}
+          errors={formErrors}
           validationRules={validationRules}
         />
       );
@@ -76,6 +77,7 @@ export default function MyPageUpdate() {
         btnLabel='수정'
         showClose={true}
         onBtnClick={handleSubmit}
+        btnDisabled={!isDirty}
       >
         {renderModalContent()}
       </Modal>
