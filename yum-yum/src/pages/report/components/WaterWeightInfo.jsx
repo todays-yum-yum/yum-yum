@@ -115,7 +115,7 @@ function InfoSection({ rowData, unit, period }) {
 
 export default function WaterWeightInfo({ period, date, unit, total, datas = [] }) {
   const periodLabel = () => {
-    let label = period !== '월간' ? date : date.slice(0, 5);
+    let label = date;
 
     if (unit === 'Kg') {
       label = period === '월간' ? label : '현재';
