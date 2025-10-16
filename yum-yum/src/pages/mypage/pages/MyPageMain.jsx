@@ -1,51 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import SettingIcon from '@/assets/icons/icon-setting.svg?react';
 import { callUserUid } from '@/utils/localStorage';
+
 import { useMyPageUserData } from '@/hooks/useMyPageUser';
+import useDeleteUser from '@/hooks/useDeleteUser';
 
 import MyPageGoalCard from '../component/MyPageGoalCard';
 import MyPageCSItem from '../component/MyPageCSItem';
 import TOSModal from '../component/TOSModal';
-
-import { differenceInDays } from 'date-fns';
+import ConfirmModal from '@/components/modal/ConfirmModal';
 
 import { useUserStore } from '@/stores/useUserStore';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+
 
 export default function MyPageMain() {
   const userId = callUserUid();
 
   // 사용자 정보
-  const { userName, goal, targetWeight, targetExercise, createAt } = useMyPageUserData(userId);
+  const { userName, goal, targetWeight, targetExercise, createDays } = useMyPageUserData(userId);
 
+  // 로그아웃
   const { logout } = useUserStore();
 
-  // 가입일
-  const [dDays, setDDays] = useState(0);
+  // 탈퇴
+  const { deleteUser } = useDeleteUser();
 
   // 모달
   const [openModal, setOpenModal] = useState(null);
 
-  useEffect(() => {
-    // console.log(userData);
-    setDDays(getDDays(createAt));
-  }, [createAt]);
+  // 삭제확인 모달
+  const [confirmModal, setConfirmModal] = useState(false);
 
-  // 가입일로부터 날짜 계산
-  const getDDays = (timestamp) => {
-    const signUpDate = new Date(timestamp * 1000);
-    const today = new Date();
-
-    // console.log(signUpDate, today)
-
-    return differenceInDays(today, signUpDate);
-  };
-
+  // 메일
   const handleSupportClick = () => {
     try {
-      window.open('mailto:tnoreply@todays-yum-yum.firebaseapp.com');
+      window.open('mailto:noreply@todays-yum-yum.firebaseapp.com');
     } catch (e) {
-      alert('메일 앱을 열 수 없습니다. 기본 메일 프로그램이 설정되어 있는지 확인해주세요.');
+      toast.error('메일 앱을 열 수 없습니다. 기본 메일 프로그램이 설정되어 있는지 확인해주세요.');
     }
   };
 
@@ -62,8 +55,10 @@ export default function MyPageMain() {
             </div>
 
             <div className='text-center bg-secondary-light rounded-[8px] px-3.5 py-2'>
-              <span className='text-base text-secondary font-bold'>{dDays ? dDays : 0} </span>
-              <span className='text-base font-bold text-gray-400'>{'일 기록 중 📈'}</span>
+              <span className='text-base text-secondary font-extrabold'>
+                {createDays ? createDays : 0}{' '}
+              </span>
+              <span className='text-base font-bold text-gray-500'>{'일 기록 중 📈'}</span>
             </div>
           </div>
 
@@ -115,7 +110,7 @@ export default function MyPageMain() {
                 setOpenModal={setOpenModal}
               />
 
-              <MyPageCSItem label={'회원 탈퇴'} />
+              <MyPageCSItem label={'회원 탈퇴'} setOpenModal={setConfirmModal} />
             </div>
           </div>
 
@@ -133,6 +128,7 @@ export default function MyPageMain() {
         </span>
       </div>
 
+       {/* 이용약관, 처리방침 */}
       {openModal && (
         <TOSModal
           isOpenModal={!!openModal}
@@ -140,6 +136,17 @@ export default function MyPageMain() {
           type={openModal}
         />
       )}
+
+      {/* 탈퇴 모달 */}
+      <ConfirmModal
+        isOpenModal={confirmModal}
+        onCloseModal={() => setConfirmModal(false)}
+        title='정말 탈퇴하시겠습니까?'
+        desc='탈퇴 후 되돌릴 수 없습니다.'
+        leftBtnLabel='취소'
+        RightBtnLabel='탈퇴'
+        onConfirm={deleteUser}
+      />
     </div>
   );
 }

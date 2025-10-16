@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUserData } from '../services/userApi';
+import { differenceInDays } from 'date-fns';
 
 const goalsOption = [
   { value: '', label: '목표 선택' },
@@ -17,16 +18,15 @@ const activityLevel = [
 ];
 
 export const useMyPageUserData = (userId) => {
-
   const userQuery = useQuery({
     queryKey: ['user', userId],
     queryFn: () => getUserData(userId),
     select: (response) => response.data,
     staleTime: 10 * 60 * 1000,
-    enabled: !!userId, 
+    enabled: !!userId,
   });
 
-    // 목표
+  // 목표
   const getGoalLabel = (value) => {
     return goalsOption.find((option) => option.value === value)?.label || '목표';
   };
@@ -36,12 +36,22 @@ export const useMyPageUserData = (userId) => {
     return activityLevel.find((level) => level.value === value)?.title || '활동량';
   };
 
+  // 가입일로부터 날짜 계산
+  const getDDays = (timestamp) => {
+    const signUpDate = new Date(timestamp * 1000);
+    const today = new Date();
+
+    // console.log(signUpDate, today)
+
+    return differenceInDays(today, signUpDate);
+  };
+
   return {
     userName: userQuery.data?.name,
     goal: getGoalLabel(userQuery.data?.goals?.goal),
-    targetWeight: userQuery.data?.goals?.targetWeight,
+    targetWeight: Math.round((userQuery.data?.goals?.targetWeight ?? 0) * 10) / 10,
     targetExercise: getActivityTitle(userQuery.data?.goals?.targetExercise),
-    createAt: userQuery.data?.createdAt?.seconds,
+    createDays: getDDays(userQuery.data?.createdAt?.seconds),
     userLoading: userQuery.isLoading,
   };
 };

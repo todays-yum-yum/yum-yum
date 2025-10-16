@@ -89,8 +89,8 @@ function InfoData({ datas, unit, period }) {
   // 정보 상세
   return (
     <div className='w-full flex flex-row items-center justify-around'>
-      <span className={clsx(textStyle, 'w-35')}>{label}</span>
-      <span className={clsx(textStyle, 'text-center', 'w-20')}>{''} </span>
+      <span className={clsx(textStyle, 'w-55')}>{label}</span>
+      <span className={clsx(textStyle, 'text-center', 'w-15')}>{''} </span>
       <span className={clsx(textStyle, 'text-right', 'w-30')}>
         {amount} {unit}
       </span>
@@ -172,7 +172,7 @@ export default function WaterWeightInfo({ period, date, unit, total, datas = [] 
         <div className='w-full flex flex-row items-center justify-around'>
           <span className='w-55 font-bold text-xl'>{periodLabel()}</span>
           <span className='w-5 font-bold text-2xl'>{''} </span>
-          <span className={clsx('w-30 font-bold text-2xl', 'text-right')}>
+          <span className={clsx('w-40 font-bold text-2xl', 'text-right')}>
             {dataHeader(total)} {unit}
           </span>
         </div>

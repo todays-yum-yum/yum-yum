@@ -248,7 +248,7 @@ export const getWaterMonthlyAverages = (monthlyData, selectedDate) => {
 
     return {
       week: format(weekStart, 'yyyy-MM-dd'),
-      weekRange: `${format(weekStart, 'M/d')} ~ ${format(weekEnd, 'M/d')}`,
+      weekRange: `${format(weekStart, 'M월 d일')} ~ ${format(weekEnd, 'M월 d일')}`,
       value: calculateWeeklyAverage(weekData),
       dataCount: weekData.length,
     };
@@ -332,7 +332,7 @@ export const getWeightMonthlyData = (weightData, selectedDate) => {
 
     return {
       week: index + 1,
-      weekRange: `${format(weekStart, 'M/d')} ~ ${format(weekEnd, 'M/d')}`,
+      weekRange: `${format(weekStart, 'M월 d일')} ~ ${format(weekEnd, 'M월 d일')}`,
       weight: lastWeight || 0,
       measurementDays: weekWeightData.length,
     };
