@@ -135,6 +135,7 @@ export default function HomePage() {
             showClose={true}
             btnLabel='확인'
             onBtnClick={weightModal.onSubmit}
+            btnDisabled={!weightModal.formState.isDirty}
           >
             {/* 날짜 선택 부분 */}
             <MyDateField {...weightModal} />
