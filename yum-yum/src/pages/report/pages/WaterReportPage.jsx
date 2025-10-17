@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import LineCharts from '../charts/LineCharts';
 import ChartArea from '../components/ChartArea';
 import WaterWeightInfo from '../components/WaterWeightInfo';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
+
 import {
   useDailyReportData,
   useWeeklyReportData,
@@ -12,15 +14,19 @@ import { useUserData } from '@/hooks/useUser';
 import { callUserUid } from '@/utils/localStorage';
 import { useReportStore } from '@/stores/useReportStore';
 
-export default function WaterReportPage({
-  originDate,
-  fullDate,
-}) {
+export default function WaterReportPage({ originDate, fullDate }) {
   // 데이터
   const userId = callUserUid();
-  
-  const { watersData, totalWaters, setWatersData, setMonthlyWatersData, setCalcuatWatersData, resetWaters, activePeriod } =
-    useReportStore();
+
+  const {
+    watersData,
+    totalWaters,
+    setWatersData,
+    setMonthlyWatersData,
+    setCalcuatWatersData,
+    resetWaters,
+    activePeriod,
+  } = useReportStore();
 
   const {
     dailyData,
@@ -49,6 +55,7 @@ export default function WaterReportPage({
     resetWaters();
   }, [activePeriod]);
 
+  // 수분 데이터 및 수분량 계산 결과 설정
   useEffect(() => {
     if (activePeriod === '일간' && dailyData) {
       setWatersData(dailyData, originDate, activePeriod);
@@ -76,23 +83,39 @@ export default function WaterReportPage({
 
   return (
     <main className='flex flex-col gap-7.5'>
-      <ChartArea
-        originDate={originDate}
-        date={fullDate}
-        unit='L'
-        value={totalWaters}
-      >
-        <LineCharts datas={watersData} activePeriod={activePeriod} unit='L' />
+      <ChartArea originDate={originDate} date={fullDate} unit='L' value={totalWaters}>
+        {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+          <div className='flex items-center justify-center'>
+            <LoadingSpinner />
+          </div>
+        )}
+
+        {/* 수분량 그래프 */}
+        {!(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+          <LineCharts datas={watersData} activePeriod={activePeriod} unit='L' />
+        )}
       </ChartArea>
-      <section>
-        <WaterWeightInfo
-          period={activePeriod}
-          date={fullDate}
-          unit='L'
-          total={totalWaters}
-          datas={watersData || []}
-        />
-      </section>
+
+      {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+        <div className='flex items-center justify-center'>
+          <LoadingSpinner />
+        </div>
+      )}
+
+      {/* 수분량 상세 표 */}
+      {!(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+        <>
+          <section>
+            <WaterWeightInfo
+              period={activePeriod}
+              date={fullDate}
+              unit='L'
+              total={totalWaters}
+              datas={watersData || []}
+            />
+          </section>
+        </>
+      )}
     </main>
   );
 }
