@@ -17,6 +17,8 @@ export default function DateHeader({
 
   const formattedDate = dateString || format(date, dateFormat, { locale: ko });
 
+  // console.log(dateString, formattedDate)
+
   return (
     <div className={`w-full h-16 bg-white  ${className}`}>
       {/* Flexbox 컨테이너 */}

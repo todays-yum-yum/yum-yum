@@ -96,7 +96,7 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
 
   // console.log("value", value)
 
-  // console.log(date, originDate)
+  console.log(date, originDate);
 
   return (
     <section
@@ -115,8 +115,8 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
           {/* 날짜 표기와 캘린더 */}
           <article className='text-2xl font-bold'>
             <DateHeader
-              date={activePeriod === '주간' ? '' : parseDateString(originDate).originDate}
-              dateString={activePeriod === '주간' ? date : ''}
+              date={activePeriod === '월간' ? parseDateString(originDate).originDate : ''}
+              dateString={activePeriod !== '월간' ? date : ''}
               dateFormat={dateFormat(activePeriod)}
               showOnBoardIcon={false}
               onCalendarClick={() => {
@@ -128,11 +128,7 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
             {calendarOpen && (
               <>
                 {/* 캘린더 */}
-                <div
-                  className={clsx(
-                    'absolute  z-10 left-1/2 -translate-x-1/2',
-                  )}
-                >
+                <div className={clsx('absolute  z-10 left-1/2 -translate-x-1/2')}>
                   <DatePicker
                     dateFormat={dateFormat(activePeriod)}
                     showMonthYearPicker={activePeriod === '월간'} // 추가
