@@ -112,6 +112,7 @@ export const useReportStore = create((set, get) => ({
       normalizeDataRange(data?.waterData ?? [], originDate, activePeriod),
       originDate,
     );
+
     set({
       calculatedWater: water,
       totalWaters: water?.totalWaters,
@@ -177,6 +178,7 @@ export const useReportStore = create((set, get) => ({
   getDisplayDate: (period, date, day) => {
     // 오늘 날짜, 년, 월, 일 분리
     const parsedDate = parseDateString(date);
+    const today = parseDateString(todayDate());
 
     switch (period) {
       case '일간':
@@ -184,7 +186,10 @@ export const useReportStore = create((set, get) => ({
       case '주간': {
         // 월, 일만 추출
         const startDate = parseDateString(getStartDateOfWeek(date));
-        const endDate = parseDateString(getEndDateOfWeek(date));
+        const weekEndDate = parseDateString(getEndDateOfWeek(date));
+
+        const endDate = weekEndDate.originDate < today.originDate ? weekEndDate : today;
+
         return `${startDate.month}월 ${startDate.date}일 ~ ${endDate.month}월 ${endDate.date}일`;
       }
       case '월간':

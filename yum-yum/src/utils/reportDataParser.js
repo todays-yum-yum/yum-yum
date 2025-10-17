@@ -23,6 +23,7 @@ import {
   getTodayKey,
   parseDateString,
   parseKeyDateString,
+  todayDate,
 } from './dateUtils';
 import { toNum } from './nutrientNumber';
 import { ko } from 'date-fns/locale';
@@ -36,7 +37,12 @@ export function normalizeDataRange(rawData, selectedDate, period) {
     endDay = parseDateString(selectedDate);
   } else if (period === '주간') {
     startDay = parseDateString(getStartDateOfWeek(selectedDate));
-    endDay = parseDateString(getEndDateOfWeek(selectedDate));
+    const weekEndDay = parseDateString(getEndDateOfWeek(selectedDate));
+    const today = parseDateString(todayDate());
+
+    endDay = weekEndDay.originDate < today.originDate ? weekEndDay : today;
+
+    // console.log(todayDate());
   } else if (period === '월간') {
     startDay = parseDateString(getStartDateOfMonth(selectedDate));
     endDay = parseDateString(getEndDateOfMonth(selectedDate));
@@ -231,14 +237,20 @@ export const getWaterMonthlyAverages = (monthlyData, selectedDate) => {
   const monthStart = new Date(year, month - 1, 1);
   const monthEnd = new Date(year, month, 0);
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   // 월간 주차들 가져오기 (일요일 시작)
-  const weeks = eachWeekOfInterval(
+  const allWeeks = eachWeekOfInterval(
     { start: monthStart, end: monthEnd },
     { weekStartsOn: 0 }, // 0 = 일요일
   );
 
+  // 미래의 주는 제외
+  const weeks = allWeeks.filter((weekStart) => weekStart <= today);
+
   return weeks.map((weekStart) => {
-    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
+    let weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
 
     // 해당 주의 데이터 필터링
     const weekData = monthlyData.filter((data) => {
@@ -279,11 +291,14 @@ export const getPeriodLastData = (datas) => {
 export const getWeightWeeklyData = (weeklyData, selectedDate) => {
   const { year, month, date } = parseDateString(selectedDate);
   const currentDate = new Date(year, month - 1, date);
+  const today = new Date();
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
 
-  const WeekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
+  const endDate = weekEnd < new Date() ? weekEnd : today;
+
+  const WeekDays = eachDayOfInterval({ start: weekStart, end: endDate });
 
   return WeekDays.map((day) => {
     const dayString = format(day, 'yyyy-MM-dd');
@@ -310,7 +325,12 @@ export const getWeightMonthlyData = (weightData, selectedDate) => {
   const monthStart = new Date(year, month - 1, 1);
   const monthEnd = new Date(year, month, 0);
 
-  const weeks = eachWeekOfInterval({ start: monthStart, end: monthEnd }, { weekStartsOn: 0 });
+  const today = new Date();
+
+  const allWeeks = eachWeekOfInterval({ start: monthStart, end: monthEnd }, { weekStartsOn: 0 });
+
+    // 미래의 주는 제외
+  const weeks = allWeeks.filter((weekStart) => weekStart <= today);
 
   return weeks.map((weekStart, index) => {
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
@@ -341,8 +361,10 @@ export const getWeightMonthlyData = (weightData, selectedDate) => {
 
 export const getWeightYearlyData = (weightData, selectedDate) => {
   const { year } = parseDateString(selectedDate);
+  const today = new Date();
+  const currentMonth = today.getMonth();
 
-  return Array.from({ length: 12 }, (_, monthIndex) => {
+  return Array.from({ length: currentMonth + 1 }, (_, monthIndex) => {
     const monthStart = new Date(year, monthIndex, 1);
     const monthStartStr = getTodayKey(monthStart);
     const monthEnd = new Date(year, monthIndex + 1, 0);
