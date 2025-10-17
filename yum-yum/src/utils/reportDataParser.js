@@ -42,7 +42,7 @@ export function normalizeDataRange(rawData, selectedDate, period) {
 
     endDay = weekEndDay.originDate < today.originDate ? weekEndDay : today;
 
-    console.log(todayDate());
+    // console.log(todayDate());
   } else if (period === '월간') {
     startDay = parseDateString(getStartDateOfMonth(selectedDate));
     endDay = parseDateString(getEndDateOfMonth(selectedDate));

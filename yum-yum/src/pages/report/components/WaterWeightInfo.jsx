@@ -118,7 +118,7 @@ export default function WaterWeightInfo({ period, date, unit, total, datas = [] 
     let label = date;
 
     if (unit === 'Kg') {
-      label = period === '월간' ? label : '현재';
+      label = period === '월간' ? label.slice(0, 5) : '현재';
     }
 
     return label;
