@@ -107,7 +107,7 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
     >
       {/* 날짜 및 날짜 변경 버튼 */}
       {date && (
-        <div className='flex flex-row gap-3 items-center'>
+        <div className='flex flex-row items-center'>
           <button onClick={() => handlePrevDate(activePeriod)}>
             <PrevDateIcon />
           </button>
