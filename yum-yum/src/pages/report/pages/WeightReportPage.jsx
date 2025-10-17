@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ChartArea from '../components/ChartArea';
 import LineCharts from '../charts/LineCharts';
 import WaterWeightInfo from '../components/WaterWeightInfo';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 // 훅
 import {
@@ -83,17 +84,38 @@ export default function WeightReportPage({ originDate, fullDate }) {
   return (
     <main className='flex flex-col gap-7.5'>
       <ChartArea originDate={originDate} date={fullDate} unit='Kg' value={dailyCurrentWeight ?? 0}>
-        <LineCharts datas={weightData} activePeriod={activePeriod} unit='Kg' />
+        {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+          <div className='flex items-center justify-center'>
+            <LoadingSpinner />
+          </div>
+        )}
+
+        {/* 체중 변화 그래프 */}
+        {!(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+          <LineCharts datas={weightData} activePeriod={activePeriod} unit='Kg' />
+        )}
       </ChartArea>
-      <section>
-        <WaterWeightInfo
-          period={activePeriod}
-          date={fullDate}
-          total={dailyCurrentWeight}
-          datas={weightData}
-          unit='Kg'
-        />
-      </section>
+
+      {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+        <div className='flex items-center justify-center'>
+          <LoadingSpinner />
+        </div>
+      )}
+
+      {/* 체중 상세 표 */}
+      {!(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+        <>
+          <section>
+            <WaterWeightInfo
+              period={activePeriod}
+              date={fullDate}
+              total={dailyCurrentWeight}
+              datas={weightData}
+              unit='Kg'
+            />
+          </section>
+        </>
+      )}
     </main>
   );
 }
