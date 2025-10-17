@@ -130,8 +130,7 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
                 {/* 캘린더 */}
                 <div
                   className={clsx(
-                    'absolute z-10',
-                    activePeriod === '월간' ? 'left-[135px]' : 'left-[120px]',
+                    'absolute  z-10 left-1/2 -translate-x-1/2',
                   )}
                 >
                   <DatePicker

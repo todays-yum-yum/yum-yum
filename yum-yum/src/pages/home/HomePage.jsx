@@ -70,7 +70,7 @@ export default function HomePage() {
           className='shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]'
         />
         {calendarOpen && (
-          <div className='absolute z-10 mt-2 left-[120px]'>
+          <div className='absolute z-10 mt-2 left-1/2 -translate-x-1/2'>
             {/* 래퍼 div 추가 */}
             <DatePicker
               dateFormat='yyyy.MM.dd'
