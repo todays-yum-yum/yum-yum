@@ -1,9 +1,17 @@
 import React from 'react';
 
-export default function DateSelector({ onCalendarClick, formattedDate, textSize }) {
+export default function DateSelector({
+  onCalendarClick,
+  formattedDate,
+  dateStringShort,
+  isReport,
+  textSize,
+}) {
   return (
     <>
-      <h1 className={`text-black text-xl font-bold whitespace-nowrap ${textSize}`}>{formattedDate}</h1>
+      <h1 className={`text-black text-xl font-bold whitespace-nowrap ${textSize}`}>
+        {isReport ? dateStringShort : formattedDate}
+      </h1>
 
       {/* 날짜 옆 캘린더 버튼 */}
       <button
