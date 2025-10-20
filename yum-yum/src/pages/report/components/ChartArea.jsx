@@ -81,7 +81,7 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
       }
     }
   };
-  // sm 사이즈 날짜 헤더 포맷
+  // 날짜 헤더 포맷
   const getShortDate = () => {
     if (activePeriod === '주간') {
       const end = new Date(dateObject);
