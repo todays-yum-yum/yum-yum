@@ -27,6 +27,7 @@ const removeDuplicateFoods = (foods) => {
     if (foodCd.has(food.id)) {
       return false;
     }
+    if (!food.foodSize) return false;
     foodCd.add(food.id);
     return true;
   });
