@@ -79,7 +79,7 @@ export default function PieCharts({ data }) {
   };
 
   return (
-    <div className='w-full h-80 px-3'>
+    <div className='w-full h-80'>
       <ResponsiveContainer width='100%' height='100%'>
         <PieChart width={400} height={330}>
           <Pie
@@ -115,7 +115,7 @@ export default function PieCharts({ data }) {
             wrapperStyle={{
               whiteSpace: 'nowrap', // 줄바꿈 방지
               marginTop: 20,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: 700,
             }}
             formatter={(value) => {

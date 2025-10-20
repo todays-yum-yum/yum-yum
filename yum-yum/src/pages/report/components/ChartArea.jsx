@@ -11,6 +11,8 @@ import { parseDateString, dateFormatting } from '@/utils/dateUtils';
 import { useReportStore } from '@/stores/useReportStore';
 import clsx from 'clsx';
 import DatePicker from 'react-datepicker';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
 // 단위 기간별 접두어
 const periodPrefixConfig = {
@@ -62,6 +64,8 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
 
   const unitInfo = unitConfig[unit];
 
+  const dateObject = parseDateString(originDate).originDate;
+  
   const dateFormat = (activePeriod) => {
     switch (activePeriod) {
       case '일간': {
@@ -76,6 +80,17 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
         return 'yyyy년 MM월';
       }
     }
+  };
+  // sm 사이즈 날짜 헤더 포맷
+  const getShortDate = () => {
+    if (activePeriod === '주간') {
+      const end = new Date(dateObject);
+      end.setDate(end.getDate() + 6);
+      return `${format(dateObject, 'M/d')} ~ ${format(end, 'M/d')}`;
+    }
+
+    const formats = {'일간': 'M/d (E)', '월간': 'MM월' };
+    return format(dateObject, formats[activePeriod] || 'M/d', { locale: ko });
   };
 
   const aiArea = clsx(unit === 'AI' && 'h-[calc(100vh-190px)] overflow-y-auto');
@@ -113,10 +128,11 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
           </button>
 
           {/* 날짜 표기와 캘린더 */}
-          <article className='text-2xl font-bold'>
+          <article className='text-xl font-bold'>
             <DateHeader
               date={activePeriod === '월간' ? parseDateString(originDate).originDate : ''}
               dateString={activePeriod !== '월간' ? date : ''}
+              dateStringShort={getShortDate()}
               dateFormat={dateFormat(activePeriod)}
               showOnBoardIcon={false}
               onCalendarClick={() => {
@@ -124,11 +140,12 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
               }}
               className={'!bg-transparent'}
               textSize={'!text-2xl'}
+              isReport={true}
             />
             {calendarOpen && (
               <>
                 {/* 캘린더 */}
-                <div className={clsx('absolute  z-10 left-1/2 -translate-x-1/2')}>
+                <div className={clsx('absolute z-10 left-1/2 -translate-x-1/2')}>
                   <DatePicker
                     dateFormat={dateFormat(activePeriod)}
                     showMonthYearPicker={activePeriod === '월간'} // 추가
@@ -156,20 +173,20 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
       {/* 리포트 타입에 따른 값과 단위 출력 + 접두어 */}
 
       {unit === 'AI' && (
-        <article className='flex items-end gap-2'>
-          <span className='text-2xl font-bold'>
+        <article className='flex items-baseline gap-2'>
+          <span className='text-xl font-bold'>
             {periodPrefix} {unitInfo.prefix}
           </span>
         </article>
       )}
 
       {value !== null && value !== undefined && unit !== 'AI' && (
-        <article className='flex items-end gap-2'>
-          <span className='text-2xl font-bold'>
+        <article className='flex items-baseline gap-2'>
+          <span className='text-xl font-bold'>
             {periodPrefix} {unitInfo.prefix} :{' '}
           </span>
-          <span className='text-4xl font-bold'>{valueNormaize() ?? 0}</span>
-          <span className='text-2xl font-bold'> {unitInfo.postfix}</span>
+          <span className='text-2xl font-bold'>{valueNormaize() ?? 0}</span>
+          <span className='text-xl font-bold'> {unitInfo.postfix}</span>
         </article>
       )}
 
