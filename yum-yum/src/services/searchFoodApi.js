@@ -1,6 +1,6 @@
 // 공공 데이터 음식 정보 불러오기
 export const fetchNutritionData = async (searchKeyword = '') => {
-  const baseUrl = 'http://api.data.go.kr/openapi/tn_pubr_public_nutri_info_api';
+  const baseUrl = 'https://api.data.go.kr/openapi/tn_pubr_public_nutri_info_api';
   const serviceKey = import.meta.env.VITE_OPEN_API_KEY;
 
   const params = new URLSearchParams({
