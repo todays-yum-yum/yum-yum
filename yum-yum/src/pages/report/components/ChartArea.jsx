@@ -96,7 +96,7 @@ export default function ChartArea({ originDate, date, unit, value, children }) {
 
   // console.log("value", value)
 
-  console.log(date, originDate);
+  // console.log(date, originDate);
 
   return (
     <section
