@@ -1,7 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 // 훅
 import { useCustomFoods } from '@/hooks/useCustomFoods';
 // 유틸
@@ -53,11 +52,7 @@ export default function CustomEntryForm() {
 
   const onSubmit = async (data) => {
     try {
-      await toast.promise(addFoodMutation.mutateAsync(data), {
-        loading: '등록 중...',
-        success: '등록 되었습니다!',
-        error: '등록 실패',
-      });
+      await addFoodMutation.mutateAsync(data);
       reset();
       navigate(`/meal/${type}`, { state: { date: selectedDate, type: type } });
     } catch (error) {
@@ -102,6 +97,7 @@ export default function CustomEntryForm() {
               <Input
                 id='servingSize'
                 type='number'
+                step='0.1'
                 noSpinner
                 status={errors.servingSize ? 'error' : 'default'}
                 {...register('servingSize', {
@@ -118,6 +114,7 @@ export default function CustomEntryForm() {
 
               <select
                 {...register('servingUnit')}
+                aria-label='단위 선택'
                 className='w-full max-w-[226px] h-[48px] px-4 border border-[var(--color-gray-300)] rounded-lg transition-colors outline-none'
               >
                 <option value='g'>g</option>
@@ -134,7 +131,7 @@ export default function CustomEntryForm() {
         </div>
 
         <div className='sticky bottom-0 z-30 w-full max-w-[500px] p-[20px] bg-white'>
-          <BasicButton size='full' type='submit'>
+          <BasicButton aria-label='등록 완료' size='full' type='submit'>
             등록 완료
           </BasicButton>
         </div>

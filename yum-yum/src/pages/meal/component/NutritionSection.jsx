@@ -1,4 +1,5 @@
 import React from 'react';
+
 // 유틸
 import { toNum } from '@/utils/nutrientNumber';
 // 컴포넌트
@@ -45,6 +46,7 @@ export default function NutritionSection({ register, errors }) {
               <Input
                 id={f.id}
                 type='number'
+                step='0.1'
                 noSpinner
                 endAdornment={f.unit}
                 placeholder='0'

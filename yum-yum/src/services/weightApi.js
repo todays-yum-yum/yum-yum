@@ -27,6 +27,8 @@ export async function saveWeight({ userId, weight, date }) {
     const inputDate = getTodayKey(new Date(date));
     // 오늘 날짜
     const today = getTodayKey(new Date());
+    // YYYY-MM
+    const monthly = inputDate.substring(0, 7); // yyyy-mm
     // users의 현재 체중 업데이트
     if (inputDate == today) {
       const userRef = doc(firestore, 'users', userId);
@@ -40,19 +42,60 @@ export async function saveWeight({ userId, weight, date }) {
     };
 
     // weight 문서 업데이트 혹은 추가
-    const weightDocRef = doc(firestore, 'users', userId, 'weight', inputDate);
+    const weightDocRef = doc(firestore, 'users', userId, 'weight', monthly);
 
     // 문서 존재 여부 확인
     const docSnapshot = await getDoc(weightDocRef);
 
     if (docSnapshot.exists()) {
-      // 존재하는경우 업데이트
-      batch.update(weightDocRef, { changes: arrayUnion(newChange), updatedAt: serverTimestamp() });
+      // 존재하는경우, date가 최신날짜가 아닌경우에만 업데이트
+      const oldDate = docSnapshot.data().date; // ex. "2025-09-24"
+      // oldDate ≥ inputDate 이면 이미 최신 데이터가 있으므로 업데이트 스킵
+      if (oldDate <= inputDate) {
+        // inputDate가 더 최신일 때만 lastchanges 업데이트
+        batch.update(weightDocRef, {
+          date: inputDate,
+          lastchanges: {
+            weight,
+            timestamp: new Date(),
+          },
+          updatedAt: serverTimestamp(),
+        });
+      } else {
+        console.log('더 최신 데이터가 이미 있어서 월간 문서 업데이트를 스킵합니다.');
+      }
     } else {
       // 존재하지 않는 경우 새로 만듦
       batch.set(weightDocRef, {
         date: inputDate,
-        changes: [newChange],
+        lastchanges: newChange,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
+
+    // weight log 남기기
+    const weightLogsDocRef = doc(
+      firestore,
+      'users',
+      userId,
+      'weight',
+      monthly,
+      'weightLogs',
+      inputDate,
+    );
+    // 문서 존재 여부 확인
+    const docSnapshot2 = await getDoc(weightLogsDocRef);
+
+    if (docSnapshot2.exists()) {
+      batch.update(weightLogsDocRef, {
+        lastchanges: newChange,
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      batch.set(weightLogsDocRef, {
+        date: inputDate,
+        lastchanges: newChange,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });

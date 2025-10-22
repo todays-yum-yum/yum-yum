@@ -2,7 +2,7 @@ import { firestore } from '@/services/firebase';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { toNum } from '@/utils/nutrientNumber';
 
-const totalDailySummary = (allFoods) => {
+export const totalDailySummary = (allFoods) => {
   return {
     totalCalories: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.kcal), 0), // 칼로리
     totalCarbs: allFoods.reduce((sum, f) => sum + toNum(f.nutrient?.carbs), 0), // 탄수화물

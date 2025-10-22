@@ -18,9 +18,12 @@ export default function SearchBar({
         className='w-full h-[48px] pr-[40px] pl-[16px] border border-gray-300 bg-white rounded-lg outline-none focus:border-secondary transition-colors'
       />
 
-      <div className='absolute right-3 flex items-center justify-center'>
+      <button
+        aria-label='직접 등록한 음식 검색'
+        className='absolute right-3 flex items-center justify-center'
+      >
         <SearchIcon />
-      </div>
+      </button>
     </div>
   );
 }

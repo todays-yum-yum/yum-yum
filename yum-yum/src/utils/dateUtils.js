@@ -13,6 +13,10 @@ import {
   addMonths,
   startOfMonth,
   endOfMonth,
+  isDate,
+  isValid,
+  startOfYear,
+  endOfYear,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -150,12 +154,13 @@ export const parseDateString = (dateString) => {
     month: month.padStart(2, '0'),
     date: date.padStart(2, '0'),
     fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
+    originDate:  new Date(Number(year), Number(month) - 1, Number(date))
   };
 };
 
 export const parseKeyDateString = (dateString) => {
-  const regex = /^(\d{4})-(\d{1,2})-(\d{2})$/
-  
+  const regex = /^(\d{4})-(\d{1,2})-(\d{2})$/;
+
   const match = dateString.match(regex);
 
   const [full, year, month, date] = match;
@@ -167,7 +172,6 @@ export const parseKeyDateString = (dateString) => {
     fullDate: `${year}년 ${month.padStart(2, '0')}월 ${date.padStart(2, '0')}일`,
   };
 };
-
 
 // 오늘보다 미래로 갈수 없게, 이동 여부 가능 체크
 export const canMoveDate = (date, days) => {
@@ -190,13 +194,45 @@ export const canMoveDate = (date, days) => {
     compareDate = endOfMonth(compareDate);
   }
 
-  today.setHours(0, 0, 0, 0);
+  newDate.setHours(0, 0, 0, 0);
   compareDate.setHours(0, 0, 0, 0);
 
   return newDate <= compareDate;
 };
 
-// 0911추가: 오늘 'yyyy-MM-dd 키
-export function getTodayKey(date) {
-  return format(new Date(date), 'yyyy-MM-dd');
+/**
+ * 오늘 날짜를 'yyyy-MM-dd' 형식의 키로 변환
+ * @param {*} date : Date or date string
+ * @returns
+ */
+export function getTodayKey(input) {
+  return format(new Date(input), 'yyyy-MM-dd');
+}
+
+/**
+ * 시작날짜, 마지막날짜 구하는 함수
+ * @param {date} date
+ * @param {string} week or month
+ */
+export function getStartDateAndEndDate(date, type) {
+  if (!date) return;
+  // console.log(date);
+  let startDate, endDate;
+  if (type === 'month') {
+    startDate = startOfMonth(date);
+    endDate = endOfMonth(date);
+  } else if (type === 'week') {
+    // 해당 주의 시작일, 끝일
+    startDate = startOfWeek(date, { weekStartsOn: 0 });
+    endDate = endOfWeek(date, { weekStartsOn: 0 });
+  } else {
+    // year
+    // 한 해의 시작일, 끝 일자
+    startDate = startOfYear(date);
+    endDate = endOfYear(date);
+  }
+  return {
+    start: format(startDate, 'yyyy-MM-dd'),
+    end: format(endDate, 'yyyy-MM-dd'),
+  };
 }

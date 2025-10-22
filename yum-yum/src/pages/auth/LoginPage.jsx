@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 // 이미지
-import logoImage from '@/assets/images/Group99.png';
+import mainLogo from '@/assets/images/mainLogo.png';
 // 컴포넌트
 import Input from '@/components/common/Input';
 import BasicButton from '@/components/button/BasicButton';
@@ -35,7 +35,7 @@ export default function LoginPage() {
   return (
     <div className='flex flex-col gap-8 justify-center items-center bg-white w-full h-full min-h-screen'>
       <div className='flex justify-center items-center pb-8'>
-        <img className='w-full h-30' src={logoImage} alt='오늘의 냠냠 로고' />
+        <img className='w-full h-30' src={mainLogo} alt='오늘의 냠냠 로고' />
       </div>
       {/* login form section */}
       <form className='w-full' onSubmit={handleSubmit(onSubmit)}>

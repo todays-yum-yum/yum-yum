@@ -4,7 +4,7 @@ import { calculateNutrientRatio } from '@/utils/calorieCalculator';
 import { toNum, roundTo1 } from '@/utils/nutrientNumber';
 
 function InfoData({ label, percent, value, isSub }) {
-  const textStyle = clsx('font-bold text-2xl', isSub && 'text-gray-500 text-xl font-normal');
+  const textStyle = clsx('font-bold text-xl', isSub && 'text-gray-500 text-lg font-normal');
   // 음식 정보 상세
 
   return (

@@ -4,9 +4,10 @@ import { BarChart, Bar, XAxis, YAxis, LabelList, Legend, ResponsiveContainer } f
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
 // 유틸
 import { toNum, roundTo1 } from '@/utils/nutrientNumber';
+import { calculateNutrientRatio } from '@/utils/calorieCalculator';
 
 export default function TotalBarChart() {
-  const NUTRIENT_COLORS = { carbs: '#FF5094', protein: '#FFD653', fat: '#2F73E5' };
+  const NUTRIENT_COLORS = { carbs: '#FF5094', protein: '#2F73E5', fat: '#FFD653' };
   const MIN_BAR_WIDTH = 10;
 
   const { selectedFoods } = useSelectedFoodsStore();
@@ -18,15 +19,17 @@ export default function TotalBarChart() {
   const totalFat = roundTo1(foods.reduce((sum, f) => sum + toNum(f.nutrient?.fat), 0));
   const totalNutrient = totalCarbs + totalProtein + totalFat;
 
-  // 라벨에 보여지는 퍼센트
-  const carbsPercent = totalNutrient ? (totalCarbs / totalNutrient) * 100 : 0;
-  const proteinPercent = totalNutrient ? (totalProtein / totalNutrient) * 100 : 0;
-  const fatPercent = totalNutrient ? (totalFat / totalNutrient) * 100 : 0;
+  // 칼로리 기준 비율 계산
+  const { carbsRatio, proteinsRatio, fatsRatio } = calculateNutrientRatio(
+    totalCarbs,
+    totalProtein,
+    totalFat,
+  );
 
   // 차트 최소 너비
-  const carbsWidth = carbsPercent > 0 ? Math.max(carbsPercent, MIN_BAR_WIDTH) : 0;
-  const proteinWidth = proteinPercent > 0 ? Math.max(proteinPercent, MIN_BAR_WIDTH) : 0;
-  const fatWidth = fatPercent > 0 ? Math.max(fatPercent, MIN_BAR_WIDTH) : 0;
+  const carbsWidth = carbsRatio > 0 ? Math.max(carbsRatio, MIN_BAR_WIDTH) : 0;
+  const proteinWidth = proteinsRatio > 0 ? Math.max(proteinsRatio, MIN_BAR_WIDTH) : 0;
+  const fatWidth = fatsRatio > 0 ? Math.max(fatsRatio, MIN_BAR_WIDTH) : 0;
 
   // 100% 유지
   const sumWidth = carbsWidth + proteinWidth + fatWidth;
@@ -41,9 +44,9 @@ export default function TotalBarChart() {
       carbs: isEmpty ? 100 : carbsWidth * scale,
       protein: isEmpty ? 100 : proteinWidth * scale,
       fat: isEmpty ? 100 : fatWidth * scale,
-      carbsPercent: isEmpty ? 0 : carbsPercent,
-      proteinPercent: isEmpty ? 0 : proteinPercent,
-      fatPercent: isEmpty ? 0 : fatPercent,
+      carbsPercent: isEmpty ? 0 : carbsRatio,
+      proteinPercent: isEmpty ? 0 : proteinsRatio,
+      fatPercent: isEmpty ? 0 : fatsRatio,
     },
   ];
 
@@ -86,7 +89,7 @@ export default function TotalBarChart() {
             fill='#fff'
             fontSize='12'
             fontWeight='800'
-            formatter={(v) => (v > 0 ? `${Math.round(v)}%` : '')}
+            formatter={(v) => (v > 0 ? `${v}%` : '')}
           />
         </Bar>
 
@@ -98,7 +101,7 @@ export default function TotalBarChart() {
             fill='#fff'
             fontSize='12'
             fontWeight='800'
-            formatter={(v) => (v > 0 ? `${Math.round(v)}%` : '')}
+            formatter={(v) => (v > 0 ? `${v}%` : '')}
           />
         </Bar>
 
@@ -110,7 +113,7 @@ export default function TotalBarChart() {
             fill='#fff'
             fontSize='12'
             fontWeight='800'
-            formatter={(v) => (v > 0 ? `${Math.round(v)}%` : '')}
+            formatter={(v) => (v > 0 ? `${v}%` : '')}
           />
         </Bar>
       </BarChart>

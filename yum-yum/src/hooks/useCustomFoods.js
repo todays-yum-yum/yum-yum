@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCustomFoods, addCustomFood, deleteCustomFood } from '@/services/customFoodsApi';
+import toast from 'react-hot-toast';
 
 export const useCustomFoods = (userId) => {
   const queryClient = useQueryClient();
@@ -9,18 +10,22 @@ export const useCustomFoods = (userId) => {
     queryKey: ['customFoods', userId],
     queryFn: () => getCustomFoods(userId),
     enabled: !!userId,
-    staleTime: 10 * 60 * 1000, // 10분
     select: (data) => data ?? [],
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 30,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // 직접 등록
   const addFoodMutation = useMutation({
     mutationFn: (newFood) => addCustomFood(userId, newFood),
     onSuccess: () => {
-      // 쿼리 무효화
+      toast.success('등록 되었어요!');
       queryClient.invalidateQueries({ queryKey: ['customFoods', userId] });
     },
     onError: (error) => {
+      toast.error('직접 등록 실패!');
       console.error('직접 등록 에러: ', error);
     },
   });
@@ -29,9 +34,11 @@ export const useCustomFoods = (userId) => {
   const deleteFoodMutation = useMutation({
     mutationFn: (foodId) => deleteCustomFood(userId, foodId),
     onSuccess: () => {
+      toast.success('삭제 되었어요!');
       queryClient.invalidateQueries({ queryKey: ['customFoods', userId] });
     },
     onError: (error) => {
+      toast.error('삭제 실패!');
       console.error('삭제 에러: ', error);
     },
   });

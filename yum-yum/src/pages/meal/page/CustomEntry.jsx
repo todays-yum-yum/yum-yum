@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import toast from 'react-hot-toast';
 //훅
 import { useCustomFoods } from '@/hooks/useCustomFoods';
 // 유틸
@@ -11,6 +10,7 @@ import FoodList from '../component/FoodList';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 import SearchBar from '../component/SearchBar';
 import RoundButton from '@/components/button/RoundButton';
+import FoodListSkeleton from '@/components/skeleton/FoodListSkeleton';
 
 export default function CustomEntry({ selectedIds, onToggleSelect }) {
   const userId = callUserUid(); // 로그인한 유저 uid 가져오기
@@ -18,7 +18,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
   const navigate = useNavigate();
   const { type } = useParams();
   const date = location.state?.date;
-  const { foodItems, deleteFoodMutation } = useCustomFoods(userId);
+  const { foodItems, deleteFoodMutation, isLoading, isError } = useCustomFoods(userId);
   const [isEditing, setIsEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [targetFoodId, setTargetFoodId] = useState(null);
@@ -60,11 +60,7 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
     if (!targetFoodId) return;
 
     try {
-      await toast.promise(deleteFoodMutation.mutateAsync(targetFoodId), {
-        loading: '삭제 중...',
-        success: '삭제 되었습니다!',
-        error: '삭제 실패',
-      });
+      await deleteFoodMutation.mutateAsync(targetFoodId);
     } catch (error) {
       console.error('직접 등록 실패', error);
     } finally {
@@ -86,12 +82,12 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
               className='flex-1'
             />
           ) : (
-            <p className='text-sm text-gray-500 font-bold'>
+            <p className='text-sm text-gray-500 font-bold flex-1'>
               찾는 음식이 없나요? 직접 등록해보세요.
             </p>
           )}
 
-          <RoundButton color='secondary' onClick={handleCustomEntry}>
+          <RoundButton aria-label='직접 등록' color='secondary' onClick={handleCustomEntry}>
             직접 등록
           </RoundButton>
         </div>
@@ -106,9 +102,19 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
         )}
       </div>
 
-      <div className='flex flex-col min-h-[calc(100vh-278px)]'>
+      <div className='flex flex-col min-h-[calc(100vh-318px)]'>
         <div className='flex-1 px-[20px]'>
-          {foodItems.length === 0 ? (
+          {isError ? (
+            // API 에러
+            <EmptyState className='min-h-[calc(100vh-278px)] text-center'>
+              서버와의 연결에 문제가 있습니다.
+              <br />
+              잠시 후 다시 시도해주세요.
+            </EmptyState>
+          ) : isLoading ? (
+            // 로딩 중
+            <FoodListSkeleton showHeader className='min-h-[calc(100vh-278px)]' />
+          ) : foodItems.length === 0 ? (
             <EmptyState className='min-h-[calc(100vh-278px)]'>등록한 음식이 없어요</EmptyState>
           ) : filteredFoodItems.length === 0 ? (
             <EmptyState className='min-h-[calc(100vh-278px)]'>검색 결과가 없어요</EmptyState>
@@ -127,7 +133,6 @@ export default function CustomEntry({ selectedIds, onToggleSelect }) {
       {/* 삭제 확인 모달 */}
       <ConfirmModal
         isOpenModal={confirmOpen}
-        s
         onCloseModal={() => setConfirmOpen(false)}
         title='음식을 삭제하시겠어요?'
         desc='리스트에서 삭제됩니다.'

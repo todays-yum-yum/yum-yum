@@ -11,8 +11,6 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 
-const userId = callUserUid(); // 로그인한 유저 uid 가져오기
-
 // 직접 입력 음식 등록
 export const addCustomFood = async (userId, newFoodData) => {
   try {
@@ -37,6 +35,7 @@ export const addCustomFood = async (userId, newFoodData) => {
 // 집접 입력 음식 조회
 export const getCustomFoods = async () => {
   try {
+    const userId = callUserUid(); // 로그인한 유저 uid 가져오기
     const customFoodsCol = collection(firestore, 'users', userId, 'customFoods');
     const q = query(customFoodsCol, orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);

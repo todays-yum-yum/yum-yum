@@ -8,6 +8,7 @@ import StackedCharts from '../charts/StackedCharts';
 import RoundButton from '@/components/button/RoundButton';
 import NutritionFood from '../components/NutritionFood';
 import NutritionInfo from '../components/NutritionInfo';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 // 아이콘
 import Carbohydrate from '@/assets/icons/icon-carbohydrate.svg?react';
@@ -26,19 +27,12 @@ import { roundTo1, toNum } from '@/utils/nutrientNumber';
 import { useUserData } from '@/hooks/useUser';
 import { callUserUid } from '@/utils/localStorage';
 
-export default function DietReportPage({
-  originDate,
-  fullDate,
-  activePeriod,
-  setActivePeriod,
-  prev,
-  next,
-  canMove,
-}) {
+export default function DietReportPage({ originDate, fullDate }) {
   // 데이터
   const userId = callUserUid();
   const {
     nutrients,
+    activePeriod,
     mealSortedByCarbs,
     mealSortedByFat,
     mealSortedByProtein,
@@ -50,31 +44,28 @@ export default function DietReportPage({
     dailyData,
     isLoading: daliyIsLoading,
     isError: daliyIsError,
-  } = useDailyReportData(userId, originDate);
+  } = useDailyReportData(userId, originDate, {
+    enabled: activePeriod === '일간',
+  });
   const {
     weeklyData,
     isLoading: weeklyIsLoading,
     isError: weeklyIsError,
-  } = useWeeklyReportData(userId, originDate);
+  } = useWeeklyReportData(userId, originDate, {
+    enabled: activePeriod === '주간',
+  });
   const {
     monthlyData,
     isLoading: monthlyIsLoading,
     isError: monthlyIsError,
-  } = useMonthlyReportData(userId, originDate);
+  } = useMonthlyReportData(userId, originDate, {
+    enabled: activePeriod === '월간',
+  });
   const { userData } = useUserData(userId, originDate);
 
   // 상세 정보 토글버튼
   const [activeDetailTab, setActiveDetailTab] = useState('영양 정보');
   const DetailTab = [{ name: '영양 정보' }, { name: '영양소 별 음식' }];
-
-  // 이전, 다음 기간 함수
-  const onPrevPeriod = () => {
-    prev();
-  };
-
-  const onNextPeriod = () => {
-    next();
-  };
 
   // 영양소별 음식 아이콘
   const nutritionIcon = {
@@ -82,9 +73,6 @@ export default function DietReportPage({
     단백질: <Protein />,
     지방: <Fat />,
   };
-
-  const isLoading = daliyIsLoading || weeklyIsLoading || monthlyIsLoading;
-  const isError = daliyIsError || weeklyIsError || monthlyIsError;
 
   useEffect(() => {
     let currentData = null;
@@ -149,40 +137,44 @@ export default function DietReportPage({
 
   return (
     <main className='flex flex-col gap-7.5'>
-      {daliyIsLoading && <span>데이터를 불러오는 중입니다. </span>}
+      <ChartArea
+        originDate={originDate}
+        date={fullDate}
+        unit='Kcal'
+        value={nutrients?.totalCalories ?? 0}
+      >
+        {/* 탄단지 비율 차트 */}
+        {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+          <div className='flex items-center justify-center'>
+            <LoadingSpinner />
+          </div>
+        )}
+        {!(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && <PieCharts data={nutrients} />}
+      </ChartArea>
+
+      {/* 영양 정보 & 영양소별 음식 토글 버튼*/}
+      <section className='flex flex-row items-center justify-center'>
+        <article className='w-fit flex flex-row items-center justify-center p-2 gap-2.5 rounded-full bg-gray-600'>
+          {DetailTab.map((tab) => (
+            <RoundButton
+              key={tab.name}
+              onClick={() => setActiveDetailTab(tab.name)}
+              color={activeDetailTab === tab.name ? 'primary' : 'gray'}
+            >
+              {tab.name}
+            </RoundButton>
+          ))}
+        </article>
+      </section>
+
+      {(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
+        <div className='flex items-center justify-center'>
+          <LoadingSpinner />
+        </div>
+      )}
 
       {!(daliyIsLoading || weeklyIsLoading || monthlyIsLoading) && (
         <>
-          <ChartArea
-            date={fullDate}
-            period='일간'
-            unit='Kcal'
-            value={nutrients?.totalCalories ?? 0}
-            activePeriod={activePeriod}
-            prevDate={onPrevPeriod}
-            nextDate={onNextPeriod}
-            canMove={canMove}
-            onPeriodChange={setActivePeriod}
-          >
-            {/* 탄단지 비율 차트 */}
-            <PieCharts data={nutrients} />
-          </ChartArea>
-
-          {/* 영양 정보 & 영양소별 음식 토글 버튼*/}
-          <section className='flex flex-row items-center justify-center'>
-            <article className='w-fit flex flex-row items-center justify-center p-2 gap-2.5 rounded-full bg-gray-600'>
-              {DetailTab.map((tab) => (
-                <RoundButton
-                  key={tab.name}
-                  onClick={() => setActiveDetailTab(tab.name)}
-                  color={activeDetailTab === tab.name ? 'primary' : 'gray'}
-                >
-                  {tab.name}
-                </RoundButton>
-              ))}
-            </article>
-          </section>
-
           {/*  영양 정보 & 영양소별 음식 영역  */}
           <section className='flex flex-col items-center justify-center'>
             {/* 영양 정보 */}

@@ -18,6 +18,8 @@ import CustomEntryForm from './pages/meal/page/CustomEntryForm';
 import TotalMeal from './pages/meal/page/TotalMeal';
 import TestPage from './pages/home/test/TestPage';
 import FoodSearchResultsPage from './pages/meal/page/FoodSearchResults';
+import MyPageMain from '@/pages/mypage/pages/MyPageMain';
+import MyPageUpdate from '@/pages/mypage/pages/MyPageUpdate';
 import ScrollToTop from './components/ScrollToTop';
 
 const router = createBrowserRouter([
@@ -41,6 +43,8 @@ const router = createBrowserRouter([
           { path: 'report', element: <ReportPage /> },
           { path: 'water', element: <WaterPage /> },
           { path: 'test', element: <TestPage /> }, //AI report 테스트 페이지(지워야함)
+          { path: 'mypage', element: <MyPageMain /> }, // 마이페이지
+          { path: 'mypage/update', element: <MyPageUpdate /> }, // 정보 수정페이지
         ],
       },
 

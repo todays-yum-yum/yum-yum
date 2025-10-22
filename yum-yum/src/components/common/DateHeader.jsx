@@ -6,24 +6,31 @@ import DateSelector from './DateSelector';
 
 export default function DateHeader({
   date = new Date(),
+  dateString,
+  dateStringShort,
   dateFormat = 'yyyy년 MM월 dd일',
   showOnBoardIcon = true,
   onCalendarClick,
   onOnBoardClick,
   className = '',
+  textSize = '',
+  isReport = false,
 }) {
-  const formattedDate = format(date, dateFormat, { locale: ko });
+
+  const formattedDate = dateString || format(date, dateFormat, { locale: ko });
+
+  // console.log(dateString, formattedDate)
 
   return (
     <div className={`w-full h-16 bg-white  ${className}`}>
       {/* Flexbox 컨테이너 */}
       <div className='h-full flex items-center justify-between px-4'>
         {/* 왼쪽 빈 공간 (균형 맞추기 위해) */}
-        <div className='w-7 h-7'></div>
+      {!isReport && <div className='w-7 h-7'></div>}
 
         {/* 중앙: 날짜 + 캘린더 버튼 */}
         <div className='flex items-center gap-2'>
-          <DateSelector onCalendarClick={onCalendarClick} formattedDate={formattedDate} />
+          <DateSelector onCalendarClick={onCalendarClick} formattedDate={formattedDate} dateStringShort={dateStringShort} isReport={isReport} textSize={textSize} />
         </div>
 
         {/* 오른쪽: 온보딩 버튼 */}
@@ -41,7 +48,7 @@ export default function DateHeader({
         )}
 
         {/* showOnBoardIcon이 false일 때 균형 맞추기 */}
-        {!showOnBoardIcon && <div className='w-7 h-7'></div>}
+        {!showOnBoardIcon && !isReport && <div className='w-7 h-7'></div>}
       </div>
     </div>
   );

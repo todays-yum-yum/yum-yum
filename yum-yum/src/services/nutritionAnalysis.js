@@ -1,17 +1,7 @@
 // AI 호출 API
-import {
-  addDoc,
-  collection,
-  getDoc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  setDoc,
-  where,
-} from 'firebase/firestore';
+import { addDoc, collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { firestore, model } from './firebase';
-import { endOfMonth, format, formatDate, startOfMonth } from 'date-fns';
+import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from 'date-fns';
 import { getCurrentTimePeriod } from '../data/timePeriods';
 import { getTodayKey } from '../utils/dateUtils';
 
@@ -39,18 +29,19 @@ function createPrompt(meals) {
 
 // AI API 호출 함수
 export async function generateNutritionAnalysis(userId, meals, dataHash) {
-  // meals에 아무것도 없을 때
-  if (meals.mealBreakdown.length === 0 || !meals.totalNutrition) {
+  // meals에 아무것도 없을 때 (mealBreakdown이나 total값이 없어도 빈값으로 처리)
+  if (!meals || !meals.mealBreakdown || meals.mealBreakdown.length === 0 || !meals.totalNutrition) {
+    // 식단이 없어서 api 호출을 안한거라 success는 true로 리턴 => text 표출 이유
     return {
       text: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요!',
       timestamp: new Date().toISOString(),
       generatedAt: new Date().toLocaleTimeString(),
       timePeriod: getCurrentTimePeriod()?.name || 'Unknown',
-      error: true,
+      success: true,
     };
   }
-  const prompt = systemPrompt + createPrompt(meals);
   try {
+    const prompt = systemPrompt + createPrompt(meals);
     // model 호출 및 prompt start
     const result = await model.generateContent(prompt);
     const response = result.response;
@@ -98,8 +89,11 @@ export async function generateNutritionAnalysisWithBackoff(meals) {
   }
 }
 
-// 1번 호출한 AI Api는 DB에서 호출
+// 1번: 호출한 AI Api는 DB에서 호출
 export async function fetchAIResultWithCache(userId, meals, dataHash) {
+  if (!meals?.date || !meals?.type || !dataHash) {
+    return { success: false, text: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요.' };
+  }
   try {
     const aiRef = collection(firestore, 'users', userId, 'aimessage');
     const aiQuery = query(
@@ -140,6 +134,7 @@ export async function fetchAIResultWithCache(userId, meals, dataHash) {
 // Ai Api 호출을 위한 식단 데이터 조회
 export async function getSelectedData(userId, selectedDate, type) {
   // console.log(selectedDate);
+  // console.log(type);
   try {
     // 컬랙션 참조 생성
     const mealRef = collection(firestore, 'users', userId, 'meal');
@@ -159,6 +154,12 @@ export async function getSelectedData(userId, selectedDate, type) {
     }
 
     const querySnapshot = await getDocs(mealQuery);
+    if (querySnapshot.empty || querySnapshot.size === 0 || querySnapshot.docs.length === 0) {
+      return {
+        success: false,
+        text: '식단 데이터가 없습니다. 식단을 입력 후 다시 시도해주세요.',
+      };
+    }
     const data = querySnapshot.docs.map((docSnap) => ({
       id: docSnap.id,
       ...docSnap.data(),
@@ -210,7 +211,7 @@ function makeMonthRange(date) {
 }
 
 function makeWeekRange(date) {
-  const start = format(startOfMonth(date), 'yyyy-MM-dd');
-  const end = format(endOfMonth(date), 'yyyy-MM-dd');
+  const start = format(startOfWeek(date), 'yyyy-MM-dd');
+  const end = format(endOfWeek(date), 'yyyy-MM-dd');
   return { start, end };
 }

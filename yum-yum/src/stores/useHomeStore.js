@@ -2,64 +2,88 @@
 import { create } from 'zustand';
 import { calorieCalculator } from '../utils/calorieCalculator';
 import { normalizerMeal, normalizerWater } from '../utils/mainDataParser';
+import { persist } from 'zustand/middleware';
 
-export const useHomeStore = create((set, get) => ({
-  // 계산된 값들
-  tdee: null,
-  targetCalories: null,
-  currentWeight: null,
-  goalWeight: null, // 목표 무게
+export const useHomeStore = create(
+  persist(
+    (set, get) => ({
+      // 계산된 값들
+      tdee: null,
+      targetCalories: null,
+      currentWeight: null,
+      goalWeight: null, // 목표 무게
 
-  // 호출 값들
-  waterData: null, //{current, goal}
-  mealData: null, // {id, breackfast, lunch, dinner, snack}
-  originalMealData: null, // 원본 식단 데이터
+      // 호출 값들
+      waterData: null, //{current, goal}
+      mealData: null, // {id, breackfast, lunch, dinner, snack}
+      originalMealData: null, // 원본 식단 데이터
+      // 체중 값 관련
+      isExacDate: '', // 선택한 날의 값이 있는경우 true
+      displayText: '', // 선택한 날에 값이 없는경우 보일 글자
 
-  // UI 상태
-  selectedDate: new Date(),
-  calendarOpen: false,
-  onboardOpen: false,
-  weightModalOpen: false,
+      // UI 상태
+      selectedDate: new Date(),
+      calendarOpen: false,
+      onboardOpen: false,
+      weightModalOpen: false,
 
-  // 액션들
-  setSelectedDate: (date) => set({ selectedDate: date }),
-  setCalendarOpen: (isOpen) => set({ calendarOpen: isOpen }),
-  setOnboardOpen: (isOpen) => set({ onboardOpen: isOpen }),
-  setWeightModalOpen: (isOpen) => set({ weightModalOpen: isOpen }),
+      // 액션들
+      setSelectedDate: (date) => set({ selectedDate: date }),
+      setCalendarOpen: (isOpen) => set({ calendarOpen: isOpen }),
+      setOnboardOpen: (isOpen) => set({ onboardOpen: isOpen }),
+      setWeightModalOpen: (isOpen) => set({ weightModalOpen: isOpen }),
 
-  // 계산 액션들
-  calcuateCalories: (userData) => {
-    if (!userData) return;
+      setWeightLogs: ({ isExacDate, displayText }) =>
+        set({ isExacDate: isExacDate, displayText: displayText }),
 
-    const { tdee, targetCalories, currentWeight, goalWeight } = calorieCalculator({
-      weight: userData?.weight,
-      height: userData?.height,
-      gender: userData?.gender,
-      age: userData?.age,
-      excercise: userData?.goals.targetExercise,
-      goalWeight: userData?.goals.targetWeight,
-    });
+      // 계산 액션들
+      calcuateCalories: (userData, weight) => {
+        if (!userData) return;
 
-    set({
-      tdee: Math.round(tdee),
-      targetCalories: Math.round(targetCalories),
-      currentWeight: currentWeight,
-      goalWeight: goalWeight,
-    });
-  },
+        const { tdee, targetCalories, currentWeight, goalWeight } = calorieCalculator({
+          // weight: userData?.weight,
+          weight: weight || userData?.weight,
+          height: userData?.height,
+          gender: userData?.gender,
+          age: userData?.age,
+          excercise: userData?.goals.targetExercise,
+          goalWeight: userData?.goals.targetWeight,
+        });
 
-  // 데이터 정제
-  setDailyData: (data, userData) => {
-    const water = normalizerWater({
-      water: data.waterData[0],
-      age: userData?.age,
-      gender: userData?.gender,
-      targetIntake: userData?.targetIntake,
-    });
-    const meal = normalizerMeal(data.mealData[0]);
-    set({ waterData: water, mealData: meal, originalMealData: data.mealData[0]?.meals });
-  },
+        set({
+          tdee: Math.round(tdee),
+          targetCalories: Math.round(targetCalories),
+          currentWeight: currentWeight,
+          goalWeight: goalWeight,
+        });
+      },
 
-  // 초기화
-  resetCalories: () => set({ tdee: null, targetCalories: null }),
-}));
+      // 음식 데이터 정제
+      setMealData: (data) => {
+        set({
+          mealData: normalizerMeal(data.mealData[0]),
+          originalMealData: data.mealData[0]?.meals,
+        });
+      },
+
+      // 수분 데이터 정제
+      setWaterData: (data, userData) => {
+        const water = normalizerWater({
+          water: data.waterData[0],
+          age: userData?.age,
+          gender: userData?.gender,
+          targetIntake: userData?.targetIntake,
+        });
+        set({ waterData: water });
+      },
+
+      // 초기화
+      resetCalories: () => set({ tdee: null, targetCalories: null }),
+    }),
+    // 로컬스토리지에 현재 체중 저장
+    {
+      name: 'current-weight',
+      partialize: (state) => state.currentWeight,
+    },
+  ),
+);

@@ -1,31 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import toast from 'react-hot-toast';
+// 훅
+import useAuth from '@/hooks/useAuth';
 // 컴포넌트
 import BasicButton from '@/components/button/BasicButton';
 import Input from '@/components/common/Input';
-import AgreementsSection from '../components/AgreementsSection';
-import useAuth from '../../../../hooks/useAuth';
-import toast from 'react-hot-toast';
 
-export default function SignupStep1({ onNext }) {
+export default function SignupStep1({ onPrev, onNext }) {
+  const { useCheckEmail, checkResult, checkEmail } = useAuth();
   const { control, handleSubmit, watch, setError, clearErrors } = useFormContext();
   const pw = watch('pw');
   const email = watch('email');
-  const { useCheckEmail, checkResult, checkEmail } = useAuth();
-  useAuth();
 
-  // 성별
-  const genderOption = [
-    { value: 'female', label: '여성' },
-    { value: 'male', label: '남성' },
-  ];
+  const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email || '');
 
   const isCheckEmail = async (email) => {
     if (!email) {
       toast.error('이메일을 입력해주세요.');
       return;
     }
-    // console.log('중복 확인:', email);
+
     try {
       const result = await useCheckEmail(email);
 
@@ -50,15 +45,15 @@ export default function SignupStep1({ onNext }) {
   };
 
   // 이메일이 변경되면 중복확인 상태 초기화
-  // useEffect(() => {
-  //   if (email !== checkResult) {
-  //     checkEmail(null);
-  //   }
-  // }, [email, checkResult, checkEmail]);
+  useEffect(() => {
+    if (email !== checkResult) {
+      checkEmail(null);
+    }
+  }, [email, checkResult, checkEmail]);
 
   return (
     <>
-      <div className='flex flex-col gap-[20px] px-[20px]'>
+      <div className='flex flex-col gap-[28px] px-[20px] min-h-[calc(100vh-220px)]'>
         {/* 이름 */}
         <Controller
           name='name'
@@ -67,7 +62,7 @@ export default function SignupStep1({ onNext }) {
             required: '이름을 입력해주세요',
             minLength: { value: 2, message: '2자 이상 입력해주세요.' },
             maxLength: { value: 5, message: '5자 이하로 입력해주세요.' },
-            pattern: { value: /^[가-힣]+$/, message: '한글만 입력 가능해요.' },
+            pattern: { value: /^[가-힣]+$/, message: '이름을 정확하게 입력해주세요.' },
           }}
           render={({ field, fieldState }) => (
             <div className='flex flex-col gap-[8px]'>
@@ -96,16 +91,7 @@ export default function SignupStep1({ onNext }) {
               value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
               message: '올바른 이메일 형식이 아니에요.',
             },
-            // 이메일 중복확인 추가
-            validate: (value) => {
-              if (value !== checkResult) {
-                return '이메일 중복확인을 해주세요.';
-              }
-              if (!checkResult) {
-                return '이메일 중복확인을 해주세요.';
-              }
-              return true;
-            },
+            validate: (value) => value === checkResult || '이메일 중복확인을 해주세요.',
           }}
           render={({ field, fieldState }) => (
             <div className='flex flex-col gap-[8px]'>
@@ -121,8 +107,13 @@ export default function SignupStep1({ onNext }) {
                   errorMessage={fieldState.error?.message}
                   className='flex-1'
                 />
-                <BasicButton type='button' size='2xl' onClick={() => isCheckEmail(field.value)}>
-                  중복확인
+                <BasicButton
+                  type='button'
+                  size='2xl'
+                  onClick={() => isCheckEmail(field.value)}
+                  disabled={!field.value || field.value === checkResult || !isValidEmail}
+                >
+                  {field.value === checkResult ? '확인완료' : '중복확인'}
                 </BasicButton>
               </div>
             </div>
@@ -138,7 +129,7 @@ export default function SignupStep1({ onNext }) {
             minLength: { value: 8, message: '8자 이상 입력해주세요.' },
             maxLength: { value: 20, message: '20자 이하로 입력해주세요.' },
             pattern: {
-              value: /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,20}$/,
+              value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,20}$/,
               message: '영문, 숫자, 특수문자를 모두 포함해야 해요.',
             },
           }}
@@ -185,144 +176,13 @@ export default function SignupStep1({ onNext }) {
             </div>
           )}
         />
-
-        {/* 성별 */}
-        <Controller
-          name='gender'
-          control={control}
-          rules={{
-            required: '성별을 선택해주세요',
-          }}
-          render={({ field, fieldState }) => (
-            <div className='flex flex-col gap-[8px]'>
-              <label htmlFor='gender' className='text-sm font-bold text-gray-500'>
-                성별 <strong className='text-secondary font-extrabold'>*</strong>
-              </label>
-              <div className='flex gap-[12px]'>
-                {genderOption.map((gender) => (
-                  <BasicButton
-                    key={gender.value}
-                    type='button'
-                    size='full'
-                    variant={field.value === gender.value ? 'filled' : 'line'}
-                    onClick={() => {
-                      field.onChange(gender.value);
-                    }}
-                  >
-                    {gender.label}
-                  </BasicButton>
-                ))}
-              </div>
-              {fieldState.error && (
-                <p className='text-[var(--color-error)] text-sm'>{fieldState.error.message}</p>
-              )}
-            </div>
-          )}
-        />
-
-        {/* 나이 */}
-        <Controller
-          name='age'
-          control={control}
-          rules={{
-            required: '나이를 입력해주세요',
-            pattern: {
-              value: /^[0-9]+$/,
-              message: '숫자만 입력 가능합니다',
-            },
-            min: { value: 14, message: '14세 이상만 가입 가능해요.' },
-            max: { value: 120, message: '나이를 다시 확인해주세요.' },
-          }}
-          render={({ field, fieldState }) => (
-            <div className='flex flex-col gap-[8px]'>
-              <label htmlFor='age' className='text-sm font-bold text-gray-500'>
-                나이 <strong className='text-secondary font-extrabold'>*</strong>
-              </label>
-              <Input
-                {...field}
-                id='age'
-                type='number'
-                noSpinner
-                placeholder='0'
-                endAdornment='세'
-                status={fieldState.error ? 'error' : 'default'}
-                errorMessage={fieldState.error?.message}
-              />
-            </div>
-          )}
-        />
-
-        {/* 키 */}
-        <Controller
-          name='height'
-          control={control}
-          rules={{
-            required: '키를 입력해주세요',
-            pattern: {
-              value: /^[0-9]+$/,
-              message: '숫자만 입력 가능합니다',
-            },
-            min: { value: 50, message: '50cm 이상 입력해주세요.' },
-            max: { value: 250, message: '250cm 이하로 입력해주세요.' },
-          }}
-          render={({ field, fieldState }) => (
-            <div className='flex flex-col gap-[8px]'>
-              <label htmlFor='height' className='text-sm font-bold text-gray-500'>
-                키 <strong className='text-secondary font-extrabold'>*</strong>
-              </label>
-              <Input
-                {...field}
-                id='height'
-                type='number'
-                noSpinner
-                placeholder='0'
-                endAdornment='cm'
-                status={fieldState.error ? 'error' : 'default'}
-                errorMessage={fieldState.error?.message}
-              />
-            </div>
-          )}
-        />
-
-        {/* 현재 체중 */}
-        <Controller
-          name='weight'
-          control={control}
-          rules={{
-            required: '현재 체중을 입력해주세요',
-            pattern: {
-              value: /^(?:\d{1,3}(?:\.\d)?|)$/,
-              message: '소수점 첫째 자리까지 입력 가능합니다',
-            },
-            min: { value: 20, message: '20kg 이상 입력해주세요.' },
-            max: { value: 300, message: '300kg 이하로 입력해주세요.' },
-          }}
-          render={({ field, fieldState }) => (
-            <div className='flex flex-col gap-[8px]'>
-              <label htmlFor='weight' className='text-sm font-bold text-gray-500'>
-                현재 체중 <strong className='text-secondary font-extrabold'>*</strong>
-              </label>
-              <Input
-                {...field}
-                id='weight'
-                type='number'
-                noSpinner
-                step='0.1'
-                placeholder='00.0'
-                endAdornment='kg'
-                status={fieldState.error ? 'error' : 'default'}
-                errorMessage={fieldState.error?.message}
-              />
-            </div>
-          )}
-        />
       </div>
 
-      {/* 약관 동의 */}
-      <AgreementsSection />
-
-      <div className='p-[20px] bg-white'>
-        <BasicButton size='full' onClick={handleSubmit(onNext)}>
+      <div className='sticky bottom-0 z-30 flex gap-[12px] p-[20px] bg-white'>
+        <BasicButton type='button' size='full' variant='line' onClick={onPrev}>
+          이전
+        </BasicButton>
+        <BasicButton type='button' size='full' onClick={handleSubmit(onNext)}>
           다음
         </BasicButton>
       </div>

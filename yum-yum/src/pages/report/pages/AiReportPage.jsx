@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import ChartArea from '../components/ChartArea';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
-import { getTodayKey, parseDateString } from '../../../utils/dateUtils';
-import { useMeals } from './../../../hooks/useMeals';
-import { useNutritionAnalysis } from './../../../hooks/useNutritionAnalysis';
-import { getCurrentTimePeriod } from '../../../data/timePeriods';
-
-import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
+import { getTodayKey, parseDateString } from '@/utils/dateUtils';
 import { callUserUid } from '@/utils/localStorage';
-import { useReportStore } from '../../../stores/useReportStore';
 
-const searchConfig = {
-  일간: 'daily',
-  주간: 'weekly',
-  월간: 'monthly',
-};
+import { useMeals } from '@/hooks/useMeals';
+import { useNutritionAnalysis } from '@/hooks/useNutritionAnalysis';
+
+import { getCurrentTimePeriod } from '@/data/timePeriods';
+import LightBulbIcon from '@/assets/icons/icon-light-bulb.svg?react';
+import { useReportStore } from '@/stores/useReportStore';
+
+import ReactMarkdown from 'react-markdown';
+import { useQueryClient } from '@tanstack/react-query';
+
+// const searchConfig = {
+//   일간: 'daily',
+//   주간: 'weekly',
+//   월간: 'monthly',
+// };
 
 export default function AiReportPage({
   originDate,
   fullDate,
-  activePeriod,
-  setActivePeriod,
-  prev,
-  next,
-  canMove,
 }) {
   const userId = callUserUid();
-  
-  const { searchType, nutrientionReport, setSearchType, setNutrientionReport } = useReportStore();
+
+  const { searchType, nutrientionReport, setSearchType, setNutrientionReport, activePeriod } = useReportStore();
 
   const parsedDate = parseDateString(originDate);
 
@@ -46,6 +46,8 @@ export default function AiReportPage({
 
   const currentTimePeriod = getCurrentTimePeriod(newDate);
 
+  const queryClient = useQueryClient();
+
   // 1. Firestore 에서 식단 가져오기
   const {
     data: meals,
@@ -57,24 +59,22 @@ export default function AiReportPage({
   } = useMeals(userId, selectedDate, searchType);
 
   // 2. meals가 준비되면 AI 분석
-  const { data, refetch, isLoading } = useNutritionAnalysis(
+  const { data, refetch, isLoading, isError: aiError, error: aiErrorMsg, } = useNutritionAnalysis(
     userId,
     meals,
     newDate,
     currentTimePeriod,
+    searchType
   );
-
-  const onPrevPeriod = () => {
-    prev();
-  };
-
-  const onNextPeriod = () => {
-    next();
-  };
+  
+  // Lookbehind / Lookahead
+  // 문장 부호 단위로 분리. 강조 구문은 분리안함
+  // const splitMarkdownSentences = (text) => {
+  //   return text.split(/(?<=[.!?])(?!\*)/);
+  // };
 
   useEffect(() => {
     setSearchType(activePeriod);
-    setNutrientionReport([]);
   }, [activePeriod]);
 
   useEffect(() => {
@@ -82,48 +82,52 @@ export default function AiReportPage({
   }, [data]);
 
   // useEffect(() => {
-  //   console.log(nutritionResults)
-  // },[nutritionResults])
+  //   if(mealsError) {
+  //     console.log(mealsErrorMsg)
+  //   }
+  // }, [mealsError])
+
+  // useEffect(() => {
+  //   console.log(aiErrorMsg)
+  // }, [aiErrorMsg])
 
   return (
-    <main className='h-full flex flex-col gap-7.5'>
+    <main className='flex flex-col h-full gap-7.5'>
       <ChartArea
+        originDate={originDate}
         date={fullDate}
-        period='일간'
         unit='AI'
         value='1.2'
-        activePeriod={activePeriod}
-        prevDate={onPrevPeriod}
-        nextDate={onNextPeriod}
-        canMove={canMove}
-        onPeriodChange={setActivePeriod}
       >
-        <section className='flex flex-col flex-1 align-items justify-center gap-2.5 w-90 pt-5 pb-5 pr-5 pl-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
+        <section className='flex flex-col flex-1 align-items justify-center gap-2.5 w-full max-w-[320px] p-5 rounded-2xl text-white bg-[var(--color-primary)] text-center'>
           <article className='flex flex-row items-center justify-center text-lg'>
             <LightBulbIcon /> AI 코치의 조언
           </article>
-          <article className='text-xl '>
-            <p className=''>
-              {mealsLoading && <span>식단 불러오는 중…</span>}
-              {mealsError && <span>식단 조회 실패: 다시 시도해주세요</span>}
-              {isLoading && <span>AI 결과 불러오는 중...</span>}
+          <article className='text-xl'>
+            <div className=''>
+              {mealsLoading && <LoadingSpinner />}
+              {mealsError && <span>식단 조회에 잠시 문제가 생겼어요. 다시 시도해 주시면 곧 확인하실 수 있습니다!</span>}
+              {(isLoading && !mealsError) && <LoadingSpinner />}
+              {(aiError && !mealsError && !isLoading && !mealsLoading && meals.mealBreakdown) && 
+                <span>AI코치가 피드백을 하는 중에 잠시 문제가 생겼어요. 다시 시도해 주시면 곧 확인하실 수 있습니다!</span>
+              }
 
               {/* 로딩/에러가 없을 때만 AI 결과 렌더링 */}
 
-              {!(mealsLoading || mealsError || isLoading) &&
+              {!(mealsLoading || mealsError || isLoading) && (!aiError || !meals.mealBreakdown) &&
                 (nutrientionReport?.text ? (
                   nutrientionReport.text
-                    .split('.')
+                    .split('\n')
                     .filter(Boolean)
                     .map((sentence, idx) => (
                       <span key={idx} className='block mt-1 mb-2'>
-                        {sentence.trim()}.
+                        <ReactMarkdown>{sentence.trim()}</ReactMarkdown>
                       </span>
                     ))
                 ) : (
-                  <span>아직 AI 코치의 분석 결과가 없습니다.</span>
+                  <span>아직 분석 결과가 준비되지 않았습니다. 오늘의 식단을 기록하면 AI 코치가 맞춤 피드백을 드려요!</span>
                 ))}
-            </p>
+            </div>
           </article>
         </section>
       </ChartArea>

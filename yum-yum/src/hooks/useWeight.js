@@ -1,25 +1,74 @@
 // 몸무게 입력 커스텀 훅
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { saveWeight } from '@/services/weightApi';
 import { getUserWeightData } from '@/services/userApi';
-import { useEffect, useState } from 'react';
+import { useHomeStore } from '@/stores/useHomeStore';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useUserData } from './useUser';
 
+export const useWeightModal = (userId, selectedDate, currentWeight) => {
+  const { weightModalOpen, setWeightModalOpen } = useHomeStore();
+  const {
+    selectedDateModal,
+    setSelectedDateModal,
+    selectedDateModalOpen,
+    setSelectedDateModalOpen,
+    saveWeightMutation,
+  } = useWeight(userId, selectedDate);
+  const { register, handleSubmit, reset, formState } = useForm({
+    defaultValues: { weight: currentWeight, date: selectedDate },
+    values: { weight: currentWeight, date: selectedDate },
+    mode: 'onSubmit',
+  });
+
+  // selectedDate 변경시 동기화
+  useEffect(() => {
+    setSelectedDateModal(selectedDate);
+  }, [selectedDate]);
+
+  const open = () => setWeightModalOpen(true);
+  const close = () => setWeightModalOpen(false);
+
+  const onSubmit = handleSubmit(async (data) => {
+    const p = saveWeightMutation.mutateAsync({ weight: +data.weight, date: selectedDateModal });
+    await toast.promise(p, {
+      loading: '저장하는 중...',
+      success: (response) => {
+        setWeightModalOpen(false);
+        reset();
+        return response?.message || '몸무게가 성공적으로 저장되었습니다!';
+      },
+      error: (error) => {
+        return error?.message || '몸무게 저장에 실패했습니다.';
+      },
+    });
+    reset();
+    close();
+  });
+
+  return {
+    weightModalOpen,
+    open,
+    close,
+    selectedDateModal,
+    setSelectedDateModal,
+    selectedDateModalOpen,
+    setSelectedDateModalOpen,
+    register,
+    onSubmit,
+    formState,
+  };
+};
+
+// 몸무게 업데이트(수정)
 export const useWeight = (userId, selectedDate) => {
   const queryClient = useQueryClient();
   // 날짜 선택
   const [selectedDateModalOpen, setSelectedDateModalOpen] = useState(false);
   const [selectedDateModal, setSelectedDateModal] = useState(selectedDate);
-
-  // 사용자 데이터 불러오기(무게데이터만 가져옴)
-  const userData = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => getUserWeightData(userId),
-    select: (response) => response.data,
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
-    retry: 2,
-  });
+  const { userData } = useUserData(userId);
 
   // 체중 수정(저장)하기
   const saveWeightMutation = useMutation({
@@ -28,15 +77,14 @@ export const useWeight = (userId, selectedDate) => {
       if (response.success) {
         // 사용자 데이터 쿼리 무효화하여 새로고침
         queryClient.invalidateQueries({
-          queryKey: ['user', userId],
+          queryKey: ['weight-log', userId, selectedDate],
         });
         // 옵티미스틱 업데이트 (즉시 UI 반영)
-        queryClient.setQueryData(['user', userId], (oldData) => {
+        queryClient.setQueryData(['weight-log', userId, selectedDate], (oldData) => {
           if (oldData) {
             return {
               ...oldData,
               weight: response.data.weight,
-              updatedAt: new Date(),
             };
           }
           return oldData;
@@ -50,12 +98,8 @@ export const useWeight = (userId, selectedDate) => {
 
   return {
     // 사용자 데이터 관련
-    currentWeight: userData.data?.weight,
-    targetWeight: userData.data?.goals?.targetWeight,
-    isLoading: userData.isLoading,
-    isError: userData.isError,
-    error: userData.error,
-    userWeightData: userData.data, // 사용자 무게 데이터
+    currentWeight: userData?.weight,
+    targetWeight: userData?.goals?.targetWeight,
 
     // 몸무게 저장 관련
     saveWeightMutation,
@@ -65,6 +109,26 @@ export const useWeight = (userId, selectedDate) => {
     setSelectedDateModal,
     selectedDateModalOpen,
     setSelectedDateModalOpen,
+  };
+};
+
+// 몸무게 로그 호출 -> 이걸 메인 체중 카드에 사용
+export const useWeightLog = (userId, selectedDate) => {
+  // 몸무게 로그 호출 훅
+  const weightQuery = useQuery({
+    queryKey: ['weight-log', userId, selectedDate],
+    queryFn: () => getUserWeightData(userId, selectedDate),
+    select: (response) => response.data,
+    staleTime: 10 * 60 * 1000,
+    enabled: !!userId && !!selectedDate,
+  });
+
+  return {
+    weightLogs: weightQuery.data,
+    // 파생 데이터
+    weight: weightQuery.data?.weight,
+    isExacDate: weightQuery.data?.isExacDate,
+    displayText: weightQuery.data?.displayText,
   };
 };
 

@@ -1,14 +1,12 @@
 /**
  * 메인 페이지
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import { ko } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 // 컴포넌트
 import DateHeader from '@/components/common/DateHeader';
 import OnBoarding from '@/components/common/OnBoarding';
@@ -21,11 +19,10 @@ import CalorieChart from './card/calorie/CalorieChart';
 import CalorieHeader from './card/calorie/CalorieHeader';
 import CalorieMessage from './card/calorie/CalorieMessage';
 import CalorieNutrition from './card/calorie/CalorieNutrition';
-import WeightInput from './modal/WeightInput';
+import NumberInput from '@/components/common/NumberInput';
 // 훅
-import { useWeight } from '@/hooks/useWeight';
+import { useWeightModal } from '@/hooks/useWeight';
 import { usePageData } from '@/hooks/useMainPageData';
-import { useUserData } from '@/hooks/useUser';
 // 스토어
 import { useHomeStore } from '@/stores/useHomeStore';
 import { useSelectedFoodsStore } from '@/stores/useSelectedFoodsStore';
@@ -46,73 +43,17 @@ export default function HomePage() {
     setCalendarOpen,
     onboardOpen,
     setOnboardOpen,
-    weightModalOpen,
-    setWeightModalOpen,
-    targetCalories,
-    calcuateCalories,
-    currentWeight,
-    goalWeight,
-    setDailyData,
-    waterData,
-    mealData, // 필요한 부분 파싱된 데이터
+    originalMealData,
+    isExacDate,
+    displayText,
   } = useHomeStore();
-  const {
-    saveWeightMutation,
-    selectedDateModal,
-    setSelectedDateModal,
-    selectedDateModalOpen,
-    setSelectedDateModalOpen,
-  } = useWeight(userId, selectedDate);
-  const { dailyData, dailyLoading } = usePageData(userId, selectedDate);
-  const { userData } = useUserData(userId, selectedDate);
+  // hoook 요청
+  const { waterData, mealData, targetCalories, currentWeight, goalWeight } = usePageData(
+    userId,
+    selectedDate,
+  );
+  const weightModal = useWeightModal(userId, selectedDate, currentWeight);
   const { clearFoods, addFood } = useSelectedFoodsStore();
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isValid },
-  } = useForm({
-    defaultValues: { weight: '' },
-    mode: 'onSubmit',
-  });
-
-  // userData가 변경되면 다시 계산
-  useEffect(() => {
-    if (userData) {
-      calcuateCalories(userData);
-    }
-  }, [userData, calcuateCalories]);
-
-  useEffect(() => {
-    if (dailyData) {
-      setDailyData(dailyData, userData);
-    }
-  }, [dailyData]);
-
-  // 체중 저장
-  const onSubmit = async (data) => {
-    try {
-      const saveWeight = saveWeightMutation.mutateAsync({
-        weight: parseFloat(data.weight),
-        date: selectedDateModal,
-      });
-
-      await toast.promise(saveWeight, {
-        loading: '저장하는 중...',
-        success: (response) => {
-          setWeightModalOpen(false);
-          reset();
-          return response?.message || '몸무게가 성공적으로 저장되었습니다!';
-        },
-        error: (error) => {
-          return error?.message || '몸무게 저장에 실패했습니다.';
-        },
-      });
-    } catch (errors) {
-      console.error('체중 저장 실패', errors);
-    }
-  };
 
   return (
     <div className='flex flex-col gap-8 justify-start item-center bg-primary-light w-full h-full min-h-screen'>
@@ -129,7 +70,7 @@ export default function HomePage() {
           className='shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]'
         />
         {calendarOpen && (
-          <div className='absolute z-10 mt-2 left-[120px]'>
+          <div className='absolute z-10 mt-2 left-1/2 -translate-x-1/2'>
             {/* 래퍼 div 추가 */}
             <DatePicker
               dateFormat='yyyy.MM.dd'
@@ -180,33 +121,40 @@ export default function HomePage() {
           <WeightCard
             currentWeight={currentWeight}
             targetWeight={goalWeight}
-            onWeightInput={() => {
-              // 체중 입력 모달 열기 등의 로직
-              setWeightModalOpen(true);
-            }}
+            onWeightInput={weightModal.open}
+            isExacDate={isExacDate}
+            displayText={displayText}
           />
         </BaseCard>
 
-        {weightModalOpen && (
+        {weightModal.weightModalOpen && (
           <Modal
-            isOpenModal={weightModalOpen}
-            onCloseModal={() => setWeightModalOpen(false)}
+            isOpenModal={weightModal.weightModalOpen}
+            onCloseModal={weightModal.close}
             title='체중 입력'
             showClose={true}
             btnLabel='확인'
-            onBtnClick={handleSubmit(onSubmit)}
+            onBtnClick={weightModal.onSubmit}
           >
             {/* 날짜 선택 부분 */}
-            <MyDateField
-              register={register}
-              errors={errors}
-              selectedDateModal={selectedDateModal}
-              setSelectedDateModal={setSelectedDateModal}
-              selectedDateModalOpen={selectedDateModalOpen}
-              setSelectedDateModalOpen={setSelectedDateModalOpen}
-            />
+            <MyDateField {...weightModal} />
             {/* 몸무게 입력 부분 */}
-            <WeightInput register={register} errors={errors} />
+            <NumberInput
+              name={'weight'}
+              register={weightModal.register}
+              errors={weightModal.formState.errors}
+              unit='kg'
+              min={30}
+              max={200}
+              validationRules={{
+                min: { value: 20, message: '20kg 이상 입력해주세요.' },
+                max: { value: 300, message: '300kg 이하로 입력해주세요.' },
+                pattern: {
+                  value: /^(?:\d{1,3}(?:\.\d{1})?|\d{1,2})$/,
+                  message: '숫자만 입력 가능하며, 소수점 첫째 자리까지만 입력해주세요',
+                },
+              }}
+            />
           </Modal>
         )}
 
@@ -242,16 +190,16 @@ export default function HomePage() {
               onUpdateMeal={(id, mealType) => {
                 clearFoods(); // zustand에 이미 저장되어있는 선택값 clear()
                 // selected zustand에 값 추가
-                const copy = dailyData.mealData[id].meals[mealType];
+                const copy = originalMealData?.[mealType];
                 copy.map((meal) => addFood(meal));
                 navigate(`/meal/${mealType}/total`, {
-                  state: { date: selectedDate },
+                  state: { date: selectedDate, formMain: true },
                 });
               }}
               onAddWater={() => {
                 navigate(`/water`, { state: { date: selectedDate } });
               }}
-              wholeData={dailyData}
+              // wholeData={{water: waterDataOrigin, meal: mealDataOrigin, weight}}
             />
           </div>
         </BaseCard>
