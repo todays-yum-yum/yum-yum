@@ -1,7 +1,11 @@
 // 공공 데이터 음식 정보 불러오기
 export const fetchNutritionData = async (searchKeyword = '') => {
-  const baseUrl = 'http://api.data.go.kr/openapi/tn_pubr_public_nutri_info_api';
   const serviceKey = import.meta.env.VITE_OPEN_API_KEY;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const proxyUrl = import.meta.env.VITE_PROXY_URL;
+  const useProxy = import.meta.env.VITE_USE_PROXY === 'true';
+
+  const targetUrl = useProxy ? proxyUrl : baseUrl;
 
   const params = new URLSearchParams({
     serviceKey: serviceKey,
@@ -12,7 +16,7 @@ export const fetchNutritionData = async (searchKeyword = '') => {
   });
 
   try {
-    const response = await fetch(`${baseUrl}?${params}`);
+    const response = await fetch(`${targetUrl}?${params}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
