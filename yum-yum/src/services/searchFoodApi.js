@@ -7,8 +7,6 @@ export const fetchNutritionData = async (searchKeyword = '') => {
   // 프록시 서버 여부 설정
   const useProxy = import.meta.env.VITE_USE_PROXY === 'true';
 
-  // 프록시 서버 여부에 따라 주소 설정
-  const targetUrl = useProxy ? proxyUrl : baseUrl;
 
   const params = new URLSearchParams({
     serviceKey: serviceKey,
@@ -18,8 +16,13 @@ export const fetchNutritionData = async (searchKeyword = '') => {
     foodNm: searchKeyword, // 검색할 음식명
   });
 
+  // 프록시 서버 여부에 따라 주소 설정
+  const requestUrl = useProxy
+    ? `${proxyUrl}?url=${encodeURIComponent(`${baseUrl}?${params}`)}`
+    : `${baseUrl}?${params}`;
+
   try {
-    const response = await fetch(`${targetUrl}?${params}`);
+    const response = await fetch(requestUrl);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
