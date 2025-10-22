@@ -4,9 +4,10 @@ export const fetchNutritionData = async (searchKeyword = '') => {
   const serviceKey = import.meta.env.VITE_OPEN_API_KEY;
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const proxyUrl = import.meta.env.VITE_PROXY_URL;
+  // 프록시 서버 여부 설정
   const useProxy = import.meta.env.VITE_USE_PROXY === 'true';
 
-  // 프록시 서버 여부
+  // 프록시 서버 여부에 따라 주소 설정
   const targetUrl = useProxy ? proxyUrl : baseUrl;
 
   const params = new URLSearchParams({
