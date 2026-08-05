@@ -31,7 +31,7 @@ export const fetchNutritionData = async (searchKeyword = '') => {
 
 // 데이터 파싱 함수
 const parseNutritionData = (jsonData) => {
-  const items = jsonData.response?.body?.items || [];
+  const items = jsonData.body?.items?.item || [];
 
   if (!Array.isArray(items)) {
     return [items]; // 단일 객체인 경우 배열로 변환
