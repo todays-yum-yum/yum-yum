@@ -29,7 +29,7 @@ export const fetchNutritionData = async (searchKeyword = '') => {
     }
 
     const jsonData = await response.json();
-    // console.log('원본 데이터:', jsonData);
+    console.log('원본 데이터:', jsonData);
 
     // 데이터 구조에 따라 파싱
     return parseNutritionData(jsonData);
@@ -53,7 +53,6 @@ const parseNutritionData = (jsonData) => {
     const { amount: serving, unit: servingUnit } = parsedFoodSize(item.nutConSrtrQua);
     // console.log(size, unit, serving, servingUnit);
 
-    console.log(item)
     return {
       id: item.foodCd,
       foodCode: item.foodCd, // 음식코드
