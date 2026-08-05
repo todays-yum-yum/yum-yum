@@ -42,8 +42,6 @@ export const fetchNutritionData = async (searchKeyword = '') => {
 // 데이터 파싱 함수
 const parseNutritionData = (jsonData) => {
   const items = jsonData.response?.body?.items?.item || [];
-  
-  console.log(items);
 
   if (!Array.isArray(items)) {
     return [items]; // 단일 객체인 경우 배열로 변환
@@ -54,6 +52,8 @@ const parseNutritionData = (jsonData) => {
     const { amount: size, unit } = parsedFoodSize(item.foodSize);
     const { amount: serving, unit: servingUnit } = parsedFoodSize(item.nutConSrtrQua);
     // console.log(size, unit, serving, servingUnit);
+
+    console.log(item)
     return {
       id: item.foodCd,
       foodCode: item.foodCd, // 음식코드
